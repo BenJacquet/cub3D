@@ -6,7 +6,7 @@
 /*   By: jabenjam <jabenjam@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/07/01 13:50:48 by jabenjam          #+#    #+#             */
-/*   Updated: 2020/07/01 18:57:41 by jabenjam         ###   ########.fr       */
+/*   Updated: 2020/07/02 19:02:44 by jabenjam         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,8 +18,7 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>
-#include "get_next_line.c"
-#include "get_next_line_utils.c"
+#include "ft_split.c"
 
 void    initialize_var(t_var *var)
 {
@@ -36,88 +35,109 @@ void    initialize_var(t_var *var)
 
 void    get_window_size(t_var *var, char *line)
 {
-    int     i;
     int     x;
 
-    i = 0;
     x = 0;
-    while (*line == ' ')
+    while (line && *line == ' ')
         line++;
-    printf("resolution line = %s\n", line);
     while (line && *line >= '0' && *line <= '9' && *line != ' ')
         x = (x * 10) + (*(line++) - '0');
-	printf("x = %d\n", x);
     var->size_x = x;
     x = 0;
-    while (*line == ' ')
+    while (line && *line == ' ')
         line++;
-    while (line && *line >= '0' && *line <= '9' && *line != '\n')
+    while (line && *line >= '0' && *line <= '9')
         x = (x * 10) + (*(line++) - '0');
     var->size_y = x;
-    printf("x = %d\n", x);
     return;
 }
 
-/*char    *get_path(char *line)
+char    *get_path(char *line)
 {
     char    *path;
-    return (path);
+
+    while (line && *line == ' ')
+        line++;
+    path = ft_strdup(line);
+    return(path);
 }
 
-char    *get_color(char *line)
+int     get_rgb(char *line)
 {
-    int     color;
+    int     rgb;
+    int     x;
+    int     colors;
 
-    color = 0;
-    return (color);
+    rgb = 0;
+    x = 0;
+    colors = 0;
+    while (line && *line == ' ')
+        line++;
+	while (line && colors < 3)
+    {
+ 	    while (*line >= '0' && *line <= '9')
+		    x = (x * 10) + (*(line++) - '0');
+        rgb = (colors == 0 ? rgb = x : (rgb << 8) + x);
+        printf("x=%d\nrgb=%d\n", x, rgb);
+        x = 0;
+        colors++;
+        if (*line == ',')
+            line++;
+        /*if (x < 0 || x > 255)
+            erreur, color "out of range"*/
+    }
+    return (rgb);
 }
-*/
+
+
 void    elem_parser(t_var *var, char *line)
 {
     if (line && line[0] == 'R' && var->size_x == 0 && var->size_y == 0)
         get_window_size(var, ++line);
-    if (line && line[0] == 'S' && var->s_path == 0)
-//        var->s_path = get_path(line);
-    if (line && line[0] == 'F' && var->f_color == 0)
-//        var->f_color = get_color(line);
-    if (line && line[0] == 'C' && var->c_color == 0)
-//        var->c_color = get_color(line);
-    if (line && line[0] == 'N' && line[1] == 'O' && var->no_path == 0)
-//       var->no_path = get_path(line);
-    if (line && line[0] == 'S' && line[1] == 'O' && var->so_path == 0)
-//        var->so_path = get_path(line);
-    if (line && line[0] == 'W' && line[1] == 'E' && var->we_path == 0)
-//        var->we_path = get_path(line);
-    if (line && line[0] == 'E' && line[1] == 'A' && var->ea_path == 0)
-//        var->ea_path = get_path(line);
-        {}
+    else if (line && line[0] == 'F' && var->f_color == 0)
+        var->f_color = get_rgb(++line);
+    else if (line && line[0] == 'C' && var->c_color == 0)
+        var->c_color = get_rgb(++line);
+    else if (line && line[0] == 'N' && line[1] == 'O' && var->no_path == 0)
+        var->no_path = get_path(2 + line);
+    else if (line && line[0] == 'S' && line[1] == 'O' && var->so_path == 0)
+        var->so_path = get_path(2 + line);
+    else if (line && line[0] == 'W' && line[1] == 'E' && var->we_path == 0)
+        var->we_path = get_path(2 + line);
+    else if (line && line[0] == 'E' && line[1] == 'A' && var->ea_path == 0)
+        var->ea_path = get_path(2 + line);
+    else if (line && line[0] == 'S' && var->s_path == 0)
+        var->s_path = get_path(++line);
 }
 
 void    cub_parser(t_var *var, char *cub)
 {
     (void)var; // a virer plus tard
     int     fd;
-    char    *line;
+    int     out;
+    char    **params;
+    char    *buffer;
 
     fd = open(cub, O_RDONLY);
+    while (out != 0)
+    {
+        params = read(fd, buffer, 4096);
+        
+    }
     // ajouter verification d'erreurs dans la map
-    printf("file = %s\n", cub);
-    printf("fd = %d\n", fd);
-    while (get_next_line(fd, &line) == 1)
+    while (*params != 0)
 	{
-		printf("cub file line = %s\n", line);
-        elem_parser(var, line);
-		free(line);
+        elem_parser(var, *(params++));
+		free(params);
 	}
-	printf("cub file line = %s\n", line);
-	free(line);
+	free(params);
     close(fd);
     return;
 }
 
 int     main(int ac, char **av)
 {
-    t_var  var;
+    t_var   var;
 
     initialize_var(&var);
     if (ac == 2 || ac == 3)
@@ -125,8 +145,8 @@ int     main(int ac, char **av)
         // ajouter verification d'erreurs dans les arguments [if (a || b)]
         cub_parser(&var, av[1]);
         var.mlx = mlx_init();
-        printf("mlx_ptr = %p\n", var.mlx);
         var.win = mlx_new_window(var.mlx, var.size_x, var.size_y, "Cub3D");
+        printf("VARS\nsize_x=%d\nsize_y=%d\nf_color=%d\nc_color=%d\nno_path=%s\nso_path=%s\nwe_path=%s\nea_path=%s\ns_path=%s\nmlx=%p\nwin=%p\n", var.size_x, var.size_y, var.f_color, var.c_color, var.no_path, var.so_path, var.we_path, var.ea_path, var.s_path, var.mlx, var.win);
         mlx_string_put(var.mlx, var.win, 20, 20, 0255255000, "KEY_PRESSED = ");
         mlx_loop(var.mlx);
     }

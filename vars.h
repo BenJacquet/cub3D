@@ -6,7 +6,7 @@
 /*   By: jabenjam <jabenjam@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/07/01 14:10:28 by jabenjam          #+#    #+#             */
-/*   Updated: 2020/07/01 17:41:03 by jabenjam         ###   ########.fr       */
+/*   Updated: 2020/07/02 18:42:47 by jabenjam         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,9 +24,27 @@ typedef struct	s_struct
     char        *we_path; /* path to west wall texture */
     char        *ea_path; /* path to east wall texture */
     char        *s_path; /* path to sky texture */
+    char        *map; /* map */
     void        *mlx; /* screen connection identifier */
     void        *win; /* window identifier */
     void        *key; /* pressed key identifier */
 }				t_var;
+
+# include <stdlib.h>
+
+int					ft_strlen(const char *str);
+char				*ft_strjoin(char *s1, char *s2);
+char	            *ft_strdup(const char *s1);
+int	                ft_atoi(char *str);
+int					ft_findn(char *s);
+int					get_next_line(int fd, char **line);
+int		            ft_mini_atoi(char *str);
+char				*get_line(char *rem);
+char				*get_remain(char *rem);
+int		            ft_toklen(const char *s, char c);
+int		            ft_free_words(char **words);
+int		            ft_count_tokens(const char *str, char c);
+char	            *ft_fill_words(char *word, const char *s, char c);
+char	            **ft_split(char const *s, char c);
 
 #endif
