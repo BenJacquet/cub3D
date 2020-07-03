@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   libft.h                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: jabenjam <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: jabenjam <jabenjam@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/10/08 18:05:09 by jabenjam          #+#    #+#             */
-/*   Updated: 2019/11/19 16:43:21 by jabenjam         ###   ########.fr       */
+/*   Updated: 2020/07/03 14:08:56 by jabenjam         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,10 +57,10 @@ char				*ft_strrchr(const char *s, int c);
 char				*ft_strrev(char *str);
 char				*ft_substr(char const *s, unsigned int start, size_t len);
 size_t				ft_strlcat(char *dst, const char *src, size_t size);
-size_t				ft_strlen(const char *s);
+int					ft_strlen(const char *s);
 char				**ft_split(char const *s, char c);
 int					ft_toklen(const char *s, char c);
-char				*ft_strjoin(char const *s1, char const *s2);
+char				*ft_strjoin(char *s1, char *s2);
 char				*ft_strmapi(char const *s, char (*f)(unsigned int, char));
 
 /*
@@ -79,7 +79,7 @@ void				*ft_calloc(size_t count, size_t size);
 /*
 **------CONVERSION FUNCTIONS---------------------------------------------------
 */
-int					ft_atoi(const char *str);
+int					ft_atoi(char *str);
 int					ft_ilen(int n);
 char				*ft_itoa(int n);
 

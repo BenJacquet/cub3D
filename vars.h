@@ -6,7 +6,7 @@
 /*   By: jabenjam <jabenjam@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/07/01 14:10:28 by jabenjam          #+#    #+#             */
-/*   Updated: 2020/07/02 18:42:47 by jabenjam         ###   ########.fr       */
+/*   Updated: 2020/07/03 14:56:59 by jabenjam         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,6 +24,7 @@ typedef struct	s_struct
     char        *we_path; /* path to west wall texture */
     char        *ea_path; /* path to east wall texture */
     char        *s_path; /* path to sky texture */
+    int         number; /* number of parameters received */
     char        *map; /* map */
     void        *mlx; /* screen connection identifier */
     void        *win; /* window identifier */
@@ -32,8 +33,6 @@ typedef struct	s_struct
 
 # include <stdlib.h>
 
-int					ft_strlen(const char *str);
-char				*ft_strjoin(char *s1, char *s2);
 char	            *ft_strdup(const char *s1);
 int	                ft_atoi(char *str);
 int					ft_findn(char *s);

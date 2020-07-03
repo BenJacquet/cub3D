@@ -1,0 +1,6 @@
+- Remplacer les espaces par des murs pour ne pas pouvoir sortir de la map
+- Fonction pour check si des sorties sont presentes(si la map n'est pas fermee)
+- Peut etre utiliser un split au lieu du GNL
+- Check si je recois le bon nombre de parametres en sortie de parsing
+- ajouter un exit sur tous les retours de fonction void  et dans les fonctions parentes en cas d'erreur
+- gerer la longueur max de la carte (apres le \n) pour la rendre rectangulaire meme si il n'y a pas d'espaces
