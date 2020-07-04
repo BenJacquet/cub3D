@@ -6,7 +6,7 @@
 /*   By: jabenjam <jabenjam@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/07/01 13:50:48 by jabenjam          #+#    #+#             */
-/*   Updated: 2020/07/03 16:35:16 by jabenjam         ###   ########.fr       */
+/*   Updated: 2020/07/04 14:48:56 by jabenjam         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -80,7 +80,6 @@ int     get_rgb(char *line)
  	    while (*line >= '0' && *line <= '9')
 		    x = (x * 10) + (*(line++) - '0');
         rgb = (colors == 0 ? rgb = x : (rgb << 8) + x);
-//        printf("x=%d\nrgb=%d\n", x, rgb);
         x = 0;
         colors++;
         if (*line == ',')
@@ -94,21 +93,21 @@ int     get_rgb(char *line)
 void    map_parser(t_var *var, char **params)
 {
     int     i;
+    int     j;
 
     i = 0;
-    if (!(var->map = malloc(sizeof(char) * (ft_strlen(*params) + 1))))
-		return;
-    while (*params != 0)
+    j = 0;
+    var->map = params;
+    while (var->map[i] != 0)
     {
-        var->map = ft_strjoin(var->map, *(params++));
-        while (var->map[i] != '\0')
+        while (var->map[i][j] != '\0')
         {
-            if (var->map[i] == ' ')
-                var->map[i] = '1';
-            i++;
+            if (var->map[i][j] == ' ')
+                var->map[i][j] = '1';
+            j++;
         }
-        var->map[i++] = '\n';
-        var->map[i] = '\0';
+        j = 0;
+        i++;;
     }
 }
 
@@ -151,7 +150,10 @@ void    cub_parser(t_var *var, char *cub)
     }
     params = ft_split(save, '\n');
     while (*params != 0 && var->number++ < 8)
-        cub_parser2(var, *(params++));
+    {
+        cub_parser2(var, *params);
+        free(*(params++));
+    }
     map_parser(var, params); // recuperation de la map
     close(fd);
     return;
@@ -168,7 +170,9 @@ int     main(int ac, char **av)
         cub_parser(&var, av[1]);
         var.mlx = mlx_init();
         var.win = mlx_new_window(var.mlx, var.size_x, var.size_y, "Cub3D");
-        printf("VARS\nsize_x=%d\nsize_y=%d\nf_color=%d\nc_color=%d\nno_path=%s\nso_path=%s\nwe_path=%s\nea_path=%s\ns_path=%s\nnumber of parameters=%d\nmap=\n%s\nmlx=%p\nwin=%p\n", var.size_x, var.size_y, var.f_color, var.c_color, var.no_path, var.so_path, var.we_path, var.ea_path, var.s_path, var.number, var.map, var.mlx, var.win);
+        printf("VARS\nsize_x=%d\nsize_y=%d\nf_color=%d\nc_color=%d\nno_path=%s\nso_path=%s\nwe_path=%s\nea_path=%s\ns_path=%s\nnumber of parameters=%d\nmlx=%p\nwin=%p\nmap=\n", var.size_x, var.size_y, var.f_color, var.c_color, var.no_path, var.so_path, var.we_path, var.ea_path, var.s_path, var.number, var.mlx, var.win);
+        while (*var.map != 0)
+            printf("%s\n", *(var.map++));
         mlx_string_put(var.mlx, var.win, 20, 20, 0255255000, "KEY_PRESSED = ");
         mlx_loop(var.mlx);
     }

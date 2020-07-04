@@ -6,7 +6,7 @@
 /*   By: jabenjam <jabenjam@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/07/01 14:10:28 by jabenjam          #+#    #+#             */
-/*   Updated: 2020/07/03 14:56:59 by jabenjam         ###   ########.fr       */
+/*   Updated: 2020/07/04 14:23:41 by jabenjam         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,7 +25,7 @@ typedef struct	s_struct
     char        *ea_path; /* path to east wall texture */
     char        *s_path; /* path to sky texture */
     int         number; /* number of parameters received */
-    char        *map; /* map */
+    char        **map; /* map */
     void        *mlx; /* screen connection identifier */
     void        *win; /* window identifier */
     void        *key; /* pressed key identifier */
