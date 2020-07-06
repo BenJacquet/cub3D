@@ -6,7 +6,7 @@
 /*   By: jabenjam <jabenjam@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/07/01 14:10:28 by jabenjam          #+#    #+#             */
-/*   Updated: 2020/07/04 14:23:41 by jabenjam         ###   ########.fr       */
+/*   Updated: 2020/07/06 16:34:44 by jabenjam         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,6 +29,8 @@ typedef struct	s_struct
     void        *mlx; /* screen connection identifier */
     void        *win; /* window identifier */
     void        *key; /* pressed key identifier */
+    int         x_test;
+    int         y_test;
 }				t_var;
 
 # include <stdlib.h>

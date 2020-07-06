@@ -6,7 +6,7 @@
 /*   By: jabenjam <jabenjam@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/07/01 13:50:48 by jabenjam          #+#    #+#             */
-/*   Updated: 2020/07/04 14:48:56 by jabenjam         ###   ########.fr       */
+/*   Updated: 2020/07/06 18:56:59 by jabenjam         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,6 +33,8 @@ void    initialize_var(t_var *var)
     var->ea_path = 0;
     var->s_path = 0;
     var->number = 0;
+    var->x_test = 40;
+    var->y_test = 40;
 }
 
 void    get_window_size(t_var *var, char *line)
@@ -159,9 +161,61 @@ void    cub_parser(t_var *var, char *cub)
     return;
 }
 
+void    background_test(t_var *var, char c, int r, int g, int b)
+{
+    void    *img_ptr;
+    char    *img_dat;
+    int     bpp = 32;
+    int     sl = var->size_x * 4;
+    int     endian = 1;
+    int     i = 0;
+
+    img_ptr = mlx_new_image(var->mlx, var->size_x, var->size_y / 2);
+    img_dat = mlx_get_data_addr(img_ptr, &bpp, &sl, &endian);
+    while (i < (var->size_x * var->size_y / 2 * 4))
+    {
+        img_dat[i++] = (char)0;
+        img_dat[i++] = (char)r;
+        img_dat[i++] = (char)g;
+        img_dat[i++] = (char)b;
+    }
+    if (c == 'C')
+        mlx_put_image_to_window(var->mlx, var->win, img_ptr, 0, 0);
+    else if (c == 'F')
+        mlx_put_image_to_window(var->mlx, var->win, img_ptr, 0, var->size_y / 2);
+}
+
+int     pixel_trail(int key, t_var *var)
+{
+    printf("\nkey = %d\n", key);
+    if (key == 13 && var->y_test > 1) // W
+        mlx_pixel_put(var->mlx, var->win, var->x_test, --var->y_test, 0255255000);
+    else if (key == 0 && var->x_test > 1) // A
+        mlx_pixel_put(var->mlx, var->win, --var->x_test, var->y_test, 0255255000);
+    else if (key == 1 && var->y_test < 1080) // S
+        mlx_pixel_put(var->mlx, var->win, var->x_test, ++var->y_test, 0255255000);
+    else if (key == 2 && var->x_test < 1920) // D
+        mlx_pixel_put(var->mlx, var->win, ++var->x_test, var->y_test, 0255255000);
+    else if (key == 15) // R
+    {
+        mlx_clear_window(var->mlx, var->win);
+        mlx_string_put(var->mlx, var->win, 20, 20, 0255255000, "PRESS W/A/S/D TO DRAW A TRAIL");
+        var->x_test = 40;
+        var->y_test = 40;
+    }
+/*    else if (key == 34) // I
+    {
+        background_test(var, 'C', 0, 150, 255);
+        background_test(var, 'F', 120, 120, 100);
+    }*/
+    else if (key == 12) // Q
+        mlx_destroy_window(var->mlx, var->win);
+    return (0);
+}
+
 int     main(int ac, char **av)
 {
-    t_var   var;
+        t_var   var;
 
     initialize_var(&var);
     if (ac == 2 || ac == 3)
@@ -173,7 +227,9 @@ int     main(int ac, char **av)
         printf("VARS\nsize_x=%d\nsize_y=%d\nf_color=%d\nc_color=%d\nno_path=%s\nso_path=%s\nwe_path=%s\nea_path=%s\ns_path=%s\nnumber of parameters=%d\nmlx=%p\nwin=%p\nmap=\n", var.size_x, var.size_y, var.f_color, var.c_color, var.no_path, var.so_path, var.we_path, var.ea_path, var.s_path, var.number, var.mlx, var.win);
         while (*var.map != 0)
             printf("%s\n", *(var.map++));
-        mlx_string_put(var.mlx, var.win, 20, 20, 0255255000, "KEY_PRESSED = ");
+        background_test(&var, 'C', 0, 150, 255);
+//        background_test(&var, 'F', 120, 120, 100);
+        mlx_key_hook(var.win, pixel_trail, &var);
         mlx_loop(var.mlx);
     }
     return(0);
