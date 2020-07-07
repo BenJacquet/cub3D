@@ -6,7 +6,7 @@
 /*   By: jabenjam <jabenjam@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/07/01 14:10:28 by jabenjam          #+#    #+#             */
-/*   Updated: 2020/07/06 16:34:44 by jabenjam         ###   ########.fr       */
+/*   Updated: 2020/07/07 18:49:10 by jabenjam         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,12 +26,21 @@ typedef struct	s_struct
     char        *s_path; /* path to sky texture */
     int         number; /* number of parameters received */
     char        **map; /* map */
+    int         map_x; /* taille de la map en x */
+    int         map_y; /* taille de la map en y */
     void        *mlx; /* screen connection identifier */
     void        *win; /* window identifier */
     void        *key; /* pressed key identifier */
-    int         x_test;
-    int         y_test;
 }				t_var;
+
+typedef         struct
+{
+    float       pos_x;
+    float       pos_y;
+    float       dir_x;
+    float       dir_y;
+}              t_player;
+
 
 # include <stdlib.h>
 

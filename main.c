@@ -6,12 +6,13 @@
 /*   By: jabenjam <jabenjam@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/07/01 13:50:48 by jabenjam          #+#    #+#             */
-/*   Updated: 2020/07/06 18:56:59 by jabenjam         ###   ########.fr       */
+/*   Updated: 2020/07/07 18:57:29 by jabenjam         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "vars.h"
 #include <mlx.h>
+#include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
@@ -21,7 +22,7 @@
 #include "ft_split.c"
 #include "utils.c"
 
-void    initialize_var(t_var *var)
+void    initialize_structs(t_var *var, t_player *player)
 {
     var->size_x = 0;
     var->size_y = 0;
@@ -33,8 +34,12 @@ void    initialize_var(t_var *var)
     var->ea_path = 0;
     var->s_path = 0;
     var->number = 0;
-    var->x_test = 40;
-    var->y_test = 40;
+    var->map_x = 0;
+    var->map_y = 0;
+    player->pos_x = 0;
+    player->pos_y = 0;
+    player->dir_x = 0;
+    player->dir_y = 0;
 }
 
 void    get_window_size(t_var *var, char *line)
@@ -92,7 +97,31 @@ int     get_rgb(char *line)
     return (rgb);
 }
 
-void    map_parser(t_var *var, char **params)
+void    player_parser(t_player *player, char c)
+{
+    if (c == 'N')
+    {
+        player->dir_x = 0;
+        player->dir_y = 1;
+    }
+    else if (c == 'S')
+    {
+        player->dir_x = 0;
+        player->dir_y = -1;
+    }
+    else if (c == 'E')
+    {
+        player->dir_x = -1;
+        player->dir_y = 0;
+    }
+    else
+    {
+        player->dir_x = 1;
+        player->dir_y = 0;
+    }
+}
+
+void    map_parser(t_var *var, t_player *player, char **params)
 {
     int     i;
     int     j;
@@ -106,11 +135,20 @@ void    map_parser(t_var *var, char **params)
         {
             if (var->map[i][j] == ' ')
                 var->map[i][j] = '1';
+            if (var->map[i][j] == 'N' || var->map[i][j] == 'S' ||
+                var->map[i][j] == 'W' || var->map[i][j] == 'E')
+            {
+                player_parser(player, var->map[i][j]);
+                player->pos_x = j;
+                player->pos_y = i;
+            }
             j++;
         }
+        var->map_x = j;
         j = 0;
-        i++;;
+        i++;
     }
+    var->map_y = i;
 }
 
 void    cub_parser2(t_var *var, char *line)
@@ -133,7 +171,7 @@ void    cub_parser2(t_var *var, char *line)
         var->s_path = get_path(++line);
 }
 
-void    cub_parser(t_var *var, char *cub)
+void    cub_parser(t_var *var, t_player *player, char *cub)
 {
     int     fd;
     int     out;
@@ -156,17 +194,17 @@ void    cub_parser(t_var *var, char *cub)
         cub_parser2(var, *params);
         free(*(params++));
     }
-    map_parser(var, params); // recuperation de la map
+    map_parser(var, player, params); // recuperation de la map
     close(fd);
     return;
 }
 
-void    background_test(t_var *var, char c, int r, int g, int b)
+void    background_fill_test(t_var *var, char c, int r, int g, int b)
 {
     void    *img_ptr;
     char    *img_dat;
-    int     bpp = 32;
-    int     sl = var->size_x * 4;
+    int     bpp = 32; //bits par pixel (32 = A + R + G + B)
+    int     sl = var->size_x * 4; // taille de chaque ligne
     int     endian = 1;
     int     i = 0;
 
@@ -174,62 +212,102 @@ void    background_test(t_var *var, char c, int r, int g, int b)
     img_dat = mlx_get_data_addr(img_ptr, &bpp, &sl, &endian);
     while (i < (var->size_x * var->size_y / 2 * 4))
     {
-        img_dat[i++] = (char)0;
+        img_dat[i++] = (char)255;
         img_dat[i++] = (char)r;
         img_dat[i++] = (char)g;
         img_dat[i++] = (char)b;
     }
     if (c == 'C')
         mlx_put_image_to_window(var->mlx, var->win, img_ptr, 0, 0);
-    else if (c == 'F')
+    if (c == 'F')
         mlx_put_image_to_window(var->mlx, var->win, img_ptr, 0, var->size_y / 2);
 }
 
-int     pixel_trail(int key, t_var *var)
+int     controls(int key, t_var *var) // TEST //
 {
     printf("\nkey = %d\n", key);
-    if (key == 13 && var->y_test > 1) // W
-        mlx_pixel_put(var->mlx, var->win, var->x_test, --var->y_test, 0255255000);
-    else if (key == 0 && var->x_test > 1) // A
-        mlx_pixel_put(var->mlx, var->win, --var->x_test, var->y_test, 0255255000);
-    else if (key == 1 && var->y_test < 1080) // S
-        mlx_pixel_put(var->mlx, var->win, var->x_test, ++var->y_test, 0255255000);
-    else if (key == 2 && var->x_test < 1920) // D
-        mlx_pixel_put(var->mlx, var->win, ++var->x_test, var->y_test, 0255255000);
-    else if (key == 15) // R
+    if (key == 15) // R
     {
         mlx_clear_window(var->mlx, var->win);
-        mlx_string_put(var->mlx, var->win, 20, 20, 0255255000, "PRESS W/A/S/D TO DRAW A TRAIL");
-        var->x_test = 40;
-        var->y_test = 40;
+        mlx_string_put(var->mlx, var->win, 0, 10, 0255255000, "PRESS W/A/S/D TO MOVE");
     }
-/*    else if (key == 34) // I
-    {
-        background_test(var, 'C', 0, 150, 255);
-        background_test(var, 'F', 120, 120, 100);
-    }*/
     else if (key == 12) // Q
         mlx_destroy_window(var->mlx, var->win);
     return (0);
 }
 
+int     draw_map(t_var *var)
+{
+    int     x = 0;
+    int     y = 0;
+    int     i = 0;
+    int     bpp = 32;
+    int     sl = 16 * 4;
+    int     size = 16;
+    int     endian = 1;
+    int     x_image = 30;
+    int     y_image = 0;
+    void    *img_ptr;
+    char    *img_dat;
+
+    img_ptr = mlx_new_image(var->mlx, 16, 16);
+    img_dat = mlx_get_data_addr(img_ptr, &bpp, &sl, &endian);
+    while (i < (16 * 16 * 4))
+    {
+        img_dat[i++] = 0;
+        img_dat[i++] = 125;
+        img_dat[i++] = 126;
+        img_dat[i++] = 0;
+    }
+    while (var->map[y])
+    {
+        while (var->map[y][x])
+        {
+            if (var->map[y][x] == '1')
+                mlx_put_image_to_window(var->mlx, var->win, img_ptr, x_image, y_image);
+            if (var->map[y][x] == 'N' || var->map[y][x] == 'S' ||
+                var->map[y][x] == 'W' || var->map[y][x] == 'E')
+                mlx_put_image_to_window(var->mlx, var->win, mlx_xpm_file_to_image(var->mlx, "./textures/arrow.xpm", &size, &size), x_image, y_image);
+            x++;
+            x_image += 17;
+        }
+        x = 0;
+        x_image = 30;
+        y_image += 17;
+        y++;
+    }
+    return (0);
+}
+
+int     draw(t_var *var, t_player *player)
+{
+    draw_map(var);
+    (void)player;
+    return (0);
+}
+
 int     main(int ac, char **av)
 {
-        t_var   var;
+        t_var       var;
+        t_player    player;
 
-    initialize_var(&var);
+    initialize_structs(&var, &player);
     if (ac == 2 || ac == 3)
     {
         // ajouter verification d'erreurs dans les arguments [if (a || b)]
-        cub_parser(&var, av[1]);
+        cub_parser(&var, &player, av[1]);
         var.mlx = mlx_init();
         var.win = mlx_new_window(var.mlx, var.size_x, var.size_y, "Cub3D");
         printf("VARS\nsize_x=%d\nsize_y=%d\nf_color=%d\nc_color=%d\nno_path=%s\nso_path=%s\nwe_path=%s\nea_path=%s\ns_path=%s\nnumber of parameters=%d\nmlx=%p\nwin=%p\nmap=\n", var.size_x, var.size_y, var.f_color, var.c_color, var.no_path, var.so_path, var.we_path, var.ea_path, var.s_path, var.number, var.mlx, var.win);
-        while (*var.map != 0)
-            printf("%s\n", *(var.map++));
-        background_test(&var, 'C', 0, 150, 255);
-//        background_test(&var, 'F', 120, 120, 100);
-        mlx_key_hook(var.win, pixel_trail, &var);
+        printf("PLAYER\npos_x=%f\npos_y=%f\ndir_x=%f\ndir_y=%f\n", player.pos_x, player.pos_y, player.dir_x, player.dir_y);
+//        while (*var.map != 0)
+//            printf("%s\n", *(var.map++));
+//        background_fill_test(&var, 'C', 0, 255, 255);
+//        background_fill_test(&var, 'F', 120, 120, 100);
+//        mlx_put_image_to_window(var.mlx, var.win, mlx_xpm_file_to_image(var.mlx, var.no_path, &x, &y), 0, 0);
+//        mlx_put_image_to_window(var.mlx, var.win, mlx_xpm_file_to_image(var.mlx, var.so_path, &x, &y), 64, 0);
+        draw(&var, &player);
+        mlx_key_hook(var.win, controls, &var);
         mlx_loop(var.mlx);
     }
     return(0);

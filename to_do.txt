@@ -5,4 +5,5 @@
 - ajouter un exit sur tous les retours de fonction void  et dans les fonctions parentes en cas d'erreur
 - gerer la longueur max de la carte (apres le \n) pour la rendre rectangulaire meme si il n'y a pas d'espaces (chaque ligne doit faire la taille max rencontree)
 - map en 2 dimensions ou 1 ?
+- gerer textures en resolutions differentes
 - free chaque ligne splittée apres etre passee dane le parser
