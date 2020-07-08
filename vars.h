@@ -6,12 +6,35 @@
 /*   By: jabenjam <jabenjam@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/07/01 14:10:28 by jabenjam          #+#    #+#             */
-/*   Updated: 2020/07/07 18:49:10 by jabenjam         ###   ########.fr       */
+/*   Updated: 2020/07/08 17:16:06 by jabenjam         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef VARS_H
 # define VARS_H
+
+# define PI 3.14159265359
+
+typedef         struct
+{
+    float       pos_x;
+    float       pos_y;
+    float       d_x;
+    float       d_y;
+    float       angle;
+}              t_player;
+
+typedef         struct
+{
+    void        *img_ptr;
+    char        *img_dat;
+    int         size;
+    int         bpp;
+    int         sl;
+    int         endian;
+    int         pos_x;
+    int         pos_y;
+}               t_tex;
 
 typedef struct	s_struct
 {
@@ -31,16 +54,9 @@ typedef struct	s_struct
     void        *mlx; /* screen connection identifier */
     void        *win; /* window identifier */
     void        *key; /* pressed key identifier */
+    t_player    player;
+    t_tex       tex;
 }				t_var;
-
-typedef         struct
-{
-    float       pos_x;
-    float       pos_y;
-    float       dir_x;
-    float       dir_y;
-}              t_player;
-
 
 # include <stdlib.h>
 

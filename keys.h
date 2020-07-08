@@ -1,0 +1,28 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   keys.h                                             :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: jabenjam <jabenjam@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2020/07/08 14:20:35 by jabenjam          #+#    #+#             */
+/*   Updated: 2020/07/08 16:46:25 by jabenjam         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
+#ifndef KEYS_H
+# define KEYS_H
+
+# define K_W 13
+# define K_A 0
+# define K_S 1
+# define K_D 2
+# define K_LEFT 123
+# define K_RIGHT 124
+# define K_R 15
+# define K_Q 12
+# define K_E 14
+# define K_SPACE 49
+# define K_ESC 53
+
+#endif

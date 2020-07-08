@@ -6,7 +6,7 @@
 /*   By: jabenjam <jabenjam@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/07/01 13:50:48 by jabenjam          #+#    #+#             */
-/*   Updated: 2020/07/07 18:57:29 by jabenjam         ###   ########.fr       */
+/*   Updated: 2020/07/08 18:23:59 by jabenjam         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,8 +21,9 @@
 #include <fcntl.h>
 #include "ft_split.c"
 #include "utils.c"
+#include "keys.h"
 
-void    initialize_structs(t_var *var, t_player *player)
+void    initialize_structs(t_var *var)
 {
     var->size_x = 0;
     var->size_y = 0;
@@ -36,10 +37,11 @@ void    initialize_structs(t_var *var, t_player *player)
     var->number = 0;
     var->map_x = 0;
     var->map_y = 0;
-    player->pos_x = 0;
-    player->pos_y = 0;
-    player->dir_x = 0;
-    player->dir_y = 0;
+    var->player.pos_x = 0;
+    var->player.pos_y = 0;
+    var->player.d_x = 0;
+    var->player.d_y = 0;
+    var->player.angle = 0;
 }
 
 void    get_window_size(t_var *var, char *line)
@@ -100,28 +102,18 @@ int     get_rgb(char *line)
 void    player_parser(t_player *player, char c)
 {
     if (c == 'N')
-    {
-        player->dir_x = 0;
-        player->dir_y = 1;
-    }
+        player->angle = 3 * PI / 2;
     else if (c == 'S')
-    {
-        player->dir_x = 0;
-        player->dir_y = -1;
-    }
+        player->angle = PI / 2;
     else if (c == 'E')
-    {
-        player->dir_x = -1;
-        player->dir_y = 0;
-    }
+        player->angle = 2 * PI;
     else
-    {
-        player->dir_x = 1;
-        player->dir_y = 0;
-    }
+        player->angle = PI;
+    player->d_x = cos(player->angle) * 5;
+    player->d_y = sin(player->angle) * 5;
 }
 
-void    map_parser(t_var *var, t_player *player, char **params)
+void    map_parser(t_var *var, char **params)
 {
     int     i;
     int     j;
@@ -138,9 +130,9 @@ void    map_parser(t_var *var, t_player *player, char **params)
             if (var->map[i][j] == 'N' || var->map[i][j] == 'S' ||
                 var->map[i][j] == 'W' || var->map[i][j] == 'E')
             {
-                player_parser(player, var->map[i][j]);
-                player->pos_x = j;
-                player->pos_y = i;
+                player_parser(&var->player, var->map[i][j]);
+                var->player.pos_x = j;
+                var->player.pos_y = i;
             }
             j++;
         }
@@ -171,7 +163,7 @@ void    cub_parser2(t_var *var, char *line)
         var->s_path = get_path(++line);
 }
 
-void    cub_parser(t_var *var, t_player *player, char *cub)
+void    cub_parser(t_var *var, char *cub)
 {
     int     fd;
     int     out;
@@ -194,7 +186,7 @@ void    cub_parser(t_var *var, t_player *player, char *cub)
         cub_parser2(var, *params);
         free(*(params++));
     }
-    map_parser(var, player, params); // recuperation de la map
+    map_parser(var, params); // recuperation de la map
     close(fd);
     return;
 }
@@ -223,20 +215,7 @@ void    background_fill_test(t_var *var, char c, int r, int g, int b)
         mlx_put_image_to_window(var->mlx, var->win, img_ptr, 0, var->size_y / 2);
 }
 
-int     controls(int key, t_var *var) // TEST //
-{
-    printf("\nkey = %d\n", key);
-    if (key == 15) // R
-    {
-        mlx_clear_window(var->mlx, var->win);
-        mlx_string_put(var->mlx, var->win, 0, 10, 0255255000, "PRESS W/A/S/D TO MOVE");
-    }
-    else if (key == 12) // Q
-        mlx_destroy_window(var->mlx, var->win);
-    return (0);
-}
-
-int     draw_map(t_var *var)
+int     draw_mini_map(t_var *var)
 {
     int     x = 0;
     int     y = 0;
@@ -244,19 +223,20 @@ int     draw_map(t_var *var)
     int     bpp = 32;
     int     sl = 16 * 4;
     int     size = 16;
-    int     endian = 1;
-    int     x_image = 30;
+    int     endian = 0;
+    int     x_image = 0;
     int     y_image = 0;
     void    *img_ptr;
     char    *img_dat;
 
+    mlx_clear_window(var->mlx, var->win); // a virer une fois que tout sera render
     img_ptr = mlx_new_image(var->mlx, 16, 16);
     img_dat = mlx_get_data_addr(img_ptr, &bpp, &sl, &endian);
     while (i < (16 * 16 * 4))
     {
         img_dat[i++] = 0;
-        img_dat[i++] = 125;
-        img_dat[i++] = 126;
+        img_dat[i++] = 0;
+        img_dat[i++] = 127;
         img_dat[i++] = 0;
     }
     while (var->map[y])
@@ -265,49 +245,88 @@ int     draw_map(t_var *var)
         {
             if (var->map[y][x] == '1')
                 mlx_put_image_to_window(var->mlx, var->win, img_ptr, x_image, y_image);
-            if (var->map[y][x] == 'N' || var->map[y][x] == 'S' ||
-                var->map[y][x] == 'W' || var->map[y][x] == 'E')
-                mlx_put_image_to_window(var->mlx, var->win, mlx_xpm_file_to_image(var->mlx, "./textures/arrow.xpm", &size, &size), x_image, y_image);
+            if (x == (int)var->player.pos_x  && y == (int)var->player.pos_y)
+                mlx_put_image_to_window(var->mlx, var->win, mlx_xpm_file_to_image(var->mlx, "./textures/arrow.xpm", &size, &size), ((int)var->player.pos_x * 17), ((int)var->player.pos_y * 17));
             x++;
             x_image += 17;
         }
         x = 0;
-        x_image = 30;
+        x_image = 0;
         y_image += 17;
         y++;
     }
     return (0);
 }
 
-int     draw(t_var *var, t_player *player)
+int     draw(t_var *var)
 {
-    draw_map(var);
-    (void)player;
+    draw_mini_map(var);
+    return (0);
+}
+
+int     key_press(int key, t_var *var) // TEST //
+{
+    printf("\nkey = %d\n", key);
+    if (key == K_W)
+    {
+        var->player.pos_x += (var->player.d_x * 0.1);
+        var->player.pos_y += (var->player.d_y * 0.1);
+    }
+    else if (key == K_S)
+    {
+        var->player.pos_x -= (var->player.d_x * 0.1);
+        var->player.pos_y -= (var->player.d_y * 0.1);
+    }
+    else if (key == K_LEFT)
+    {
+        var->player.angle -= 0.1;
+        var->player.d_x = cos(var->player.angle) * 5;
+        var->player.d_y = sin(var->player.angle) * 5;
+        if (var->player.angle < 0)
+            var->player.angle += 2 * PI;
+    }
+    else if (key == K_RIGHT)
+    {
+        var->player.angle += 0.1;
+        var->player.d_x = cos(var->player.angle) * 5;
+        var->player.d_y = sin(var->player.angle) * 5;
+        if (var->player.angle > 2 * PI)
+            var->player.angle -= 2 * PI;
+    }
+    else if (key == K_R)
+    {
+        mlx_clear_window(var->mlx, var->win);
+        mlx_string_put(var->mlx, var->win, 0, 10, 0255255000, "PRESS W/LEFT/S/RIGHT TO MOVE");
+    }
+    draw_mini_map(var);
+    if (key == K_ESC) // ESC
+        mlx_destroy_window(var->mlx, var->win);
+    printf("PLAYER\npos_x=%f\npos_y=%f\nangle=%f\n", var->player.pos_x, var->player.pos_y, var->player.angle);
     return (0);
 }
 
 int     main(int ac, char **av)
 {
         t_var       var;
-        t_player    player;
 
-    initialize_structs(&var, &player);
+    initialize_structs(&var);
     if (ac == 2 || ac == 3)
     {
         // ajouter verification d'erreurs dans les arguments [if (a || b)]
-        cub_parser(&var, &player, av[1]);
+        cub_parser(&var, av[1]);
         var.mlx = mlx_init();
         var.win = mlx_new_window(var.mlx, var.size_x, var.size_y, "Cub3D");
         printf("VARS\nsize_x=%d\nsize_y=%d\nf_color=%d\nc_color=%d\nno_path=%s\nso_path=%s\nwe_path=%s\nea_path=%s\ns_path=%s\nnumber of parameters=%d\nmlx=%p\nwin=%p\nmap=\n", var.size_x, var.size_y, var.f_color, var.c_color, var.no_path, var.so_path, var.we_path, var.ea_path, var.s_path, var.number, var.mlx, var.win);
-        printf("PLAYER\npos_x=%f\npos_y=%f\ndir_x=%f\ndir_y=%f\n", player.pos_x, player.pos_y, player.dir_x, player.dir_y);
+        printf("PLAYER\npos_x=%f\npos_y=%f\nangle=%f\n", var.player.pos_x, var.player.pos_y, var.player.angle);
 //        while (*var.map != 0)
 //            printf("%s\n", *(var.map++));
 //        background_fill_test(&var, 'C', 0, 255, 255);
 //        background_fill_test(&var, 'F', 120, 120, 100);
 //        mlx_put_image_to_window(var.mlx, var.win, mlx_xpm_file_to_image(var.mlx, var.no_path, &x, &y), 0, 0);
 //        mlx_put_image_to_window(var.mlx, var.win, mlx_xpm_file_to_image(var.mlx, var.so_path, &x, &y), 64, 0);
-        draw(&var, &player);
-        mlx_key_hook(var.win, controls, &var);
+        draw(&var);
+        mlx_hook(var.win, 2, 0, key_press, &var);
+//        mlx_hook(var.win, 2, 0, key_release, &var);
         mlx_loop(var.mlx);
     }
     return(0);
