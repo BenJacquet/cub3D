@@ -6,25 +6,39 @@
 /*   By: jabenjam <jabenjam@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/07/01 14:10:28 by jabenjam          #+#    #+#             */
-/*   Updated: 2020/07/08 17:16:06 by jabenjam         ###   ########.fr       */
+/*   Updated: 2020/07/09 18:24:44 by jabenjam         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef VARS_H
 # define VARS_H
 
-# define PI 3.14159265359
-
-typedef         struct
+typedef struct  s_player
 {
     float       pos_x;
     float       pos_y;
-    float       d_x;
-    float       d_y;
-    float       angle;
-}              t_player;
+}               t_player;
 
-typedef         struct
+typedef struct  s_camera
+{
+    float       delta_x;
+    float       delta_y;
+    float       plane_x;
+    float       plane_y;
+    float       ray_dirx;
+    float       ray_diry;
+    float       side_x;
+    float       side_y;
+    float       cam_x;
+    float       wall_dist;
+    int         map_x;
+    int         map_y;
+    float       dir_x;
+    float       dir_y;
+}               t_camera;
+
+
+typedef struct  s_tex
 {
     void        *img_ptr;
     char        *img_dat;
@@ -38,8 +52,8 @@ typedef         struct
 
 typedef struct	s_struct
 {
-    int         size_x; /* window length */
-    int         size_y; /* window width */
+    int         length; /* window length */
+    int         height; /* window height */
     int         f_color; /* floor color */
     int         c_color; /* ceiling color */
     char        *no_path; /* path to north wall texture */
@@ -49,12 +63,13 @@ typedef struct	s_struct
     char        *s_path; /* path to sky texture */
     int         number; /* number of parameters received */
     char        **map; /* map */
-    int         map_x; /* taille de la map en x */
-    int         map_y; /* taille de la map en y */
+    int         size_x; /* taille de la map en x */
+    int         size_y; /* taille de la map en y */
     void        *mlx; /* screen connection identifier */
     void        *win; /* window identifier */
     void        *key; /* pressed key identifier */
     t_player    player;
+    t_camera    camera;
     t_tex       tex;
 }				t_var;
 

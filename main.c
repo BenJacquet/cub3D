@@ -6,7 +6,7 @@
 /*   By: jabenjam <jabenjam@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/07/01 13:50:48 by jabenjam          #+#    #+#             */
-/*   Updated: 2020/07/08 18:23:59 by jabenjam         ###   ########.fr       */
+/*   Updated: 2020/07/09 19:00:37 by jabenjam         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,13 +35,22 @@ void    initialize_structs(t_var *var)
     var->ea_path = 0;
     var->s_path = 0;
     var->number = 0;
-    var->map_x = 0;
-    var->map_y = 0;
+    var->camera.map_x = 0;
+    var->camera.map_y = 0;
     var->player.pos_x = 0;
     var->player.pos_y = 0;
-    var->player.d_x = 0;
-    var->player.d_y = 0;
-    var->player.angle = 0;
+    var->camera.dir_x = 0;
+    var->camera.dir_y = 0;
+    var->camera.delta_x = 0;
+    var->camera.delta_y = 0;
+    var->camera.plane_x = 0;
+    var->camera.plane_y = 0.66;
+    var->camera.cam_x = 0;
+    var->camera.wall_dist = 0;
+    var->camera.side_x = 0;
+    var->camera.side_y = 0;
+    var->camera.map_x = 0;
+    var->camera.map_y = 0;
 }
 
 void    get_window_size(t_var *var, char *line)
@@ -53,13 +62,13 @@ void    get_window_size(t_var *var, char *line)
         line++;
     while (line && *line >= '0' && *line <= '9' && *line != ' ')
         x = (x * 10) + (*(line++) - '0');
-    var->size_x = x;
+    var->length = x;
     x = 0;
     while (line && *line == ' ')
         line++;
     while (line && *line >= '0' && *line <= '9')
         x = (x * 10) + (*(line++) - '0');
-    var->size_y = x;
+    var->height = x;
     return;
 }
 
@@ -99,18 +108,16 @@ int     get_rgb(char *line)
     return (rgb);
 }
 
-void    player_parser(t_player *player, char c)
+void    parse_direction(t_camera *camera, char c)
 {
     if (c == 'N')
-        player->angle = 3 * PI / 2;
+        camera->dir_y = -1;
     else if (c == 'S')
-        player->angle = PI / 2;
+        camera->dir_y = 1;
     else if (c == 'E')
-        player->angle = 2 * PI;
+        camera->dir_x = 1;
     else
-        player->angle = PI;
-    player->d_x = cos(player->angle) * 5;
-    player->d_y = sin(player->angle) * 5;
+        camera->dir_x = -1;
 }
 
 void    map_parser(t_var *var, char **params)
@@ -130,17 +137,17 @@ void    map_parser(t_var *var, char **params)
             if (var->map[i][j] == 'N' || var->map[i][j] == 'S' ||
                 var->map[i][j] == 'W' || var->map[i][j] == 'E')
             {
-                player_parser(&var->player, var->map[i][j]);
+                parse_direction(&var->camera, var->map[i][j]);
                 var->player.pos_x = j;
                 var->player.pos_y = i;
             }
             j++;
         }
-        var->map_x = j;
+        var->size_x = j;
         j = 0;
         i++;
     }
-    var->map_y = i;
+    var->size_y = i;
 }
 
 void    cub_parser2(t_var *var, char *line)
@@ -215,7 +222,7 @@ void    background_fill_test(t_var *var, char c, int r, int g, int b)
         mlx_put_image_to_window(var->mlx, var->win, img_ptr, 0, var->size_y / 2);
 }
 
-int     draw_mini_map(t_var *var)
+/*int     draw_mini_map(t_var *var)
 {
     int     x = 0;
     int     y = 0;
@@ -262,46 +269,144 @@ int     draw(t_var *var)
 {
     draw_mini_map(var);
     return (0);
-}
+}*/
 
 int     key_press(int key, t_var *var) // TEST //
 {
     printf("\nkey = %d\n", key);
+    float     save_dir_x = 0;
+    float     save_plane_x = 0;
+
     if (key == K_W)
     {
-        var->player.pos_x += (var->player.d_x * 0.1);
-        var->player.pos_y += (var->player.d_y * 0.1);
+        var->player.pos_x += (var->camera.dir_x * 0.1);
+        var->player.pos_y += (var->camera.dir_y * 0.1);
     }
     else if (key == K_S)
     {
-        var->player.pos_x -= (var->player.d_x * 0.1);
-        var->player.pos_y -= (var->player.d_y * 0.1);
+        var->player.pos_x -= (var->camera.dir_x * 0.1);
+        var->player.pos_y -= (var->camera.dir_y * 0.1);
     }
     else if (key == K_LEFT)
     {
-        var->player.angle -= 0.1;
-        var->player.d_x = cos(var->player.angle) * 5;
-        var->player.d_y = sin(var->player.angle) * 5;
-        if (var->player.angle < 0)
-            var->player.angle += 2 * PI;
+        save_dir_x = var->camera.dir_x;
+        save_plane_x = var->camera.plane_x;
+        var->camera.dir_x = var->camera.dir_x * cos(0.1) - var->camera.dir_y * sin(0.1);
+        var->camera.dir_y = save_dir_x * sin(0.1) + var->camera.dir_y * cos(0.1);
+        var->camera.plane_x = var->camera.plane_x * cos(0.1) - var->camera.plane_y * sin(0.1);
+        var->camera.plane_y = save_plane_x * sin(0.1) + var->camera.dir_y * cos(0.1);
     }
     else if (key == K_RIGHT)
     {
-        var->player.angle += 0.1;
-        var->player.d_x = cos(var->player.angle) * 5;
-        var->player.d_y = sin(var->player.angle) * 5;
-        if (var->player.angle > 2 * PI)
-            var->player.angle -= 2 * PI;
+        save_dir_x = var->camera.dir_x;
+        save_plane_x = var->camera.plane_x;
+        var->camera.dir_x = var->camera.dir_x * cos(-0.1) - var->camera.dir_y * sin(-0.1);
+        var->camera.dir_y = save_dir_x * sin(-0.1) + var->camera.dir_y * cos(-0.1);
+        var->camera.plane_x = var->camera.plane_x * cos(-0.1) - var->camera.plane_y * sin(-0.1);
+        var->camera.plane_y = save_plane_x * sin(-0.1) + var->camera.dir_y * cos(-0.1);
     }
     else if (key == K_R)
     {
         mlx_clear_window(var->mlx, var->win);
         mlx_string_put(var->mlx, var->win, 0, 10, 0255255000, "PRESS W/LEFT/S/RIGHT TO MOVE");
     }
-    draw_mini_map(var);
+ //   draw_mini_map(var);
     if (key == K_ESC) // ESC
         mlx_destroy_window(var->mlx, var->win);
-    printf("PLAYER\npos_x=%f\npos_y=%f\nangle=%f\n", var->player.pos_x, var->player.pos_y, var->player.angle);
+    printf("PLAYER\npos_x=%f\npos_y=%f\ndir_x=%f\ndir_y=%f\n", var->player.pos_x, var->player.pos_y, var->camera.dir_x, var->camera.dir_y);
+    return (0);
+}
+
+/*int     draw_pixel(t_var *var, int x, int y, int color)
+{
+    if (x >= 0 && x <= var->length && y >= 0 && y <= var->height)
+        *(int*)(var->win + ((4 * var->length * y) + (x * 4))) = color;
+    return (0);
+}*/
+
+int     draw_vline(t_var *var, int x, int start, int end, int color)
+{
+    int     i = 0;
+
+    while (start + i < end)
+    {
+        mlx_pixel_put(var->mlx, var->win, x, start + i, color);
+        i++;
+    }
+    return (0);
+}
+
+int     raycast(t_var *var)
+{
+    int     hit = 0;
+    int     side = 0;
+    int     step_x = 0;
+    int     step_y = 0;
+    int     line_h = 0;
+    int     start = 0;
+    int     end = 0;
+    int     color = 45439488;
+    int     x = 0;
+    while (x < var->length)
+    {
+        var->camera.cam_x = 2 * x / (double)var->length - 1;
+        var->camera.ray_dirx = var->camera.dir_x + var->camera.plane_x * var->camera.cam_x;
+        var->camera.ray_diry = var->camera.dir_y + var->camera.plane_y * var->camera.cam_x;
+        var->camera.map_x = (int)var->player.pos_x; // determine la case dans laquelle se trouve la camera
+        var->camera.map_y = (int)var->player.pos_y;
+        var->camera.delta_x = fabs(1 / var->camera.ray_dirx);
+        var->camera.delta_y = fabs(1 / var->camera.ray_diry);
+
+        if (var->camera.ray_dirx < 0)
+        {
+            step_x = -1;
+            var->camera.side_x = (var->player.pos_x - var->camera.map_x) * var->camera.delta_x;
+        }
+        else
+        {
+            step_x = 1;
+            var->camera.side_x = (var->camera.map_x + 1 - var->player.pos_x) * var->camera.delta_x;
+        }
+        if (var->camera.ray_diry < 0)
+        {
+            step_y = -1;
+            var->camera.side_y = (var->player.pos_y - var->camera.map_y) * var->camera.delta_y;
+        }
+        else
+        {
+            step_y = 1;
+            var->camera.side_y = (var->camera.map_y + 1 - var->player.pos_y) * var->camera.delta_y;
+        }
+        while (hit == 0)
+        {
+            if (var->camera.side_x < var->camera.side_y)
+            {
+                var->camera.side_x += var->camera.delta_x;
+                var->camera.map_x += step_x;
+                side = 0;
+            }
+            else
+            {
+                var->camera.side_y += var->camera.delta_y;
+                var->camera.map_y += step_y;
+                side = 1;
+            }
+            if (var->map[var->camera.map_y][var->camera.map_x] > 0)
+                hit = 1;
+        }
+        if (!side)
+            var->camera.wall_dist = (var->camera.map_x - var->player.pos_x + (1 - step_x) / 2) / var->camera.ray_dirx;
+        else
+            var->camera.wall_dist = (var->camera.map_y - var->player.pos_y + (1 - step_y) / 2) / var->camera.ray_diry;
+        line_h = (int)(var->height / var->camera.wall_dist);
+        start = -line_h / 2 + var->height / 2;
+        start = (start < 0 ? 0 : start);
+        end = line_h / 2 + var->height / 2;
+        end = (end > var->height ? var->height - 1 : end);
+        color = (side == 1 ? color / 2 : color); // attenuer la couleur selon la distance
+        draw_vline(var, x, start, end, color);
+        x++;
+    }
     return (0);
 }
 
@@ -315,16 +420,17 @@ int     main(int ac, char **av)
         // ajouter verification d'erreurs dans les arguments [if (a || b)]
         cub_parser(&var, av[1]);
         var.mlx = mlx_init();
-        var.win = mlx_new_window(var.mlx, var.size_x, var.size_y, "Cub3D");
-        printf("VARS\nsize_x=%d\nsize_y=%d\nf_color=%d\nc_color=%d\nno_path=%s\nso_path=%s\nwe_path=%s\nea_path=%s\ns_path=%s\nnumber of parameters=%d\nmlx=%p\nwin=%p\nmap=\n", var.size_x, var.size_y, var.f_color, var.c_color, var.no_path, var.so_path, var.we_path, var.ea_path, var.s_path, var.number, var.mlx, var.win);
-        printf("PLAYER\npos_x=%f\npos_y=%f\nangle=%f\n", var.player.pos_x, var.player.pos_y, var.player.angle);
+        var.win = mlx_new_window(var.mlx, var.length, var.height, "Cub3D");
+        printf("VARS\nlength=%d\nheight=%d\nf_color=%d\nc_color=%d\nno_path=%s\nso_path=%s\nwe_path=%s\nea_path=%s\ns_path=%s\nnumber of parameters=%d\nmlx=%p\nwin=%p\nmap=\n", var.length, var.height, var.f_color, var.c_color, var.no_path, var.so_path, var.we_path, var.ea_path, var.s_path, var.number, var.mlx, var.win);
+        printf("PLAYER\npos_x=%f\npos_y=%f\ndir_x=%f\ndir_y=%f\n", var.player.pos_x, var.player.pos_y, var.camera.dir_x, var.camera.dir_y);
 //        while (*var.map != 0)
 //            printf("%s\n", *(var.map++));
 //        background_fill_test(&var, 'C', 0, 255, 255);
 //        background_fill_test(&var, 'F', 120, 120, 100);
 //        mlx_put_image_to_window(var.mlx, var.win, mlx_xpm_file_to_image(var.mlx, var.no_path, &x, &y), 0, 0);
 //        mlx_put_image_to_window(var.mlx, var.win, mlx_xpm_file_to_image(var.mlx, var.so_path, &x, &y), 64, 0);
-        draw(&var);
+        raycast(&var);
+//        mlx_pixel_put(var.mlx, var.win, 25, 25, 45350912);
         mlx_hook(var.win, 2, 0, key_press, &var);
 //        mlx_hook(var.win, 2, 0, key_release, &var);
         mlx_loop(var.mlx);
