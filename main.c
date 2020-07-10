@@ -6,7 +6,7 @@
 /*   By: jabenjam <jabenjam@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/07/01 13:50:48 by jabenjam          #+#    #+#             */
-/*   Updated: 2020/07/09 19:00:37 by jabenjam         ###   ########.fr       */
+/*   Updated: 2020/07/10 16:37:24 by jabenjam         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -222,7 +222,7 @@ void    background_fill_test(t_var *var, char c, int r, int g, int b)
         mlx_put_image_to_window(var->mlx, var->win, img_ptr, 0, var->size_y / 2);
 }
 
-/*int     draw_mini_map(t_var *var)
+int     draw_mini_map(t_var *var)
 {
     int     x = 0;
     int     y = 0;
@@ -269,7 +269,7 @@ int     draw(t_var *var)
 {
     draw_mini_map(var);
     return (0);
-}*/
+}
 
 int     key_press(int key, t_var *var) // TEST //
 {
@@ -310,7 +310,6 @@ int     key_press(int key, t_var *var) // TEST //
         mlx_clear_window(var->mlx, var->win);
         mlx_string_put(var->mlx, var->win, 0, 10, 0255255000, "PRESS W/LEFT/S/RIGHT TO MOVE");
     }
- //   draw_mini_map(var);
     if (key == K_ESC) // ESC
         mlx_destroy_window(var->mlx, var->win);
     printf("PLAYER\npos_x=%f\npos_y=%f\ndir_x=%f\ndir_y=%f\n", var->player.pos_x, var->player.pos_y, var->camera.dir_x, var->camera.dir_y);
@@ -328,7 +327,7 @@ int     draw_vline(t_var *var, int x, int start, int end, int color)
 {
     int     i = 0;
 
-    while (start + i < end)
+    while (i < end)
     {
         mlx_pixel_put(var->mlx, var->win, x, start + i, color);
         i++;
@@ -345,7 +344,7 @@ int     raycast(t_var *var)
     int     line_h = 0;
     int     start = 0;
     int     end = 0;
-    int     color = 45439488;
+    int     color = 45350912;
     int     x = 0;
     while (x < var->length)
     {
@@ -356,7 +355,6 @@ int     raycast(t_var *var)
         var->camera.map_y = (int)var->player.pos_y;
         var->camera.delta_x = fabs(1 / var->camera.ray_dirx);
         var->camera.delta_y = fabs(1 / var->camera.ray_diry);
-
         if (var->camera.ray_dirx < 0)
         {
             step_x = -1;
@@ -391,7 +389,8 @@ int     raycast(t_var *var)
                 var->camera.map_y += step_y;
                 side = 1;
             }
-            if (var->map[var->camera.map_y][var->camera.map_x] > 0)
+            printf("\nvar->camera.map_x=%d\nvar->camera.map_y=%d\n", var->camera.map_x,var->camera.map_y);
+            if (var->camera.map_x < var->size_x && var->camera.map_y < var->size_y && var->map[var->camera.map_y][var->camera.map_x] > 0)
                 hit = 1;
         }
         if (!side)
@@ -403,10 +402,12 @@ int     raycast(t_var *var)
         start = (start < 0 ? 0 : start);
         end = line_h / 2 + var->height / 2;
         end = (end > var->height ? var->height - 1 : end);
-        color = (side == 1 ? color / 2 : color); // attenuer la couleur selon la distance
+        color = (side == 1 ? 22806528 : color); // attenuer la couleur si c'est un coté
+//       printf("\nstart = %d\n, end = %d\n", start, end);
         draw_vline(var, x, start, end, color);
         x++;
     }
+    draw_mini_map(var);
     return (0);
 }
 
@@ -429,8 +430,7 @@ int     main(int ac, char **av)
 //        background_fill_test(&var, 'F', 120, 120, 100);
 //        mlx_put_image_to_window(var.mlx, var.win, mlx_xpm_file_to_image(var.mlx, var.no_path, &x, &y), 0, 0);
 //        mlx_put_image_to_window(var.mlx, var.win, mlx_xpm_file_to_image(var.mlx, var.so_path, &x, &y), 64, 0);
-        raycast(&var);
-//        mlx_pixel_put(var.mlx, var.win, 25, 25, 45350912);
+        mlx_loop_hook(var.mlx, raycast, &var);
         mlx_hook(var.win, 2, 0, key_press, &var);
 //        mlx_hook(var.win, 2, 0, key_release, &var);
         mlx_loop(var.mlx);
