@@ -6,7 +6,7 @@
 /*   By: jabenjam <jabenjam@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/07/01 14:10:28 by jabenjam          #+#    #+#             */
-/*   Updated: 2020/07/09 18:24:44 by jabenjam         ###   ########.fr       */
+/*   Updated: 2020/07/11 16:32:14 by jabenjam         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,6 +18,18 @@ typedef struct  s_player
     float       pos_x;
     float       pos_y;
 }               t_player;
+
+typedef struct  s_rayc
+{
+    int     hit;
+    int     side;
+    int     step_x;
+    int     step_y;
+    int     line_h;
+    int     start;
+    int     end;
+    int     color;
+}               t_rayc;
 
 typedef struct  s_camera
 {
@@ -40,14 +52,14 @@ typedef struct  s_camera
 
 typedef struct  s_tex
 {
-    void        *img_ptr;
-    char        *img_dat;
+    void        *ptr;
+    char        *dat;
     int         size;
     int         bpp;
     int         sl;
-    int         endian;
-    int         pos_x;
-    int         pos_y;
+    int         end;
+    int         x;
+    int         y;
 }               t_tex;
 
 typedef struct	s_struct
