@@ -6,7 +6,7 @@
 /*   By: jabenjam <jabenjam@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/07/01 14:10:28 by jabenjam          #+#    #+#             */
-/*   Updated: 2020/07/11 16:32:14 by jabenjam         ###   ########.fr       */
+/*   Updated: 2020/07/14 18:54:57 by jabenjam         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,17 +19,18 @@ typedef struct  s_player
     float       pos_y;
 }               t_player;
 
-typedef struct  s_rayc
+typedef struct  s_ray
 {
     int     hit;
     int     side;
     int     step_x;
     int     step_y;
     int     line_h;
+    int     wall_x;
     int     start;
     int     end;
     int     color;
-}               t_rayc;
+}               t_ray;
 
 typedef struct  s_camera
 {
@@ -52,15 +53,22 @@ typedef struct  s_camera
 
 typedef struct  s_tex
 {
+    char        *path;
     void        *ptr;
     char        *dat;
-    int         size;
-    int         bpp;
-    int         sl;
-    int         end;
+    int         length;
+    int         height;
     int         x;
     int         y;
 }               t_tex;
+
+typedef struct s_img
+{
+    void        *ptr;
+    char        *dat;
+    int         x;
+    int         y;
+}               t_img;
 
 typedef struct	s_struct
 {
@@ -68,10 +76,6 @@ typedef struct	s_struct
     int         height; /* window height */
     int         f_color; /* floor color */
     int         c_color; /* ceiling color */
-    char        *no_path; /* path to north wall texture */
-    char        *so_path; /* path to south wall texture */
-    char        *we_path; /* path to west wall texture */
-    char        *ea_path; /* path to east wall texture */
     char        *s_path; /* path to sky texture */
     int         number; /* number of parameters received */
     char        **map; /* map */
@@ -82,7 +86,8 @@ typedef struct	s_struct
     void        *key; /* pressed key identifier */
     t_player    player;
     t_camera    camera;
-    t_tex       tex;
+    t_tex       tex[4];
+    t_img       img;
 }				t_var;
 
 # include <stdlib.h>
