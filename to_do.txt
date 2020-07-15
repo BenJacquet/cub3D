@@ -5,3 +5,5 @@
 - gerer textures en resolutions differentes
 - free chaque ligne splittée apres etre passee dans le parser
 - malloc chaque structure
+- Makefile
+- changer nom executable

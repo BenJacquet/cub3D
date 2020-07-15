@@ -6,7 +6,7 @@
 /*   By: jabenjam <jabenjam@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/07/01 14:10:28 by jabenjam          #+#    #+#             */
-/*   Updated: 2020/07/14 18:54:57 by jabenjam         ###   ########.fr       */
+/*   Updated: 2020/07/15 15:56:49 by jabenjam         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,6 +27,10 @@ typedef struct  s_ray
     int     step_y;
     int     line_h;
     int     wall_x;
+    int     tex_x;
+    int     tex_y;
+    float   tex_pos;
+    float   step_t;
     int     start;
     int     end;
     int     color;

@@ -2,7 +2,7 @@ R 1080 720
 NO ./textures/redbrick.xpm
 SO ./textures/purplestone.xpm
 WE ./textures/greystone.xpm
-EA ./textures/mossy.xpm
+EA ./textures/bluestone.xpm
 S ./textures/pillar.xpm
 
 F 255,255,0

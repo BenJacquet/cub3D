@@ -6,7 +6,7 @@
 /*   By: jabenjam <jabenjam@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/07/01 13:50:48 by jabenjam          #+#    #+#             */
-/*   Updated: 2020/07/14 19:03:00 by jabenjam         ###   ########.fr       */
+/*   Updated: 2020/07/15 18:46:35 by jabenjam         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,6 +61,11 @@ void    initialize_ray(t_ray *ray)
     ray->step_y = 0;
     ray->line_h = 0;
     ray->start = 0;
+    ray->wall_x = 0;
+    ray->tex_x = 0;
+    ray->tex_y = 0;
+    ray->tex_pos = 0;
+    ray->step_t = 0;
     ray->end = 0;
 }
 
@@ -79,8 +84,9 @@ void    initialize_tex(t_var *var)
         sl = var->tex[i].length * 4;
         var->tex[i].length = 64;
         var->tex[i].height = 64;
-        var->tex[i].ptr = mlx_xpm_file_to_image(var->mlx, var->tex[i].path, var->tex[i].length, var->tex[i].height);
-        var->tex[i].dat = mlx_get_data_addr(var->tex[i], &bpp, &sl ,&endian);
+        var->tex[i].ptr = mlx_xpm_file_to_image(var->mlx, var->tex[i].path, &var->tex[i].length, &var->tex[i].height);
+        var->tex[i].dat = mlx_get_data_addr(var->tex[i].ptr, &bpp, &sl ,&endian);
+        i++;
     }
 }
 
@@ -236,43 +242,88 @@ void    cub_parser(t_var *var, char *cub)
         cub_parser2(var, *params);
         free(*(params++));
     }
+    free(save);
     map_parser(var, params); // recuperation de la map
     close(fd);
     return;
 }
 
-void    image_fill(t_var *var, int x, int y, int end, int side)
+void    image_fill_bkp(t_var *var, int x, t_ray *ray)
 {
     int i = 0;
-    int y_c = 0;
+    int j = 0;
+    int tex_height = var->tex[ray->side].height;
     //printf("\nx=%d\nstart=%d\nend=%d\ni=%d\n", x, start, end, i);
 
-    while (y_c < y) // ceiling
+    while (j < ray->start) // ceiling
     {
-        i = y_c * var->img.sl + x * 4;
+        i = j * var->length * 4 + x * 4;
         var->img.dat[i++] = 0x0; // B
         var->img.dat[i++] = 0x64; // G
         var->img.dat[i++] = 0xFF; // R
         var->img.dat[i] = 0; // A
-        y_c++;
+        j++;
     }
-    while (y <= end && end >= 0) // walls;
+    while (ray->start <= ray->end && ray->end >= 0) // walls;
     {
-        i = y * var->img.sl + x * 4;
-        var->img.dat[i++] = (side == 0 ? 0x52 : 0x52 /2); // B
-        var->img.dat[i++] = (side == 0 ? 0x04 : 0x04 / 2); // G
-        var->img.dat[i++] = (side == 0 ? 0x2c : 0x2c / 2); // R
+        ray->tex_y = (int)ray->tex_pos & (tex_height - 1);
+        ray->tex_pos += ray->step_t;
+        i = ray->start * var->length * 4 + x * 4;
+        j = ray->tex_y * tex_height * 4 + ray->tex_x * 4;
+        var->img.dat[i++] = var->tex[ray->side].dat[j++]; // B
+        var->img.dat[i++] = var->tex[ray->side].dat[j++]; // G
+        var->img.dat[i++] = var->tex[ray->side].dat[j++]; // R
         var->img.dat[i] = 0; // A
-        y++;
+        ray->start++;
     }
-    while (end < var->height && end >= 0) // floor
+    while (ray->end < var->height && ray->end >= 0) // floor
     {
-        i = end * var->img.sl + x * 4;
+        i = ray->end * var->length * 4 + x * 4;
         var->img.dat[i++] = 0x52; // B
         var->img.dat[i++] = 0x35; // G
         var->img.dat[i++] = 0x2c; // R
         var->img.dat[i] = 0; // A
-        end++;
+        ray->end++;
+    }
+}
+
+void    image_fill(t_var *var, int x, t_ray *ray)
+{
+    int i = 0;
+    int j = 0;
+    int tex_length = var->tex[ray->side].length;
+    //printf("\nx=%d\nstart=%d\nend=%d\ni=%d\n", x, start, end, i);
+
+    while (j < ray->start) // ceiling
+    {
+        i = j * var->length * 4 + x * 4;
+        var->img.dat[i++] = 0x0; // B
+        var->img.dat[i++] = 0x64; // G
+        var->img.dat[i++] = 0xFF; // R
+        var->img.dat[i] = 0; // A
+        j++;
+    }
+    while (ray->start <= ray->end && ray->end >= 0) // walls;
+    {
+        ray->tex_y = (int)ray->tex_pos & (tex_length - 1);
+        i = ray->start * var->length * 4 + x * 4;
+        j = (int)ray->tex_y * tex_length * 4 + ray->tex_x * 4;
+       // printf("\ntexB=%d\ntexG=%d\ntexR=%d\ntexA=%d\n", var->tex[ray->side].dat[j], var->tex[ray->side].dat[j+1], var->tex[ray->side].dat[j+2], var->tex[ray->side].dat[j+3]);
+        var->img.dat[i++] = var->tex[ray->side].dat[j++]; // B
+        var->img.dat[i++] = var->tex[ray->side].dat[j++]; // G
+        var->img.dat[i++] = var->tex[ray->side].dat[j++]; // R
+        var->img.dat[i] = 0; // A
+        ray->start++;
+        ray->tex_pos += ray->step_t;
+    }
+    while (ray->end < var->height && ray->end >= 0) // floor
+    {
+        i = ray->end * var->length * 4 + x * 4;
+        var->img.dat[i++] = 0x52; // B
+        var->img.dat[i++] = 0x35; // G
+        var->img.dat[i++] = 0x2c; // R
+        var->img.dat[i] = 0; // A
+        ray->end++;
     }
 }
 
@@ -333,21 +384,8 @@ int     draw_mini_map(t_var *var)
     return (0);
 }
 
-int     draw_vline(t_var *var, int x, int start, int end, int color)
-{
-    int     i = 0;
-
-    while (start + i < end)
-    {
-        mlx_pixel_put(var->mlx, var->win, x, start + i, color);
-        i++;
-    }
-    return (0);
-}
-
 int     raycast(t_var *var, t_ray *ray)
 {
-    int     color = 45350912;
     int     x = 0;
     while (x < var->length)
     {
@@ -379,24 +417,21 @@ int     raycast(t_var *var, t_ray *ray)
             ray->step_y = 1;
             var->camera.side_y = (var->camera.map_y + 1 - var->player.pos_y) * var->camera.delta_y;
         }
-//        printf("\n\nvar->camera.cam_x=%f\nvar->camera.ray_dirx=%f\nvar->camera.ray_diry=%f\nvar->camera.map_x=%d\nvar->camera.map_y=%d\nvar->camera.delta_x=%f\nvar->camera.delta_y=%f\n",var->camera.cam_x,var->camera.ray_dirx,var->camera.ray_diry,var->camera.map_x,var->camera.map_y,var->camera.delta_x,var->camera.delta_y);
-//        printf("var->camera.side_x=%f\nvar->camera.side_y=%f\n", var->camera.side_x,var->camera.side_y);
         while (ray->hit == 0)
         {
             if (var->camera.side_x < var->camera.side_y)
             {
                 var->camera.side_x += var->camera.delta_x;
                 var->camera.map_x += ray->step_x;
-                /*get_side(var, rayc)*/ray->side = 0;
+                ray->side = 0;
             }
             else
             {
                 var->camera.side_y += var->camera.delta_y;
                 var->camera.map_y += ray->step_y;
-                /*get_side(var, rayc)*/ray->side = 1;
+                ray->side = 1;
             }
-            //printf("\nvar->camera.map_x=%d\nvar->camera.map_y=%d\n", var->camera.map_x,var->camera.map_y);
-            if (var->camera.map_x < var->size_x && var->camera.map_y < var->size_y && var->map[var->camera.map_y][var->camera.map_x] > '0')
+            if (var->camera.map_x < var->size_x && var->camera.map_y < var->size_y && var->map[var->camera.map_y][var->camera.map_x] == '1')
                 ray->hit = 1;
         }
         if (ray->side == 0)
@@ -408,22 +443,67 @@ int     raycast(t_var *var, t_ray *ray)
         ray->start = (ray->start < 0 ? 0 : ray->start);
         ray->end = ray->line_h / 2 + var->height / 2;
         ray->end = (ray->end >= var->height ? var->height - 1 : ray->end);
-        color = (ray->side == 1 ? 22806528 : color); // attenuer la couleur si c'est un coté
-        image_fill(var, x++, ray->start, ray->end, ray->side);
+        image_fill(var, x++, ray);
     }
-    mlx_put_image_to_window(var->mlx, var->win, var->img.ptr, 0, 0);
-//    printf("\nwall_dist = %f\nline_h = %d\nstart = %d\nend = %d\n", var->camera.wall_dist, ray->line_h, ray->start, ray->end);
-    draw_mini_map(var);
+    return (0);
+}
+
+void     ft_swap(char *a, char *b)
+{
+    char tmp;
+
+    tmp = *a;
+    *a = *b;
+    *b = tmp;
+}
+
+int     texture_swap(t_var *var)
+{
+    int i = 0;
+    int x = 0;
+    int y = 0;
+    int cx = 0;
+    int cy = 0;
+    while (i <= 3)
+    {
+        int length = var->tex[i].length;
+        while (x < length)
+        {
+            while(y < x)
+            {
+                cx = length * y + x;
+                cy = length * x + y;
+                ft_swap(&var->tex[i].dat[cx++], &var->tex[i].dat[cy++]);
+                ft_swap(&var->tex[i].dat[cx++], &var->tex[i].dat[cy++]);
+                ft_swap(&var->tex[i].dat[cx++], &var->tex[i].dat[cy++]);
+                y++;
+            }
+            x++;
+        }
+        i++;
+    }
     return (0);
 }
 
 int     texture_copy(t_var *var, t_ray *ray, int x)
 {
     if (ray->side == 2 || ray->side == 3)
-        ray->wall_x = var->player.pos_x + var->camera.wall_dist * var->ray.dir_x;
+        ray->wall_x = var->player.pos_x + var->camera.wall_dist * var->camera.ray_dirx;
     if (ray->side == 0 || ray->side == 1)
-        ray->wall_x = var->player.pos_y + var->camera.wall_dist * var->ray.dir_y;
+        ray->wall_x = var->player.pos_y + var->camera.wall_dist * var->camera.ray_diry;
     ray->wall_x -= floor(ray->wall_x);
+    ray->tex_x = (int)(ray->wall_x * (double)var->tex[ray->side].length);
+    if ((ray->side >= 2 && var->camera.ray_dirx > 0) ||
+        (ray->side <= 1 && var->camera.ray_diry < 0))
+        ray->tex_x = var->tex[ray->side].length - ray->tex_x - 1;
+    ray->step_t = 1.0 * var->tex[ray->side].height / var->height;
+/*    for (int i = 0, j = 0; i <= 3 ; i++, j+=65)
+        mlx_put_image_to_window(var->mlx, var->win, var->tex[i].ptr, j, j);
+    texture_swap(var);
+    for (int i = 0, j = 260; i <= 3 ; i++, j+=65)
+        mlx_put_image_to_window(var->mlx, var->win, var->tex[i].ptr, j, j);*/
+    image_fill(var, x, ray);
+    return (0);
 }
 
 int     raycast_t(t_var *var, t_ray *ray)
@@ -505,6 +585,13 @@ int     engine(t_var *var)
     raycast_t(var, &ray);
     mlx_put_image_to_window(var->mlx, var->win, var->img.ptr, 0, 0);
     draw_mini_map(var);
+ /*   for (int color = 0;color < 64 * 4; color++)
+    {
+        printf("\ntex[B]=%d\n", (int)*(var->tex[0].dat++));
+        printf("\ntex[G]=%d\n", (int)*(var->tex[0].dat++));
+        printf("\ntex[R]=%d\n", (int)*(var->tex[0].dat++));
+        printf("\ntex[A]=%d\n", (int)*(var->tex[0].dat++));
+    }*/
     return (0);
 }
 
@@ -532,19 +619,19 @@ int     key_press(int key, t_var *var) // TEST //
     {
         save_dir_x = var->camera.dir_x;
         save_plane_x = var->camera.plane_x;
-        var->camera.dir_x = var->camera.dir_x * cos(0.2) - var->camera.dir_y * sin(0.2);
-        var->camera.dir_y = save_dir_x * sin(0.2) + var->camera.dir_y * cos(0.2);
-        var->camera.plane_x = var->camera.plane_x * cos(0.2) - var->camera.plane_y * sin(0.2);
-        var->camera.plane_y = save_plane_x * sin(0.2) + var->camera.plane_y * cos(0.2);
+        var->camera.dir_x = var->camera.dir_x * cos(0.1) - var->camera.dir_y * sin(0.1);
+        var->camera.dir_y = save_dir_x * sin(0.1) + var->camera.dir_y * cos(0.1);
+        var->camera.plane_x = var->camera.plane_x * cos(0.1) - var->camera.plane_y * sin(0.1);
+        var->camera.plane_y = save_plane_x * sin(0.1) + var->camera.plane_y * cos(0.1);
     }
     else if (key == K_LEFT)
     {
         save_dir_x = var->camera.dir_x;
         save_plane_x = var->camera.plane_x;
-        var->camera.dir_x = var->camera.dir_x * cos(-0.2) - var->camera.dir_y * sin(-0.2);
-        var->camera.dir_y = save_dir_x * sin(-0.2) + var->camera.dir_y * cos(-0.2);
-        var->camera.plane_x = var->camera.plane_x * cos(-0.2) - var->camera.plane_y * sin(-0.2);
-        var->camera.plane_y = save_plane_x * sin(-0.2) + var->camera.plane_y * cos(-0.2);
+        var->camera.dir_x = var->camera.dir_x * cos(-0.1) - var->camera.dir_y * sin(-0.1);
+        var->camera.dir_y = save_dir_x * sin(-0.1) + var->camera.dir_y * cos(-0.1);
+        var->camera.plane_x = var->camera.plane_x * cos(-0.1) - var->camera.plane_y * sin(-0.1);
+        var->camera.plane_y = save_plane_x * sin(-0.1) + var->camera.plane_y * cos(-0.1);
     }
     else if (key == K_R)
     {
