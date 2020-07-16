@@ -6,7 +6,7 @@
 /*   By: jabenjam <jabenjam@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/07/01 14:10:28 by jabenjam          #+#    #+#             */
-/*   Updated: 2020/07/15 15:56:49 by jabenjam         ###   ########.fr       */
+/*   Updated: 2020/07/16 19:00:46 by jabenjam         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,9 +15,19 @@
 
 typedef struct  s_player
 {
-    float       pos_x;
-    float       pos_y;
+    double       pos_x;
+    double       pos_y;
 }               t_player;
+
+typedef struct s_move
+{
+    int         forward;
+    int         backward;
+    int         left;
+    int         right;
+    int         l_strafe;
+    int         r_strafe;
+}               t_move;
 
 typedef struct  s_ray
 {
@@ -26,11 +36,11 @@ typedef struct  s_ray
     int     step_x;
     int     step_y;
     int     line_h;
-    int     wall_x;
+    double     wall_x;
     int     tex_x;
     int     tex_y;
-    float   tex_pos;
-    float   step_t;
+    double   tex_pos;
+    double   step_t;
     int     start;
     int     end;
     int     color;
@@ -38,20 +48,20 @@ typedef struct  s_ray
 
 typedef struct  s_camera
 {
-    float       delta_x;
-    float       delta_y;
-    float       plane_x;
-    float       plane_y;
-    float       ray_dirx;
-    float       ray_diry;
-    float       side_x;
-    float       side_y;
-    float       cam_x;
-    float       wall_dist;
+    double       delta_x;
+    double       delta_y;
+    double       plane_x;
+    double       plane_y;
+    double       ray_dirx;
+    double       ray_diry;
+    double       side_x;
+    double       side_y;
+    double       cam_x;
+    double       wall_dist;
     int         map_x;
     int         map_y;
-    float       dir_x;
-    float       dir_y;
+    double       dir_x;
+    double       dir_y;
 }               t_camera;
 
 
@@ -87,7 +97,7 @@ typedef struct	s_struct
     int         size_y; /* taille de la map en y */
     void        *mlx; /* screen connection identifier */
     void        *win; /* window identifier */
-    void        *key; /* pressed key identifier */
+    t_move      move;
     t_player    player;
     t_camera    camera;
     t_tex       tex[4];
