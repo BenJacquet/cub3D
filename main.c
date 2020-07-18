@@ -6,7 +6,7 @@
 /*   By: jabenjam <jabenjam@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/07/01 13:50:48 by jabenjam          #+#    #+#             */
-/*   Updated: 2020/07/16 18:59:31 by jabenjam         ###   ########.fr       */
+/*   Updated: 2020/07/18 18:54:19 by jabenjam         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,22 +35,15 @@ int    initialize_var(t_var *var)
     var->tex[3].path = 0;
     var->s_path = 0;
     var->number = 0;
-    var->camera.map_x = 0;
-    var->camera.map_y = 0;
-    var->player.pos_x = 0;
-    var->player.pos_y = 0;
-    var->camera.dir_x = 0;
-    var->camera.dir_y = 0;
-    var->camera.delta_x = 0;
-    var->camera.delta_y = 0;
-    var->camera.plane_x = 0;
-    var->camera.plane_y = 0;
-    var->camera.cam_x = 0;
-    var->camera.wall_dist = 0;
-    var->camera.side_x = 0;
-    var->camera.side_y = 0;
-    var->camera.map_x = 0;
-    var->camera.map_y = 0;
+    var->player.pos_x = 0.0;
+    var->player.pos_y = 0.0;
+    var->camera.dir_x = 0.0;
+    var->camera.dir_y = 0.0;
+    var->camera.delta_x = 0.0;
+    var->camera.delta_y = 0.0;
+    var->camera.plane_x = 0.0;
+    var->camera.plane_y = 0.0;
+    var->camera.cam_x = 0.0;
     return (0);
 }
 
@@ -129,10 +122,29 @@ int     forback(t_var *var, int mode)
     return (0);
 }
 
+int     strafe(t_var *var, int mode)
+{
+    if (mode == 1)
+    {
+        if (var->map[(int)var->player.pos_y][(int)(var->player.pos_x - var->camera.plane_x * 0.2)] != '1')
+            var->player.pos_x -= (var->camera.plane_x * 0.2);
+        if (var->map[(int)(var->player.pos_y - var->camera.plane_y * 0.2)][(int)var->player.pos_x] != '1')
+            var->player.pos_y -= (var->camera.plane_y * 0.2);
+    }
+    else
+    {
+        if (var->map[(int)var->player.pos_y][(int)(var->player.pos_x + var->camera.plane_x * 0.2)] != '1')
+            var->player.pos_x += (var->camera.plane_x * 0.2);
+        if (var->map[(int)(var->player.pos_y + var->camera.plane_y * 0.2)][(int)var->player.pos_x] != '1')
+            var->player.pos_y += (var->camera.plane_y * 0.2);
+    }
+    return (0);
+}
+
 int     look(t_var *var, int mode)
 {
-    float   save_dir_x;
-    float   save_plane_x;
+    double   save_dir_x;
+    double   save_plane_x;
 
     save_dir_x = var->camera.dir_x;
     save_plane_x = var->camera.plane_x;
@@ -153,39 +165,20 @@ int     look(t_var *var, int mode)
     return (0);
 }
 
-int     strafe(t_var *var, int mode)
-{
-    if (mode == 1)
-    {
-        if (var->map[(int)var->player.pos_y][(int)(var->player.pos_x - var->camera.plane_x * 0.2)] != '1')
-            var->player.pos_x -= (var->camera.plane_x * 0.2);
-        if (var->map[(int)(var->player.pos_y - var->camera.plane_y * 0.2)][(int)var->player.pos_x] != '1')
-            var->player.pos_y -= (var->camera.plane_y * 0.2);
-    }
-    else
-    {
-        if (var->map[(int)var->player.pos_y][(int)(var->player.pos_x + var->camera.plane_x * 0.2)] != '1')
-            var->player.pos_x += (var->camera.plane_x * 0.2);
-        if (var->map[(int)(var->player.pos_y + var->camera.plane_y * 0.2)][(int)var->player.pos_x] != '1')
-            var->player.pos_y += (var->camera.plane_y * 0.2);
-    }
-    return (0);
-}
-
 int     keys(t_var *var)
 {
     if (var->move.forward == 1)
         forback(var, 1);
     if (var->move.backward == 1)
         forback(var, 0);
-    if (var->move.left == 1)
-        look(var, 1);
-    if (var->move.right == 1)
-        look(var, 0);
     if (var->move.l_strafe == 1)
         strafe(var, 1);
     if (var->move.r_strafe == 1)
         strafe(var, 0);
+    if (var->move.left == 1)
+        look(var, 1);
+    if (var->move.right == 1)
+        look(var, 0);
     return(0);
 }
 
@@ -358,14 +351,14 @@ void    cub_parser2(t_var *var, char *line)
         var->f_color = get_rgb(++line);
     else if (line && line[0] == 'C' && var->c_color == 0)
         var->c_color = get_rgb(++line);
-    else if (line && line[0] == 'N' && line[1] == 'O' && var->tex[0].path == 0)
-        var->tex[0].path = get_path(2 + line);
-    else if (line && line[0] == 'S' && line[1] == 'O' && var->tex[1].path == 0)
-        var->tex[1].path = get_path(2 + line);
-    else if (line && line[0] == 'W' && line[1] == 'E' && var->tex[2].path == 0)
+    else if (line && line[0] == 'N' && line[1] == 'O' && var->tex[2].path == 0)
         var->tex[2].path = get_path(2 + line);
-    else if (line && line[0] == 'E' && line[1] == 'A' && var->tex[3].path == 0)
+    else if (line && line[0] == 'S' && line[1] == 'O' && var->tex[3].path == 0)
         var->tex[3].path = get_path(2 + line);
+    else if (line && line[0] == 'W' && line[1] == 'E' && var->tex[0].path == 0)
+        var->tex[0].path = get_path(2 + line);
+    else if (line && line[0] == 'E' && line[1] == 'A' && var->tex[1].path == 0)
+        var->tex[1].path = get_path(2 + line);
     else if (line && line[0] == 'S' && var->s_path == 0)
         var->s_path = get_path(++line);
 }
@@ -499,15 +492,11 @@ void    image_fill(t_var *var, int x, t_ray *ray)
     {
         ray->tex_y = (int)ray->tex_pos & (tex_length - 1);
         i = ray->start * var->length * 4 + x * 4;
-        j = ray->tex_y * tex_length * 4 + ray->tex_x * 4;
-/*        if(x == 540)
-        {
-            printf("\nx=%d tex_y=%d tex_x=%d img_y=%d wall_x=%f\n", x, ray->tex_y, ray->tex_x, ray->start, ray->wall_x);
-        }*/
+        j = ray->tex_y * tex_length * 4 + (tex_length - 1 - ray->tex_x) * 4;
         var->img.dat[i++] = var->tex[ray->side].dat[j++]; // B
         var->img.dat[i++] = var->tex[ray->side].dat[j++]; // G
         var->img.dat[i++] = var->tex[ray->side].dat[j++]; // R
-        var->img.dat[i] = 0; // A
+        var->img.dat[i] = var->tex[ray->side].dat[j]; // A
         ray->start++;
         ray->tex_pos += ray->step_t;
     }
@@ -525,15 +514,16 @@ void    image_fill(t_var *var, int x, t_ray *ray)
 int     texture_copy(t_var *var, t_ray *ray, int x)
 {
     ray->step_t = 1.0 * var->tex[ray->side].height / ray->line_h;
-    if (ray->side == 2 || ray->side == 3)
-        ray->wall_x = var->player.pos_x + var->camera.wall_dist * var->camera.ray_dirx;
+    if (ray->side <= 1)
+        ray->wall_x = var->player.pos_y + (ray->wall_dist * ray->dir_y);
     else
-        ray->wall_x = var->player.pos_y + var->camera.wall_dist * var->camera.ray_diry;
-    printf("\nray->wall_x=%f\nvar->player.pos_y=%f\nvar->player.pos_x=%f\nvar->camera.wall_dist=%f\nvar->camera.ray_diry=%f\nvar->camera.ray_dirx=%f\n",ray->wall_x,var->player.pos_y,var->player.pos_x,var->camera.wall_dist,var->camera.ray_diry,var->camera.ray_dirx);
+        ray->wall_x = var->player.pos_x + (ray->wall_dist * ray->dir_x);
+    //printf("\nray->wall_x=%f\nvar->player.pos_y=%f\nvar->player.pos_x=%f\nray->wall_dist=%f\nray->dir_y=%f\nray->dir_x=%f\n",ray->wall_x,var->player.pos_y,var->player.pos_x,ray->wall_dist,ray->dir_y,ray->dir_x);
     ray->wall_x -= floor(ray->wall_x);
-    ray->tex_x = (int)ray->wall_x * (float)var->tex[ray->side].length;
-    if ((ray->side >= 2 && var->camera.ray_dirx > 0) ||
-        (ray->side <= 1 && var->camera.ray_diry < 0))
+    //printf("\nray->wall_x=%f\n", ray->wall_x);
+    ray->tex_x = (int)(ray->wall_x * (double)var->tex[ray->side].length);
+    if ((ray->side <= 1 && ray->dir_x > 0) ||
+        (ray->side >= 2 && ray->dir_y < 0))
         ray->tex_x = var->tex[ray->side].length - ray->tex_x - 1;
     ray->tex_pos = (ray->start - var->height / 2 + ray->line_h / 2) * ray->step_t;
     image_fill(var, x, ray);
@@ -542,82 +532,87 @@ int     texture_copy(t_var *var, t_ray *ray, int x)
 
 int     raycast(t_var *var, t_ray *ray)
 {
-    int     x = 0;
+    int     x;
+    double  zbuffer[var->length];
+
+    x = 0;
     while (x < var->length)
     {
-        var->camera.cam_x = (2 * x) / (float)var->length - 1;
-        var->camera.ray_dirx = var->camera.dir_x + var->camera.plane_x * var->camera.cam_x;
-        var->camera.ray_diry = var->camera.dir_y + var->camera.plane_y * var->camera.cam_x;
-        var->camera.map_x = (int)var->player.pos_x; // determine la case dans laquelle se trouve la camera
-        var->camera.map_y = (int)var->player.pos_y;
-        var->camera.delta_x = fabs(1 / var->camera.ray_dirx);
-        var->camera.delta_y = fabs(1 / var->camera.ray_diry);
+        var->camera.cam_x = (2 * x) / (double)var->length - 1;
+        ray->dir_x = var->camera.dir_x + var->camera.plane_x * var->camera.cam_x;
+        ray->dir_y = var->camera.dir_y + var->camera.plane_y * var->camera.cam_x;
+        ray->map_x = (int)var->player.pos_x; // determine la case dans laquelle se trouve la camera
+        ray->map_y = (int)var->player.pos_y;
+        var->camera.delta_x = fabs(1 / ray->dir_x);
+        var->camera.delta_y = fabs(1 / ray->dir_y);
         ray->hit = 0;
-        if (var->camera.ray_dirx < 0)
+        if (ray->dir_x < 0)
         {
             ray->step_x = -1;
-            var->camera.side_x = (var->player.pos_x - var->camera.map_x) * var->camera.delta_x;
+            ray->side_x = (var->player.pos_x - ray->map_x) * var->camera.delta_x;
         }
         else
         {
             ray->step_x = 1;
-            var->camera.side_x = (var->camera.map_x + 1.0 - var->player.pos_x) * var->camera.delta_x;
+            ray->side_x = (ray->map_x + 1.0 - var->player.pos_x) * var->camera.delta_x;
         }
-        if (var->camera.ray_diry < 0)
+        if (ray->dir_y < 0)
         {
             ray->step_y = -1;
-            var->camera.side_y = (var->player.pos_y - var->camera.map_y) * var->camera.delta_y;
+            ray->side_y = (var->player.pos_y - ray->map_y) * var->camera.delta_y;
         }
         else
         {
             ray->step_y = 1;
-            var->camera.side_y = (var->camera.map_y + 1 - var->player.pos_y) * var->camera.delta_y;
+            ray->side_y = (ray->map_y + 1 - var->player.pos_y) * var->camera.delta_y;
         }
-//        printf("\n\nvar->camera.cam_x=%f\nvar->camera.ray_dirx=%f\nvar->camera.ray_diry=%f\nvar->camera.map_x=%d\nvar->camera.map_y=%d\nvar->camera.delta_x=%f\nvar->camera.delta_y=%f\n",var->camera.cam_x,var->camera.ray_dirx,var->camera.ray_diry,var->camera.map_x,var->camera.map_y,var->camera.delta_x,var->camera.delta_y);
-//        printf("var->camera.side_x=%f\nvar->camera.side_y=%f\n", var->camera.side_x,var->camera.side_y);
+//        printf("\n\nvar->camera.cam_x=%f\nray->dir_x=%f\nray->dir_y=%f\nray->map_x=%d\nray->map_y=%d\nvar->camera.delta_x=%f\nvar->camera.delta_y=%f\n",var->camera.cam_x,ray->dir_x,ray->dir_y,ray->map_x,ray->map_y,var->camera.delta_x,var->camera.delta_y);
+//        printf("ray->side_x=%f\nray->side_y=%f\n", ray->side_x,ray->side_y);
         while (ray->hit == 0)
         {
-            if (var->camera.side_x < var->camera.side_y)
+            if (ray->side_x < ray->side_y)
             {
-                var->camera.side_x += var->camera.delta_x;
-                var->camera.map_x += ray->step_x;
-                ray->side = (ray->step_x == -1 ? 2 : 3);
+                ray->side_x += var->camera.delta_x;
+                ray->map_x += ray->step_x;
+                ray->side = (ray->step_x == -1 ? 0 : 1);
             }
             else
             {
-                var->camera.side_y += var->camera.delta_y;
-                var->camera.map_y += ray->step_y;
-                ray->side = (ray->step_y == -1 ? 0 : 1);
+                ray->side_y += var->camera.delta_y;
+                ray->map_y += ray->step_y;
+                ray->side = (ray->step_y == -1 ? 2 : 3);
             }
-            //printf("\nvar->camera.map_x=%d\nvar->camera.map_y=%d\n", var->camera.map_x,var->camera.map_y);
-            if (var->camera.map_x < var->size_x && var->camera.map_y < var->size_y && var->map[var->camera.map_y][var->camera.map_x] == '1')
+            //printf("\nray->map_x=%d\nray->map_y=%d\n", ray->map_x,ray->map_y);
+            if (ray->map_x < var->size_x && ray->map_y < var->size_y && var->map[ray->map_y][ray->map_x] == '1')
                 ray->hit = 1;
         }
-        if (ray->side >= 2)
-            var->camera.wall_dist = (var->camera.map_x - var->player.pos_x + (1 - ray->step_x) / 2) / var->camera.ray_dirx;
+        if (ray->side <= 1)
+            ray->wall_dist = (ray->map_x - var->player.pos_x + (1 - ray->step_x) / 2) / ray->dir_x;
         else
-            var->camera.wall_dist = (var->camera.map_y - var->player.pos_y + (1 - ray->step_y) / 2) / var->camera.ray_diry;
-        ray->line_h = (int)(var->height / var->camera.wall_dist);
+            ray->wall_dist = (ray->map_y - var->player.pos_y + (1 - ray->step_y) / 2) / ray->dir_y;
+        ray->line_h = (int)(var->height / ray->wall_dist);
         ray->start = -ray->line_h / 2 + var->height / 2;
         ray->start = (ray->start < 0 ? 0 : ray->start);
         ray->end = ray->line_h / 2 + var->height / 2;
         ray->end = (ray->end >= var->height ? var->height - 1 : ray->end);
+        zbuffer[x] = ray->wall_dist;
         texture_copy(var, ray, x++);
     }
-//    printf("\nwall_dist = %f\nline_h = %d\nstart = %d\nend = %d\n", var->camera.wall_dist, ray->line_h, ray->start, ray->end);
+    //printf("\nwall_dist = %f\nline_h = %d\nstart = %d\nend = %d\n", ray->wall_dist, ray->line_h, ray->start, ray->end);
     return (0);
 }
 
 int     game(t_var *var)
 {
     t_ray  ray;
-//    initialize_ray(&ray);
-    keys(var);
+    initialize_ray(&ray);
     initialize_tex(var);
     new_image(var);
     raycast(var, &ray);
     mlx_put_image_to_window(var->mlx, var->win, var->img.ptr, 0, 0);
     draw_mini_map(var);
+    mlx_destroy_image(var->mlx, var->img.ptr);
+    keys(var);
     return (0);
 }
 

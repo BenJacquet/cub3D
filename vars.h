@@ -6,7 +6,7 @@
 /*   By: jabenjam <jabenjam@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/07/01 14:10:28 by jabenjam          #+#    #+#             */
-/*   Updated: 2020/07/16 19:00:46 by jabenjam         ###   ########.fr       */
+/*   Updated: 2020/07/18 17:05:02 by jabenjam         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,19 +31,25 @@ typedef struct s_move
 
 typedef struct  s_ray
 {
-    int     hit;
-    int     side;
-    int     step_x;
-    int     step_y;
-    int     line_h;
-    double     wall_x;
-    int     tex_x;
-    int     tex_y;
-    double   tex_pos;
-    double   step_t;
-    int     start;
-    int     end;
-    int     color;
+    int         hit;
+    int         side;
+    int         step_x;
+    int         step_y;
+    int         line_h;
+    double      wall_dist;
+    double      wall_x;
+    double      dir_x;
+    double      dir_y;
+    double      side_x;
+    double      side_y;
+    int         map_x;
+    int         map_y;
+    int         tex_x;
+    int         tex_y;
+    double      tex_pos;
+    double      step_t;
+    int         start;
+    int         end;
 }               t_ray;
 
 typedef struct  s_camera
@@ -52,14 +58,7 @@ typedef struct  s_camera
     double       delta_y;
     double       plane_x;
     double       plane_y;
-    double       ray_dirx;
-    double       ray_diry;
-    double       side_x;
-    double       side_y;
     double       cam_x;
-    double       wall_dist;
-    int         map_x;
-    int         map_y;
     double       dir_x;
     double       dir_y;
 }               t_camera;
@@ -72,16 +71,12 @@ typedef struct  s_tex
     char        *dat;
     int         length;
     int         height;
-    int         x;
-    int         y;
 }               t_tex;
 
 typedef struct s_img
 {
     void        *ptr;
     char        *dat;
-    int         x;
-    int         y;
 }               t_img;
 
 typedef struct	s_struct
