@@ -6,7 +6,7 @@
 /*   By: jabenjam <jabenjam@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/07/01 14:10:28 by jabenjam          #+#    #+#             */
-/*   Updated: 2020/07/18 17:05:02 by jabenjam         ###   ########.fr       */
+/*   Updated: 2020/07/19 18:51:55 by jabenjam         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,7 @@ typedef struct  s_player
     double       pos_y;
 }               t_player;
 
-typedef struct s_move
+typedef struct s_key
 {
     int         forward;
     int         backward;
@@ -27,7 +27,9 @@ typedef struct s_move
     int         right;
     int         l_strafe;
     int         r_strafe;
-}               t_move;
+    int         size;
+    int         map;
+}               t_key;
 
 typedef struct  s_ray
 {
@@ -77,6 +79,10 @@ typedef struct s_img
 {
     void        *ptr;
     char        *dat;
+    int         length;
+    int         bpp;
+    int         sl;
+    int         end;
 }               t_img;
 
 typedef struct	s_struct
@@ -92,11 +98,11 @@ typedef struct	s_struct
     int         size_y; /* taille de la map en y */
     void        *mlx; /* screen connection identifier */
     void        *win; /* window identifier */
-    t_move      move;
+    t_key       key;
     t_player    player;
     t_camera    camera;
     t_tex       tex[4];
-    t_img       img;
+    t_img       screen;
 }				t_var;
 
 # include <stdlib.h>
