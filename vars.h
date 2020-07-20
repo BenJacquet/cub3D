@@ -6,7 +6,7 @@
 /*   By: jabenjam <jabenjam@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/07/01 14:10:28 by jabenjam          #+#    #+#             */
-/*   Updated: 2020/07/19 18:51:55 by jabenjam         ###   ########.fr       */
+/*   Updated: 2020/07/20 18:30:31 by jabenjam         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,15 @@ typedef struct  s_player
 {
     double       pos_x;
     double       pos_y;
+    double       speed;
 }               t_player;
+
+typedef struct  s_sprite
+{
+    int         pos_x;
+    int         pos_y;
+    void        *next;
+}               t_sprite;
 
 typedef struct s_key
 {
@@ -54,7 +62,7 @@ typedef struct  s_ray
     int         end;
 }               t_ray;
 
-typedef struct  s_camera
+typedef struct  s_cam
 {
     double       delta_x;
     double       delta_y;
@@ -63,7 +71,7 @@ typedef struct  s_camera
     double       cam_x;
     double       dir_x;
     double       dir_y;
-}               t_camera;
+}               t_cam;
 
 
 typedef struct  s_tex
@@ -91,17 +99,19 @@ typedef struct	s_struct
     int         height; /* window height */
     int         f_color; /* floor color */
     int         c_color; /* ceiling color */
-    char        *s_path; /* path to sky texture */
+    char        *s_path; /* path to sprite texture */
     int         number; /* number of parameters received */
     char        **map; /* map */
     int         size_x; /* taille de la map en x */
     int         size_y; /* taille de la map en y */
     void        *mlx; /* screen connection identifier */
     void        *win; /* window identifier */
+    int         save;
     t_key       key;
     t_player    player;
-    t_camera    camera;
+    t_cam       cam;
     t_tex       tex[4];
+    t_sprite    *sprite;
     t_img       screen;
 }				t_var;
 

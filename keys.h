@@ -6,7 +6,7 @@
 /*   By: jabenjam <jabenjam@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/07/08 14:20:35 by jabenjam          #+#    #+#             */
-/*   Updated: 2020/07/19 18:45:50 by jabenjam         ###   ########.fr       */
+/*   Updated: 2020/07/20 17:22:42 by jabenjam         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,6 +23,7 @@
 # define K_Q 12
 # define K_E 14
 # define K_M 46
+# define K_P 35
 # define K_PLUS 69
 # define K_MINUS 78
 # define K_ESC 53
