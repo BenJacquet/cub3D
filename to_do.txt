@@ -4,8 +4,10 @@
 - gerer la longueur max de la carte (apres le \n) pour la rendre rectangulaire meme si il n'y a pas d'espaces (chaque ligne doit faire la taille max rencontree)
 - gerer textures en resolutions differentes
 - malloc chaque structure
+- free la liste de sprites apres display
 - check erreur sur les return de fonctions mlx
 - Makefile
+- essayer avec un seul ou zero sprites
 - Scale la minimap selon la taille de la fenetre
 - Mettre la taille de l'ectran si resolution superieure
 - changer nom executable

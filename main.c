@@ -6,7 +6,7 @@
 /*   By: jabenjam <jabenjam@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/07/01 13:50:48 by jabenjam          #+#    #+#             */
-/*   Updated: 2020/07/20 18:57:14 by jabenjam         ###   ########.fr       */
+/*   Updated: 2020/07/21 19:07:21 by jabenjam         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,6 +36,7 @@ int initialize_var(t_var *var)
     var->s_path = 0;
     var->number = 0;
     var->save = 0;
+    var->n_sprites = 0;
     var->player.pos_x = 0.0;
     var->player.pos_y = 0.0;
     var->cam.dir_x = 0.0;
@@ -77,26 +78,14 @@ int initialize_tex(t_var *var)
     endian = 0;
     while (i <= 3)
     {
-        sl = var->tex[i].length * 4;
-        var->tex[i].length = 64;
+        sl = var->tex[i].width * 4;
+        var->tex[i].width = 64;
         var->tex[i].height = 64;
-        var->tex[i].ptr = mlx_xpm_file_to_image(var->mlx, var->tex[i].path, &var->tex[i].length, &var->tex[i].height);
+        var->tex[i].ptr = mlx_xpm_file_to_image(var->mlx, var->tex[i].path, &var->tex[i].width, &var->tex[i].height);
         var->tex[i].dat = mlx_get_data_addr(var->tex[i].ptr, &bpp, &sl, &endian);
         i++;
     }
     return (0);
-}
-
-t_sprite *create_sprite(int x, int y)
-{
-    t_sprite *new;
-
-    if (!(new = malloc(sizeof(new))))
-        return (NULL);
-    new->pos_x = x;
-    new->pos_y = y;
-    new->next = NULL;
-    return (new);
 }
 
 int initialize_key(t_key *key)
@@ -110,12 +99,12 @@ int initialize_key(t_key *key)
     return (0);
 }
 
-int create_image(t_img *img, void *mlx, int length, int height)
+int create_image(t_img *img, void *mlx, int width, int height)
 {
     img->bpp = 32;
-    img->sl = length * 4;
+    img->sl = width * 4;
     img->end = 0;
-    img->ptr = mlx_new_image(mlx, length, height);
+    img->ptr = mlx_new_image(mlx, width, height);
     img->dat = mlx_get_data_addr(img->ptr, &img->bpp, &img->sl, &img->end);
     return (0);
 }
@@ -254,7 +243,7 @@ int create_bmp(t_var *var)
     int size;
 
     fd = open("Cub3D.bmp", O_CREAT | O_RDWR);
-    size = (var->length * var->height) * 4;
+    size = (var->width * var->height) * 4;
     return (0);
 }
 
@@ -279,18 +268,18 @@ int keys(t_var *var)
 
 int print_sprites(t_var *var)
 {
-    void *save;
-    int     i = 0;
+    t_sprite *save;
+    int i = 0;
 
-    save = &var->sprite;
-    while (var->sprite->next != NULL)
+    save = var->sprites;
+    while (var->sprites->next != NULL)
     {
-        printf("\n%p[%d] --- sprite.x=%d --- sprite.y=%d\n", &var->sprite,i++,var->sprite->pos_x,var->sprite->pos_y);
-        var->sprite = var->sprite->next;
+        printf("\n%p[%d] --- sprite.x=%d --- sprite.y=%d sprite.dist=%f --- next=%p\n", &var->sprites, i++, var->sprites->x, var->sprites->y, var->sprites->dist, var->sprites->next);
+        var->sprites = var->sprites->next;
     }
-    printf("\n%p --- sprite.x=%d --- sprite.y=%d\n", &var->sprite,var->sprite->pos_x,var->sprite->pos_y);
-    printf("%p\n", save);
-    var->sprite = save;
+    printf("\n%p[%d] --- sprite.x=%d --- sprite.y=%d --- sprite.dist=%f --- next=%p\n", &var->sprites, i++, var->sprites->x, var->sprites->y, var->sprites->dist, var->sprites->next);
+    printf("\n%d sprites found\n\n", var->n_sprites);
+    var->sprites = save;
     return (0);
 }
 
@@ -315,7 +304,7 @@ int key_press(int key, t_var *var)
     else if (key == K_P)
         print_sprites(var);
     else if (key == K_PLUS)
-        var->key.size += (var->key.size < var->length / 400);
+        var->key.size += (var->key.size < var->width / 400);
     else if (key == K_MINUS)
         var->key.size -= (var->key.size > -4);
     return (0);
@@ -347,7 +336,7 @@ void get_window_size(t_var *var, char *line)
         line++;
     while (line && *line >= '0' && *line <= '9' && *line != ' ')
         x = (x * 10) + (*(line++) - '0');
-    var->length = x;
+    var->width = x;
     x = 0;
     while (line && *line == ' ')
         line++;
@@ -420,6 +409,114 @@ int parse_direction(t_cam *cam, char c)
     return (0);
 }
 
+t_sprite *store_sprite(t_var *var, int x, int y)
+{
+    t_sprite *new;
+
+    if (!(new = malloc(sizeof(t_sprite))))
+        return (NULL);
+    new->x = x;
+    new->y = y;
+    new->dist = 0.0;
+    new->next = (var->sprites ? var->sprites : NULL);
+    if (var->sprites)
+        new->next = var->sprites;
+    var->n_sprites++;
+    return (new);
+}
+
+void get_distance(t_sprite *sprites, t_player *player)
+{
+    t_sprite *head;
+
+    head = sprites;
+    while (sprites)
+    {
+        sprites->dist =
+            ((player->pos_x - sprites->x) * (player->pos_x - sprites->x) +
+             (player->pos_y - sprites->y) * (player->pos_y - sprites->y));
+        sprites = sprites->next;
+    }
+    sprites = head;
+}
+
+void swap_content(t_sprite *current, t_sprite *next)
+{
+    float temp;
+
+    temp = 0;
+    if (current && next)
+    {
+        temp = current->x;
+        current->x = next->x;
+        next->x = temp;
+        temp = current->y;
+        current->y = next->y;
+        next->y = temp;
+        temp = current->dist;
+        current->dist = next->dist;
+        next->dist = temp;
+    }
+}
+
+t_sprite *sort_sprites(t_sprite *sprites)
+{
+    t_sprite *head;
+    t_sprite *next;
+
+    head = sprites;
+    while (sprites && sprites->next)
+    {
+        next = sprites->next;
+        if (sprites->dist > next->dist)
+            swap_content(sprites, next);
+        sprites = sprites->next;
+    }
+    return (head);
+}
+
+int raycast_sprites(t_var *var)
+{
+    double x;
+    double y;
+    t_sprite *head;
+    t_ray_s ray_s;
+
+    while (var->sprites)
+    {
+        x = var->sprites->x - (var->player.pos_x - 0.5);
+        y = var->sprites->y - (var->player.pos_y - 0.5);
+        ray_s.inv = 1.0 / (var->cam.plane_x * var->cam.dir_y -
+                           var->cam.dir_x * var->cam.plane_y);
+        ray_s.x = ray_s.inv * (var->cam.dir_y * x - var->cam.dir_x * y);
+        ray_s.y = ray_s.inv * (-var->cam.plane_y * x + var->cam.plane_x * y);
+        ray_s.x_screen = (int)((var->width / 2) * (1 + x / y));
+        ray_s.height = fabs((int)(var->height / y));
+
+        ray_s.start_y = -ray_s.height / 2 + var->height / 2;
+        ray_s.start_y = (ray_s.start_y < 0 ? 0 : ray_s.start_y);
+        ray_s.end_y = ray_s.height / 2 + var->height / 2;
+        ray_s.end_y = (ray_s.end_y >= var->height ? var->height - 1 : ray_s.end_y);
+
+        ray_s.width = fabs((int)(var->height / y));
+        ray_s.start_x = -ray_s.width / 2 + ray_s.x_screen;
+        ray_s.start_x = (ray_s.start_x < 0 ? 0 : ray_s.start_x);
+        ray_s.end_x = ray_s.width / 2 + ray_s.x_screen;
+        ray_s.end_x = (ray_s.end_x >= var->width ? var->width - 1 : ray_s.end_x);
+    }
+}
+
+int sprites_manager(t_var *var, t_ray *ray)
+{
+    int i;
+
+    i = ray->dir_x;
+    get_distance(var->sprites, &var->player);
+    var->sprites = sort_sprites(var->sprites);
+    raycast_sprites(var);
+    return (0);
+}
+
 void map_parser(t_var *var, char **params)
 {
     int i;
@@ -439,6 +536,8 @@ void map_parser(t_var *var, char **params)
                 var->player.pos_x = j + 0.5;
                 var->player.pos_y = i + 0.5;
             }
+            if (var->map[i][j] == '2')
+                var->sprites = store_sprite(var, j, i);
         }
         var->size_x = j;
         j = 0;
@@ -499,14 +598,14 @@ void image_wall(t_var *var, t_ray *ray, int x)
 {
     int i;
     int j;
-    int tex_length;
+    int tex_width;
 
-    tex_length = var->tex[ray->side].length;
+    tex_width = var->tex[ray->side].width;
     while (ray->start <= ray->end && ray->end >= 0) // walls;
     {
-        ray->tex_y = (int)ray->tex_pos & (tex_length - 1);
-        i = ray->start * var->length * 4 + x * 4;
-        j = ray->tex_y * tex_length * 4 + (tex_length - 1 - ray->tex_x) * 4;
+        ray->tex_y = (int)ray->tex_pos & (tex_width - 1);
+        i = ray->start * var->width * 4 + x * 4;
+        j = ray->tex_y * tex_width * 4 + (tex_width - 1 - ray->tex_x) * 4;
         var->screen.dat[i++] = var->tex[ray->side].dat[j++]; // B
         var->screen.dat[i++] = var->tex[ray->side].dat[j++]; // G
         var->screen.dat[i++] = var->tex[ray->side].dat[j++]; // R
@@ -522,7 +621,7 @@ void image_fill(t_var *var, t_ray *ray, int x)
     int y = 0;
     while (y < ray->start) // ceiling
     {
-        i = y * var->length * 4 + x * 4;
+        i = y * var->width * 4 + x * 4;
         var->screen.dat[i++] = 0x0;  // B
         var->screen.dat[i++] = 0x64; // G
         var->screen.dat[i++] = 0xFF; // R
@@ -532,7 +631,7 @@ void image_fill(t_var *var, t_ray *ray, int x)
     image_wall(var, ray, x);
     while (ray->end < var->height && ray->end >= 0) // floor
     {
-        i = ray->end * var->length * 4 + x * 4;
+        i = ray->end * var->width * 4 + x * 4;
         var->screen.dat[i++] = 0x52; // B
         var->screen.dat[i++] = 0x35; // G
         var->screen.dat[i++] = 0x2c; // R
@@ -551,27 +650,12 @@ int texture_copy(t_var *var, t_ray *ray, int x)
     //printf("\nray->wall_x=%f\nvar->player.pos_y=%f\nvar->player.pos_x=%f\nray->wall_dist=%f\nray->dir_y=%f\nray->dir_x=%f\n",ray->wall_x,var->player.pos_y,var->player.pos_x,ray->wall_dist,ray->dir_y,ray->dir_x);
     ray->wall_x -= floor(ray->wall_x);
     //printf("\nray->wall_x=%f\n", ray->wall_x);
-    ray->tex_x = (int)(ray->wall_x * (double)var->tex[ray->side].length);
+    ray->tex_x = (int)(ray->wall_x * (double)var->tex[ray->side].width);
     if ((ray->side <= 1 && ray->dir_x > 0) ||
         (ray->side >= 2 && ray->dir_y < 0))
-        ray->tex_x = var->tex[ray->side].length - ray->tex_x - 1;
+        ray->tex_x = var->tex[ray->side].width - ray->tex_x - 1;
     ray->tex_pos = (ray->start - var->height / 2 + ray->line_h / 2) * ray->step_t;
     image_fill(var, ray, x);
-    return (0);
-}
-
-int new_sprite(t_var *var, t_ray *ray)
-{
-    t_sprite *new;
-    t_sprite *save;
-
-    new = create_sprite(ray->map_x, ray->map_y);
-    save = var->sprite;
-    if (!save->pos_x && !save->pos_y)
-    {
-        save->pos_x = ray->map_x;
-        save->pos_y = ray->map_y;
-    }
     return (0);
 }
 
@@ -588,7 +672,7 @@ void raycast_scale(t_var *var, t_ray *ray)
     ray->end = (ray->end >= var->height ? var->height - 1 : ray->end);
 }
 
-void raycast_cast(t_var *var, t_ray *ray)
+void raycast_walls(t_var *var, t_ray *ray)
 {
     while (ray->hit == 0)
     {
@@ -607,8 +691,6 @@ void raycast_cast(t_var *var, t_ray *ray)
         //printf("\nray->map_x=%d\nray->map_y=%d\n", ray->map_x,ray->map_y);
         if (ray->map_x < var->size_x && ray->map_y < var->size_y && var->map[ray->map_y][ray->map_x] == '1')
             ray->hit = 1;
-/*        else if (ray->map_x < var->size_x && ray->map_y < var->size_y && var->map[ray->map_y][ray->map_x] == '2')
-            is_sprite(var, ray);*/
     }
 }
 
@@ -638,7 +720,7 @@ void raycast_step(t_var *var, t_ray *ray)
 
 void raycast_setup(t_var *var, t_ray *ray, int x)
 {
-    var->cam.cam_x = (2 * x) / (double)var->length - 1;
+    var->cam.cam_x = (2 * x) / (double)var->width - 1;
     ray->dir_x = var->cam.dir_x + var->cam.plane_x * var->cam.cam_x;
     ray->dir_y = var->cam.dir_y + var->cam.plane_y * var->cam.cam_x;
     ray->map_x = (int)var->player.pos_x; // determine la case dans laquelle se trouve la cam
@@ -651,20 +733,20 @@ void raycast_setup(t_var *var, t_ray *ray, int x)
 int raycast(t_var *var, t_ray *ray)
 {
     int x;
-    double zbuffer[var->length];
+    double zbuffer[var->width];
 
     x = 0;
-    while (x < var->length)
+    while (x < var->width)
     {
         raycast_setup(var, ray, x);
         raycast_step(var, ray);
-        raycast_cast(var, ray);
+        raycast_walls(var, ray);
         raycast_scale(var, ray);
         //printf("\n\nvar->cam.cam_x=%f\nray->dir_x=%f\nray->dir_y=%f\nray->map_x=%d\nray->map_y=%d\nvar->cam.delta_x=%f\nvar->cam.delta_y=%f\n",var->cam.cam_x,ray->dir_x,ray->dir_y,ray->map_x,ray->map_y,var->cam.delta_x,var->cam.delta_y);
         //printf("ray->side_x=%f\nray->side_y=%f\n", ray->side_x,ray->side_y);
         zbuffer[x] = ray->wall_dist;
         texture_copy(var, ray, x++);
-        //add_sprite();
+        sprites_manager(var, ray);
     }
     //printf("\nwall_dist = %f\nline_h = %d\nstart = %d\nend = %d\n", ray->wall_dist, ray->line_h, ray->start, ray->end);
     return (0);
@@ -676,10 +758,9 @@ int game(t_var *var)
 
     initialize_ray(&ray);
     initialize_tex(var);
-    var->sprite = create_sprite(0,0);
-    new_image(&var->screen, var->mlx, var->length, var->height);
+    create_image(&var->screen, var->mlx, var->width, var->height);
     raycast(var, &ray);
-/*    if (var->save)
+    /*    if (var->save)
     {
         create_bmp(var);
         exit(0);
@@ -693,15 +774,14 @@ int game(t_var *var)
 int main(int ac, char **av)
 {
     t_var var;
-
     initialize_var(&var);
     if (ac == 2 || ac == 3)
     {
         // ajouter verification d'erreurs dans les arguments [if (a || b)]
         cub_parser(&var, av[1]);
         var.mlx = mlx_init();
-        var.win = mlx_new_window(var.mlx, var.length, var.height, "Cub3D");
-        //        printf("VARS\nlength=%d\nheight=%d\nf_color=%d\nc_color=%d\nno_path=%s\nso_path=%s\nwe_path=%s\nea_path=%s\ns_path=%s\nnumber of parameters=%d\nmlx=%p\nwin=%p\nmap=\n", var.length, var.height, var.f_color, var.c_color, var.tex[0].path, var.tex[1].path, var.tex[2].path, var.tex[3].path, var.s_path, var.number, var.mlx, var.win);
+        var.win = mlx_new_window(var.mlx, var.width, var.height, "Cub3D");
+        //        printf("VARS\nwidth=%d\nheight=%d\nf_color=%d\nc_color=%d\nno_path=%s\nso_path=%s\nwe_path=%s\nea_path=%s\ns_path=%s\nnumber of parameters=%d\nmlx=%p\nwin=%p\nmap=\n", var.width, var.height, var.f_color, var.c_color, var.tex[0].path, var.tex[1].path, var.tex[2].path, var.tex[3].path, var.s_path, var.number, var.mlx, var.win);
         //        printf("PLAYER\npos_x=%f\npos_y=%f\ndir_x=%f\ndir_y=%f\n", var.player.pos_x, var.player.pos_y, var.cam.dir_x, var.cam.dir_y);
         mlx_hook(var.win, 2, 0, key_press, &var);
         mlx_hook(var.win, 3, 0, key_release, &var);

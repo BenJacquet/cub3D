@@ -6,7 +6,7 @@
 /*   By: jabenjam <jabenjam@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/07/01 14:10:28 by jabenjam          #+#    #+#             */
-/*   Updated: 2020/07/20 18:30:31 by jabenjam         ###   ########.fr       */
+/*   Updated: 2020/07/21 19:06:39 by jabenjam         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,10 +22,27 @@ typedef struct  s_player
 
 typedef struct  s_sprite
 {
-    int         pos_x;
-    int         pos_y;
+    int         x;
+    int         y;
+    double      dist;
     void        *next;
 }               t_sprite;
+
+typedef struct s_ray_s
+{
+    double      x;
+    double      y;
+    double      x_screen;
+    double      inv;
+    int         height;
+    int         width;
+    int         start_x;
+    int         end_x;
+    int         start_y;
+    int         end_y;
+    int         stripe;
+}               t_ray_s;
+
 
 typedef struct s_key
 {
@@ -95,7 +112,7 @@ typedef struct s_img
 
 typedef struct	s_struct
 {
-    int         length; /* window length */
+    int         width; /* window width */
     int         height; /* window height */
     int         f_color; /* floor color */
     int         c_color; /* ceiling color */
@@ -107,11 +124,12 @@ typedef struct	s_struct
     void        *mlx; /* screen connection identifier */
     void        *win; /* window identifier */
     int         save;
+    int         n_sprites;
     t_key       key;
     t_player    player;
     t_cam       cam;
     t_tex       tex[4];
-    t_sprite    *sprite;
+    t_sprite    *sprites;
     t_img       screen;
 }				t_var;
 
