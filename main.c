@@ -6,7 +6,7 @@
 /*   By: jabenjam <jabenjam@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/07/01 13:50:48 by jabenjam          #+#    #+#             */
-/*   Updated: 2020/07/21 19:07:21 by jabenjam         ###   ########.fr       */
+/*   Updated: 2020/07/22 19:08:02 by jabenjam         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -88,6 +88,22 @@ int initialize_tex(t_var *var)
     return (0);
 }
 
+int initialize_sprite(t_var *var, t_sprite *sprite)
+{
+    int bpp;
+    int endian;
+
+
+    sprite->width = 64;
+    sprite->height = 64;
+    sprite->sl = sprite->width * 4;
+    bpp = 32;
+    endian = 0;
+    sprite->ptr = mlx_xpm_file_to_image(var->mlx, var->s_path, &sprite->width, &sprite->height);
+    sprite->dat = mlx_get_data_addr(sprite->ptr, &bpp, &sprite->sl, &endian);
+    return (0);
+}
+
 int initialize_key(t_key *key)
 {
     key->forward = 0;
@@ -119,17 +135,17 @@ int forback(t_var *var, int mode)
 {
     if (mode == 1)
     {
-        if (var->map[(int)var->player.pos_y][(int)(var->player.pos_x + var->cam.dir_x * 0.2)] != '1')
-            var->player.pos_x += (var->cam.dir_x * 0.2);
-        if (var->map[(int)(var->player.pos_y + var->cam.dir_y * 0.2)][(int)var->player.pos_x] != '1')
-            var->player.pos_y += (var->cam.dir_y * 0.2);
+        if (var->map[(int)var->player.pos_y][(int)(var->player.pos_x + var->cam.dir_x * 0.1)] != '1')
+            var->player.pos_x += (var->cam.dir_x * 0.1);
+        if (var->map[(int)(var->player.pos_y + var->cam.dir_y * 0.1)][(int)var->player.pos_x] != '1')
+            var->player.pos_y += (var->cam.dir_y * 0.1);
     }
     else
     {
-        if (var->map[(int)var->player.pos_y][(int)(var->player.pos_x - var->cam.dir_x * 0.2)] != '1')
-            var->player.pos_x -= (var->cam.dir_x * 0.2);
-        if (var->map[(int)(var->player.pos_y - var->cam.dir_y * 0.2)][(int)var->player.pos_x] != '1')
-            var->player.pos_y -= (var->cam.dir_y * 0.2);
+        if (var->map[(int)var->player.pos_y][(int)(var->player.pos_x - var->cam.dir_x * 0.1)] != '1')
+            var->player.pos_x -= (var->cam.dir_x * 0.1);
+        if (var->map[(int)(var->player.pos_y - var->cam.dir_y * 0.1)][(int)var->player.pos_x] != '1')
+            var->player.pos_y -= (var->cam.dir_y * 0.1);
     }
     return (0);
 }
@@ -138,17 +154,17 @@ int strafe(t_var *var, int mode)
 {
     if (mode == 1)
     {
-        if (var->map[(int)var->player.pos_y][(int)(var->player.pos_x - var->cam.plane_x * 0.2)] != '1')
-            var->player.pos_x -= (var->cam.plane_x * 0.2);
-        if (var->map[(int)(var->player.pos_y - var->cam.plane_y * 0.2)][(int)var->player.pos_x] != '1')
-            var->player.pos_y -= (var->cam.plane_y * 0.2);
+        if (var->map[(int)var->player.pos_y][(int)(var->player.pos_x - var->cam.plane_x * 0.1)] != '1')
+            var->player.pos_x -= (var->cam.plane_x * 0.1);
+        if (var->map[(int)(var->player.pos_y - var->cam.plane_y * 0.1)][(int)var->player.pos_x] != '1')
+            var->player.pos_y -= (var->cam.plane_y * 0.1);
     }
     else
     {
-        if (var->map[(int)var->player.pos_y][(int)(var->player.pos_x + var->cam.plane_x * 0.2)] != '1')
-            var->player.pos_x += (var->cam.plane_x * 0.2);
-        if (var->map[(int)(var->player.pos_y + var->cam.plane_y * 0.2)][(int)var->player.pos_x] != '1')
-            var->player.pos_y += (var->cam.plane_y * 0.2);
+        if (var->map[(int)var->player.pos_y][(int)(var->player.pos_x + var->cam.plane_x * 0.1)] != '1')
+            var->player.pos_x += (var->cam.plane_x * 0.1);
+        if (var->map[(int)(var->player.pos_y + var->cam.plane_y * 0.1)][(int)var->player.pos_x] != '1')
+            var->player.pos_y += (var->cam.plane_y * 0.1);
     }
     return (0);
 }
@@ -475,14 +491,16 @@ t_sprite *sort_sprites(t_sprite *sprites)
     return (head);
 }
 
-int raycast_sprites(t_var *var)
+int raycast_sprites(t_var *var, double *zbuffer)
 {
     double x;
     double y;
     t_sprite *head;
     t_ray_s ray_s;
 
-    while (var->sprites)
+    head = var->sprites;
+    initialize_sprite(var, head);
+    while (var->sprites->next)
     {
         x = var->sprites->x - (var->player.pos_x - 0.5);
         y = var->sprites->y - (var->player.pos_y - 0.5);
@@ -490,30 +508,56 @@ int raycast_sprites(t_var *var)
                            var->cam.dir_x * var->cam.plane_y);
         ray_s.x = ray_s.inv * (var->cam.dir_y * x - var->cam.dir_x * y);
         ray_s.y = ray_s.inv * (-var->cam.plane_y * x + var->cam.plane_x * y);
-        ray_s.x_screen = (int)((var->width / 2) * (1 + x / y));
-        ray_s.height = fabs((int)(var->height / y));
-
+        ray_s.x_screen = (int)((var->width / 2) * (1 + ray_s.x / ray_s.y));
+        ray_s.height = abs((int)(var->height / ray_s.y));
+        /*calcul de la longueur du sprite a afficher*/
         ray_s.start_y = -ray_s.height / 2 + var->height / 2;
         ray_s.start_y = (ray_s.start_y < 0 ? 0 : ray_s.start_y);
         ray_s.end_y = ray_s.height / 2 + var->height / 2;
         ray_s.end_y = (ray_s.end_y >= var->height ? var->height - 1 : ray_s.end_y);
-
-        ray_s.width = fabs((int)(var->height / y));
+        /*calcul de la largeur du sprite a afficher*/
+        ray_s.width = abs((int)(var->height / ray_s.y));
         ray_s.start_x = -ray_s.width / 2 + ray_s.x_screen;
         ray_s.start_x = (ray_s.start_x < 0 ? 0 : ray_s.start_x);
         ray_s.end_x = ray_s.width / 2 + ray_s.x_screen;
         ray_s.end_x = (ray_s.end_x >= var->width ? var->width - 1 : ray_s.end_x);
+        int stripe = ray_s.start_x;
+        while (stripe < ray_s.end_x)
+        {
+            ray_s.tex_x = (int)(head->width * ((stripe - (-ray_s.width / 2 + ray_s.x_screen)) * head->width / ray_s.width) / (head->width * 4));
+            if (ray_s.y > 0 && stripe > 0 &&
+                stripe < var->width && ray_s.y < zbuffer[stripe])
+            {
+                int start = ray_s.start_y;
+                while (start < ray_s.end_y)
+                {
+                    ray_s.d = start * head->width * 4 - (var->height * 4) * (head->width * 4) + head->height + ray_s.height * (head->width * 4) / 2;
+                    ray_s.tex_y = ((ray_s.d * head->height) / ray_s.height / (head->width * 4));
+                    int i = start * var->width * 4 + stripe * 4;
+                    int j = ray_s.tex_y * head->width * 4 + ray_s.tex_x * 4;
+                    if (head->dat[j] + head->dat[j + 1] + head->dat[j + 2] != 0x0)
+                    {
+                        var->screen.dat[i++] = head->dat[j++]; // B
+                        var->screen.dat[i++] = head->dat[j++]; // G
+                        var->screen.dat[i++] = head->dat[j++]; // R
+                        var->screen.dat[i] = head->dat[j];     // A
+                    }
+                    start++;
+                }
+            }
+            stripe++;
+        }
+        var->sprites = var->sprites->next;
     }
+    var->sprites = head;
+    return (0);
 }
 
-int sprites_manager(t_var *var, t_ray *ray)
+int sprites_manager(t_var *var, double *zbuffer)
 {
-    int i;
-
-    i = ray->dir_x;
     get_distance(var->sprites, &var->player);
     var->sprites = sort_sprites(var->sprites);
-    raycast_sprites(var);
+    raycast_sprites(var, zbuffer);
     return (0);
 }
 
@@ -662,9 +706,13 @@ int texture_copy(t_var *var, t_ray *ray, int x)
 void raycast_scale(t_var *var, t_ray *ray)
 {
     if (ray->side <= 1)
-        ray->wall_dist = (ray->map_x - var->player.pos_x + (1 - ray->step_x) / 2) / ray->dir_x;
+        ray->wall_dist = (ray->map_x - var->player.pos_x +
+                          (1 - ray->step_x) / 2) /
+                         ray->dir_x;
     else
-        ray->wall_dist = (ray->map_y - var->player.pos_y + (1 - ray->step_y) / 2) / ray->dir_y;
+        ray->wall_dist = (ray->map_y - var->player.pos_y +
+                          (1 - ray->step_y) / 2) /
+                         ray->dir_y;
     ray->line_h = (int)(var->height / ray->wall_dist);
     ray->start = -ray->line_h / 2 + var->height / 2;
     ray->start = (ray->start < 0 ? 0 : ray->start);
@@ -689,7 +737,8 @@ void raycast_walls(t_var *var, t_ray *ray)
             ray->side = (ray->step_y == -1 ? 2 : 3);
         }
         //printf("\nray->map_x=%d\nray->map_y=%d\n", ray->map_x,ray->map_y);
-        if (ray->map_x < var->size_x && ray->map_y < var->size_y && var->map[ray->map_y][ray->map_x] == '1')
+        if (ray->map_x < var->size_x && ray->map_y < var->size_y &&
+            var->map[ray->map_y][ray->map_x] == '1')
             ray->hit = 1;
     }
 }
@@ -746,8 +795,8 @@ int raycast(t_var *var, t_ray *ray)
         //printf("ray->side_x=%f\nray->side_y=%f\n", ray->side_x,ray->side_y);
         zbuffer[x] = ray->wall_dist;
         texture_copy(var, ray, x++);
-        sprites_manager(var, ray);
     }
+    sprites_manager(var, zbuffer);
     //printf("\nwall_dist = %f\nline_h = %d\nstart = %d\nend = %d\n", ray->wall_dist, ray->line_h, ray->start, ray->end);
     return (0);
 }
