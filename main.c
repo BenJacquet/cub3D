@@ -6,7 +6,7 @@
 /*   By: jabenjam <jabenjam@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/07/01 13:50:48 by jabenjam          #+#    #+#             */
-/*   Updated: 2020/07/22 19:08:02 by jabenjam         ###   ########.fr       */
+/*   Updated: 2020/07/23 19:01:20 by jabenjam         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -93,7 +93,6 @@ int initialize_sprite(t_var *var, t_sprite *sprite)
     int bpp;
     int endian;
 
-
     sprite->width = 64;
     sprite->height = 64;
     sprite->sl = sprite->width * 4;
@@ -122,6 +121,108 @@ int create_image(t_img *img, void *mlx, int width, int height)
     img->end = 0;
     img->ptr = mlx_new_image(mlx, width, height);
     img->dat = mlx_get_data_addr(img->ptr, &img->bpp, &img->sl, &img->end);
+    return (0);
+}
+
+void create_bmp(t_var *var)
+{
+    int i;
+    int fd;
+    int size;
+    int array;
+    int header_size;
+    int color_plane;
+
+    i = 0;
+    fd = open("Cub3D.bmp", O_CREAT | O_RDWR);
+    size = 54 + (var->width * var->height * 4);
+    array = 54;
+    header_size = 40;
+    color_plane = 1;
+    //BMP HEADER
+    write(fd, "BM", 2); // Identificateur
+    write(fd, &size, 4); // Taille du fichier
+    write(fd, "\0\0\0\0", 4); // Reserve a l'application qui genere le fichier
+    write(fd, &array, 4); // Debut du tableau de pixels
+    // DIB HEADER
+    write(fd, &header_size, 4); // Taille du header DIB
+    write(fd, &var->width, 4); // Largeur de l'image
+    write(fd, &var->height, 4); // Hauteur de l'image
+    write(fd, &color_plane, 2); // Nombre de plans de couleurs
+    write(fd, &var->screen.bpp, 2); // Bits par pixel
+    // MISE A ZERO DES DONNEES INUTILES ICI
+    while (i < 24)
+    {
+        write(fd, "\0", 1);
+        i++;
+    }
+    i = var->height * var->width * 4;
+    // REMPLISSAGE DU TABLEAU DE PIXELS
+    while (i > 0)
+    {
+        write(fd, &var->screen.dat[i--], 1); // Copie de l'image char par char
+    }
+    close(fd);
+    exit(0);
+}
+
+void put_tiles(t_var *var, t_img *wall, t_img *pos, int size)
+{
+    int x;
+    int y;
+    int x_tile;
+    int y_tile;
+
+    x = -1;
+    y = -1;
+    x_tile = 0;
+    y_tile = 0;
+    while (var->map[++y])
+    {
+        while (var->map[y][++x])
+        {
+            if (var->map[y][x] == '1')
+                mlx_put_image_to_window(var->mlx, var->win, wall->ptr,
+                                        x_tile, y_tile);
+            if (x == (int)var->player.pos_x && y == (int)var->player.pos_y)
+                mlx_put_image_to_window(var->mlx, var->win, pos->ptr,
+                                        x * (size + 1), y * (size + 1));
+            x_tile += size + 1;
+        }
+        x = -1;
+        x_tile = 0;
+        y_tile += size + 1;
+    }
+}
+
+/*
+**  Mode == 0 ? tile mur;
+**  Mode == 1 ? tile joueur;
+*/
+void create_tiles(t_img *tile, void *mlx, int size, int mode)
+{
+    int i;
+
+    i = 0;
+    create_image(tile, mlx, size, size);
+    while (i < (size * size * 4))
+    {
+        tile->dat[i++] = (mode ? 0x64 : 0xC8); // B
+        tile->dat[i++] = (mode ? 0xC8 : 0x80); // G
+        tile->dat[i++] = 0x0;                  // R
+        tile->dat[i++] = 0x0;                  // A
+    }
+}
+
+int draw_mini_map(t_var *var, int size)
+{
+    t_img tile[2];
+
+    create_tiles(&tile[0], var->mlx, size, 0);
+    create_tiles(&tile[1], var->mlx, size, 1);
+    put_tiles(var, &tile[0], &tile[1], size);
+    mlx_destroy_image(var->mlx, tile[0].ptr);
+    mlx_destroy_image(var->mlx, tile[1].ptr);
     return (0);
 }
 
@@ -193,76 +294,6 @@ int look(t_var *var, int mode)
     return (0);
 }
 
-void put_tiles(t_var *var, t_img *wall, t_img *pos, int size)
-{
-    int x;
-    int y;
-    int x_tile;
-    int y_tile;
-
-    x = -1;
-    y = -1;
-    x_tile = 0;
-    y_tile = 0;
-    while (var->map[++y])
-    {
-        while (var->map[y][++x])
-        {
-            if (var->map[y][x] == '1')
-                mlx_put_image_to_window(var->mlx, var->win, wall->ptr,
-                                        x_tile, y_tile);
-            if (x == (int)var->player.pos_x && y == (int)var->player.pos_y)
-                mlx_put_image_to_window(var->mlx, var->win, pos->ptr,
-                                        x * (size + 1), y * (size + 1));
-            x_tile += size + 1;
-        }
-        x = -1;
-        x_tile = 0;
-        y_tile += size + 1;
-    }
-}
-
-/*
-**  Mode == 0 ? tile mur;
-**  Mode == 1 ? tile joueur;
-*/
-void create_tiles(t_img *tile, void *mlx, int size, int mode)
-{
-    int i;
-
-    i = 0;
-    create_image(tile, mlx, size, size);
-    while (i < (size * size * 4))
-    {
-        tile->dat[i++] = (mode ? 0x64 : 0xC8); // B
-        tile->dat[i++] = (mode ? 0xC8 : 0x80); // G
-        tile->dat[i++] = 0x0;                  // R
-        tile->dat[i++] = 0x0;                  // A
-    }
-}
-
-int draw_mini_map(t_var *var, int size)
-{
-    t_img tile[2];
-
-    create_tiles(&tile[0], var->mlx, size, 0);
-    create_tiles(&tile[1], var->mlx, size, 1);
-    put_tiles(var, &tile[0], &tile[1], size);
-    mlx_destroy_image(var->mlx, tile[0].ptr);
-    mlx_destroy_image(var->mlx, tile[1].ptr);
-    return (0);
-}
-
-int create_bmp(t_var *var)
-{
-    int fd;
-    int size;
-
-    fd = open("Cub3D.bmp", O_CREAT | O_RDWR);
-    size = (var->width * var->height) * 4;
-    return (0);
-}
-
 int keys(t_var *var)
 {
     if (var->key.forward == 1)
@@ -279,23 +310,6 @@ int keys(t_var *var)
         look(var, 0);
     if (var->key.map == 1)
         draw_mini_map(var, 8 + var->key.size);
-    return (0);
-}
-
-int print_sprites(t_var *var)
-{
-    t_sprite *save;
-    int i = 0;
-
-    save = var->sprites;
-    while (var->sprites->next != NULL)
-    {
-        printf("\n%p[%d] --- sprite.x=%d --- sprite.y=%d sprite.dist=%f --- next=%p\n", &var->sprites, i++, var->sprites->x, var->sprites->y, var->sprites->dist, var->sprites->next);
-        var->sprites = var->sprites->next;
-    }
-    printf("\n%p[%d] --- sprite.x=%d --- sprite.y=%d --- sprite.dist=%f --- next=%p\n", &var->sprites, i++, var->sprites->x, var->sprites->y, var->sprites->dist, var->sprites->next);
-    printf("\n%d sprites found\n\n", var->n_sprites);
-    var->sprites = save;
     return (0);
 }
 
@@ -317,8 +331,6 @@ int key_press(int key, t_var *var)
         var->key.r_strafe = 1;
     else if (key == K_M)
         var->key.map = (var->key.map ? 0 : 1);
-    else if (key == K_P)
-        print_sprites(var);
     else if (key == K_PLUS)
         var->key.size += (var->key.size < var->width / 400);
     else if (key == K_MINUS)
@@ -484,7 +496,7 @@ t_sprite *sort_sprites(t_sprite *sprites)
     while (sprites && sprites->next)
     {
         next = sprites->next;
-        if (sprites->dist > next->dist)
+        if (sprites->dist < next->dist)
             swap_content(sprites, next);
         sprites = sprites->next;
     }
@@ -500,7 +512,7 @@ int raycast_sprites(t_var *var, double *zbuffer)
 
     head = var->sprites;
     initialize_sprite(var, head);
-    while (var->sprites->next)
+    while (var->sprites)
     {
         x = var->sprites->x - (var->player.pos_x - 0.5);
         y = var->sprites->y - (var->player.pos_y - 0.5);
@@ -524,18 +536,21 @@ int raycast_sprites(t_var *var, double *zbuffer)
         int stripe = ray_s.start_x;
         while (stripe < ray_s.end_x)
         {
-            ray_s.tex_x = (int)(head->width * ((stripe - (-ray_s.width / 2 + ray_s.x_screen)) * head->width / ray_s.width) / (head->width * 4));
+            ray_s.tex_x = (int)((head->width * 4) * (stripe - (-ray_s.width / 2 + ray_s.x_screen)) *
+                                head->width / ray_s.width) /
+                          (head->width * 4);
             if (ray_s.y > 0 && stripe > 0 &&
                 stripe < var->width && ray_s.y < zbuffer[stripe])
             {
                 int start = ray_s.start_y;
                 while (start < ray_s.end_y)
                 {
-                    ray_s.d = start * head->width * 4 - (var->height * 4) * (head->width * 4) + head->height + ray_s.height * (head->width * 4) / 2;
+                    ray_s.d = start * (head->width * 4) - var->height * (head->width * 4 / 2) +
+                              ray_s.height * (head->width * 4) / 2;
                     ray_s.tex_y = ((ray_s.d * head->height) / ray_s.height / (head->width * 4));
-                    int i = start * var->width * 4 + stripe * 4;
-                    int j = ray_s.tex_y * head->width * 4 + ray_s.tex_x * 4;
-                    if (head->dat[j] + head->dat[j + 1] + head->dat[j + 2] != 0x0)
+                    int i = start * (var->width * 4) + (stripe * 4);
+                    int j = ray_s.tex_y * (head->width * 4) + (ray_s.tex_x * 4);
+                    if (head->dat[j] + head->dat[j + 1] + head->dat[j + 2] + head->dat[j + 3] != 0x0)
                     {
                         var->screen.dat[i++] = head->dat[j++]; // B
                         var->screen.dat[i++] = head->dat[j++]; // G
@@ -691,9 +706,7 @@ int texture_copy(t_var *var, t_ray *ray, int x)
         ray->wall_x = var->player.pos_y + (ray->wall_dist * ray->dir_y);
     else
         ray->wall_x = var->player.pos_x + (ray->wall_dist * ray->dir_x);
-    //printf("\nray->wall_x=%f\nvar->player.pos_y=%f\nvar->player.pos_x=%f\nray->wall_dist=%f\nray->dir_y=%f\nray->dir_x=%f\n",ray->wall_x,var->player.pos_y,var->player.pos_x,ray->wall_dist,ray->dir_y,ray->dir_x);
     ray->wall_x -= floor(ray->wall_x);
-    //printf("\nray->wall_x=%f\n", ray->wall_x);
     ray->tex_x = (int)(ray->wall_x * (double)var->tex[ray->side].width);
     if ((ray->side <= 1 && ray->dir_x > 0) ||
         (ray->side >= 2 && ray->dir_y < 0))
@@ -736,7 +749,6 @@ void raycast_walls(t_var *var, t_ray *ray)
             ray->map_y += ray->step_y;
             ray->side = (ray->step_y == -1 ? 2 : 3);
         }
-        //printf("\nray->map_x=%d\nray->map_y=%d\n", ray->map_x,ray->map_y);
         if (ray->map_x < var->size_x && ray->map_y < var->size_y &&
             var->map[ray->map_y][ray->map_x] == '1')
             ray->hit = 1;
@@ -791,13 +803,10 @@ int raycast(t_var *var, t_ray *ray)
         raycast_step(var, ray);
         raycast_walls(var, ray);
         raycast_scale(var, ray);
-        //printf("\n\nvar->cam.cam_x=%f\nray->dir_x=%f\nray->dir_y=%f\nray->map_x=%d\nray->map_y=%d\nvar->cam.delta_x=%f\nvar->cam.delta_y=%f\n",var->cam.cam_x,ray->dir_x,ray->dir_y,ray->map_x,ray->map_y,var->cam.delta_x,var->cam.delta_y);
-        //printf("ray->side_x=%f\nray->side_y=%f\n", ray->side_x,ray->side_y);
         zbuffer[x] = ray->wall_dist;
         texture_copy(var, ray, x++);
     }
     sprites_manager(var, zbuffer);
-    //printf("\nwall_dist = %f\nline_h = %d\nstart = %d\nend = %d\n", ray->wall_dist, ray->line_h, ray->start, ray->end);
     return (0);
 }
 
@@ -809,11 +818,8 @@ int game(t_var *var)
     initialize_tex(var);
     create_image(&var->screen, var->mlx, var->width, var->height);
     raycast(var, &ray);
-    /*    if (var->save)
-    {
+    if (var->save)
         create_bmp(var);
-        exit(0);
-    }*/
     mlx_put_image_to_window(var->mlx, var->win, var->screen.ptr, 0, 0);
     mlx_destroy_image(var->mlx, var->screen.ptr);
     keys(var);
@@ -826,12 +832,12 @@ int main(int ac, char **av)
     initialize_var(&var);
     if (ac == 2 || ac == 3)
     {
-        // ajouter verification d'erreurs dans les arguments [if (a || b)]
+        // ajouter verification d'erreurs dans les arguments : if (a || b)
+        if (ac == 3)
+            var.save = ft_strcmp("--save", av[ac - 1]);
         cub_parser(&var, av[1]);
         var.mlx = mlx_init();
         var.win = mlx_new_window(var.mlx, var.width, var.height, "Cub3D");
-        //        printf("VARS\nwidth=%d\nheight=%d\nf_color=%d\nc_color=%d\nno_path=%s\nso_path=%s\nwe_path=%s\nea_path=%s\ns_path=%s\nnumber of parameters=%d\nmlx=%p\nwin=%p\nmap=\n", var.width, var.height, var.f_color, var.c_color, var.tex[0].path, var.tex[1].path, var.tex[2].path, var.tex[3].path, var.s_path, var.number, var.mlx, var.win);
-        //        printf("PLAYER\npos_x=%f\npos_y=%f\ndir_x=%f\ndir_y=%f\n", var.player.pos_x, var.player.pos_y, var.cam.dir_x, var.cam.dir_y);
         mlx_hook(var.win, 2, 0, key_press, &var);
         mlx_hook(var.win, 3, 0, key_release, &var);
         mlx_loop_hook(var.mlx, game, &var);

@@ -6,7 +6,7 @@
 /*   By: jabenjam <jabenjam@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/07/01 14:10:28 by jabenjam          #+#    #+#             */
-/*   Updated: 2020/07/22 19:04:56 by jabenjam         ###   ########.fr       */
+/*   Updated: 2020/07/23 18:19:59 by jabenjam         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -109,7 +109,7 @@ typedef struct s_img
 {
     void *ptr;
     char *dat;
-    int length;
+    int width;
     int bpp;
     int sl;
     int end;
