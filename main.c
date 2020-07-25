@@ -6,7 +6,7 @@
 /*   By: jabenjam <jabenjam@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/07/01 13:50:48 by jabenjam          #+#    #+#             */
-/*   Updated: 2020/07/23 19:01:20 by jabenjam         ###   ########.fr       */
+/*   Updated: 2020/07/25 18:52:38 by jabenjam         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,6 +22,20 @@
 #include "ft_split.c"
 #include "utils.c"
 #include "keys.h"
+
+void close_game(t_var *var)
+{
+    void *current;
+
+    while (var->sprites)
+    {
+        current = var->sprites;
+        var->sprites = var->sprites->next;
+        free(current);
+    }
+    mlx_destroy_window(var->mlx, var->win);
+    exit(0);
+}
 
 int initialize_var(t_var *var)
 {
@@ -124,46 +138,53 @@ int create_image(t_img *img, void *mlx, int width, int height)
     return (0);
 }
 
-void create_bmp(t_var *var)
+void fill_bmp(int fd, t_var *var)
 {
     int i;
+    i = 0;
+    // MISE A ZERO DES DONNEES INUTILES ICI
+    while (i < 3)
+    {
+        write(fd, "\0\0\0\0\0\0\0\0", 8);
+        i++;
+    }
+    // REMPLISSAGE DU TABLEAU DE PIXELS
+    i = 0;
+    while (var->height >= 0)
+    {
+        i = var->width * 4 * var->height;
+        write(fd, &var->screen.dat[i], var->width * 4); // Copie de l'image ligne par ligne
+        var->height--;
+    }
+}
+
+void create_bmp(t_var *var)
+{
     int fd;
     int size;
     int array;
     int header_size;
     int color_plane;
 
-    i = 0;
     fd = open("Cub3D.bmp", O_CREAT | O_RDWR);
     size = 54 + (var->width * var->height * 4);
     array = 54;
     header_size = 40;
     color_plane = 1;
     //BMP HEADER
-    write(fd, "BM", 2); // Identificateur
-    write(fd, &size, 4); // Taille du fichier
+    write(fd, "BM", 2);       // Identificateur
+    write(fd, &size, 4);      // Taille du fichier
     write(fd, "\0\0\0\0", 4); // Reserve a l'application qui genere le fichier
-    write(fd, &array, 4); // Debut du tableau de pixels
+    write(fd, &array, 4);     // Debut du tableau de pixels
     // DIB HEADER
-    write(fd, &header_size, 4); // Taille du header DIB
-    write(fd, &var->width, 4); // Largeur de l'image
-    write(fd, &var->height, 4); // Hauteur de l'image
-    write(fd, &color_plane, 2); // Nombre de plans de couleurs
+    write(fd, &header_size, 4);     // Taille du header DIB
+    write(fd, &var->width, 4);      // Largeur de l'image
+    write(fd, &var->height, 4);     // Hauteur de l'image
+    write(fd, &color_plane, 2);     // Nombre de plans de couleurs
     write(fd, &var->screen.bpp, 2); // Bits par pixel
-    // MISE A ZERO DES DONNEES INUTILES ICI
-    while (i < 24)
-    {
-        write(fd, "\0", 1);
-        i++;
-    }
-    i = var->height * var->width * 4;
-    // REMPLISSAGE DU TABLEAU DE PIXELS
-    while (i > 0)
-    {
-        write(fd, &var->screen.dat[i--], 1); // Copie de l'image char par char
-    }
+    fill_bmp(fd, var);
     close(fd);
-    exit(0);
+    close_game(var);
 }
 
 void put_tiles(t_var *var, t_img *wall, t_img *pos, int size)
@@ -207,9 +228,9 @@ void create_tiles(t_img *tile, void *mlx, int size, int mode)
     create_image(tile, mlx, size, size);
     while (i < (size * size * 4))
     {
-        tile->dat[i++] = (mode ? 0x64 : 0xC8); // B
-        tile->dat[i++] = (mode ? 0xC8 : 0x80); // G
-        tile->dat[i++] = 0x0;                  // R
+        tile->dat[i++] = (mode ? 0x64 : 0xFF); // B
+        tile->dat[i++] = (mode ? 0x64 : 0xFF); // G
+        tile->dat[i++] = (mode ? 0x0 : 0xFF);  // R
         tile->dat[i++] = 0x0;                  // A
     }
 }
@@ -224,12 +245,6 @@ int draw_mini_map(t_var *var, int size)
     mlx_destroy_image(var->mlx, tile[0].ptr);
     mlx_destroy_image(var->mlx, tile[1].ptr);
     return (0);
-}
-
-int quit_game(t_var *var)
-{
-    mlx_destroy_window(var->mlx, var->win);
-    exit(0);
 }
 
 int forback(t_var *var, int mode)
@@ -316,7 +331,7 @@ int keys(t_var *var)
 int key_press(int key, t_var *var)
 {
     if (key == K_ESC)
-        quit_game(var);
+        close_game(var);
     else if (key == K_W)
         var->key.forward = 1;
     else if (key == K_S)
@@ -364,13 +379,13 @@ void get_window_size(t_var *var, char *line)
         line++;
     while (line && *line >= '0' && *line <= '9' && *line != ' ')
         x = (x * 10) + (*(line++) - '0');
-    var->width = x;
+    var->width = (var->width > 2560 ? 2560 : x);
     x = 0;
     while (line && *line == ' ')
         line++;
     while (line && *line >= '0' && *line <= '9')
         x = (x * 10) + (*(line++) - '0');
-    var->height = x;
+    var->height = (var->height > 1440 ? 1440 : x);
     return;
 }
 
@@ -588,7 +603,7 @@ void map_parser(t_var *var, char **params)
     {
         while (var->map[i][++j] != '\0')
         {
-            if (var->map[i][j] == ' ')
+            if (var->map[i][j] == ' ' || var->map[i][j] == '\t')
                 var->map[i][j] = '1';
             if (parse_direction(&var->cam, var->map[i][j]))
             {
@@ -681,20 +696,20 @@ void image_fill(t_var *var, t_ray *ray, int x)
     while (y < ray->start) // ceiling
     {
         i = y * var->width * 4 + x * 4;
-        var->screen.dat[i++] = 0x0;  // B
-        var->screen.dat[i++] = 0x64; // G
-        var->screen.dat[i++] = 0xFF; // R
-        var->screen.dat[i] = 0;      // A
+        var->screen.dat[i++] = var->c_color & 0x0000FF;       // B
+        var->screen.dat[i++] = var->c_color >> 8 & 0x0000FF;  // G
+        var->screen.dat[i++] = var->c_color >> 16 & 0x0000FF; // R
+        var->screen.dat[i] = 0;                               // A
         y++;
     }
     image_wall(var, ray, x);
     while (ray->end < var->height && ray->end >= 0) // floor
     {
         i = ray->end * var->width * 4 + x * 4;
-        var->screen.dat[i++] = 0x52; // B
-        var->screen.dat[i++] = 0x35; // G
-        var->screen.dat[i++] = 0x2c; // R
-        var->screen.dat[i] = 0;      // A
+        var->screen.dat[i++] = var->f_color & 0x0000FF;       // B
+        var->screen.dat[i++] = var->f_color >> 8 & 0x0000FF;  // G
+        var->screen.dat[i++] = var->f_color >> 16 & 0x0000FF; // R
+        var->screen.dat[i] = 0;                               // A
         ray->end++;
     }
 }
@@ -750,7 +765,7 @@ void raycast_walls(t_var *var, t_ray *ray)
             ray->side = (ray->step_y == -1 ? 2 : 3);
         }
         if (ray->map_x < var->size_x && ray->map_y < var->size_y &&
-            var->map[ray->map_y][ray->map_x] == '1')
+            (var->map[ray->map_y][ray->map_x] == '1'))
             ray->hit = 1;
     }
 }
@@ -806,7 +821,8 @@ int raycast(t_var *var, t_ray *ray)
         zbuffer[x] = ray->wall_dist;
         texture_copy(var, ray, x++);
     }
-    sprites_manager(var, zbuffer);
+    if (var->sprites)
+        sprites_manager(var, zbuffer);
     return (0);
 }
 
@@ -842,6 +858,7 @@ int main(int ac, char **av)
         mlx_hook(var.win, 3, 0, key_release, &var);
         mlx_loop_hook(var.mlx, game, &var);
         mlx_loop(var.mlx);
+        close_game(&var);
     }
     return (0);
 }

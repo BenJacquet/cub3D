@@ -6,7 +6,7 @@
 /*   By: jabenjam <jabenjam@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/07/01 14:10:28 by jabenjam          #+#    #+#             */
-/*   Updated: 2020/07/23 18:19:59 by jabenjam         ###   ########.fr       */
+/*   Updated: 2020/07/25 18:26:23 by jabenjam         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -134,7 +134,7 @@ typedef struct s_struct
     t_key key;
     t_player player;
     t_cam cam;
-    t_tex tex[4];
+    t_tex tex[5];
     t_sprite *sprites;
     t_img screen;
 } t_var;
