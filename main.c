@@ -6,7 +6,7 @@
 /*   By: jabenjam <jabenjam@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/07/01 13:50:48 by jabenjam          #+#    #+#             */
-/*   Updated: 2020/07/25 18:52:38 by jabenjam         ###   ########.fr       */
+/*   Updated: 2020/07/26 19:03:10 by jabenjam         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,7 +23,7 @@
 #include "utils.c"
 #include "keys.h"
 
-void close_game(t_var *var)
+void close_game(t_var *var, char *error)
 {
     void *current;
 
@@ -33,7 +33,13 @@ void close_game(t_var *var)
         var->sprites = var->sprites->next;
         free(current);
     }
-    mlx_destroy_window(var->mlx, var->win);
+    if (*error != '\0')
+    {
+        ft_putstr_fd("Error : ", 2);
+        ft_putstr_fd(error, 2);
+    }
+    if (var->mlx)
+        mlx_destroy_window(var->mlx, var->win);
     exit(0);
 }
 
@@ -184,7 +190,7 @@ void create_bmp(t_var *var)
     write(fd, &var->screen.bpp, 2); // Bits par pixel
     fill_bmp(fd, var);
     close(fd);
-    close_game(var);
+    close_game(var, "");
 }
 
 void put_tiles(t_var *var, t_img *wall, t_img *pos, int size)
@@ -331,7 +337,7 @@ int keys(t_var *var)
 int key_press(int key, t_var *var)
 {
     if (key == K_ESC)
-        close_game(var);
+        close_game(var, "");
     else if (key == K_W)
         var->key.forward = 1;
     else if (key == K_S)
@@ -379,13 +385,15 @@ void get_window_size(t_var *var, char *line)
         line++;
     while (line && *line >= '0' && *line <= '9' && *line != ' ')
         x = (x * 10) + (*(line++) - '0');
-    var->width = (var->width > 2560 ? 2560 : x);
+    var->width = (x > 2560 ? 2560 : x);
     x = 0;
     while (line && *line == ' ')
         line++;
     while (line && *line >= '0' && *line <= '9')
         x = (x * 10) + (*(line++) - '0');
-    var->height = (var->height > 1440 ? 1440 : x);
+    var->height = (x > 1440 ? 1440 : x);
+    if (var->height <= 0 || var->width <= 0)
+        close_game(var, "Resolution must be higher than 0.");
     return;
 }
 
@@ -399,7 +407,7 @@ char *get_path(char *line)
     return (path);
 }
 
-int get_rgb(char *line)
+int get_rgb(t_var *var, char *line)
 {
     int rgb;
     int x;
@@ -410,45 +418,43 @@ int get_rgb(char *line)
     colors = 0;
     while (line && *line == ' ')
         line++;
-    while (line && colors < 3)
+    while (line)
     {
         while (*line >= '0' && *line <= '9')
             x = (x * 10) + (*(line++) - '0');
         rgb = (colors == 0 ? rgb = x : (rgb << 8) + x);
-        x = 0;
+        if (x < 0 || x > 255)
+            close_game(var, "Color must be between 0 and 255.");
         colors++;
-        if (*line == ',')
-            line++;
-        /*if (x < 0 || x > 255)
-            erreur, color "out of range"*/
+        if (*(line++) != ',')
+            break;
+        x = 0;
     }
+    if (colors != 3)
+        close_game(var, "Color must contain 3 numbers separated by comas.");
     return (rgb);
 }
 
-int parse_direction(t_cam *cam, char c)
+int parse_player(t_var *var, int x, int y)
 {
-    if (c == 'N')
+    if (var->map[y][x] == 'N' || var->map[y][x] == 'S')
     {
-        cam->dir_y = -1.0;
-        cam->plane_x = 0.66;
+        var->cam.dir_y = (var->map[y][x] == 'N' ? -1.0 : 1.0);
+        var->cam.plane_x = (var->map[y][x] == 'N' ? 0.66 : -0.66);
     }
-    else if (c == 'S')
+    else if (var->map[y][x] == 'E' || var->map[y][x] == 'W')
     {
-        cam->dir_y = 1.0;
-        cam->plane_x = -0.66;
+        var->cam.dir_x = (var->map[y][x] == 'E' ? 1.0 : -1.0);
+        var->cam.plane_y = (var->map[y][x] == 'W' ? 0.66 : -0.66);
     }
-    else if (c == 'E')
+    if (var->map[y][x] == 'N' || var->map[y][x] == 'S' ||
+        var->map[y][x] == 'W' || var->map[y][x] == 'E')
     {
-        cam->dir_x = 1.0;
-        cam->plane_y = 0.66;
+        if (var->player.pos_x && var->player.pos_y)
+            close_game(var, "Player position specified more than once");
+        var->player.pos_x = x + 0.5;
+        var->player.pos_y = y + 0.5;
     }
-    else if (c == 'W')
-    {
-        cam->dir_x = -1.0;
-        cam->plane_y = -0.66;
-    }
-    if (c == 'N' || c == 'S' || c == 'W' || c == 'E')
-        return (1);
     return (0);
 }
 
@@ -591,42 +597,64 @@ int sprites_manager(t_var *var, double *zbuffer)
     return (0);
 }
 
+void check_map(t_var *var)
+{
+    int x;
+    int y;
+
+    x = -1;
+    y = -1;
+    while (var->map[++y])
+    {
+        while (var->map[y][++x])
+        {
+            if (!ft_isinset("012NSWE", var->map[y][x]))
+                close_game(var, "Map can only contain 0 1 2 N S W E.");
+            else if ((x == 0 && var->map[y][x] == '0') ||
+                     (x == var->size_x - 1 && var->map[y][x] == '0') ||
+                     (y == 0 && var->map[y][x] == '0') ||
+                     (y == var->size_y - 1 && var->map[y][x] == '0'))
+                close_game(var, "Map is not closed, check the edges.");
+        }
+        x = -1;
+    }
+}
+
 void map_parser(t_var *var, char **params)
 {
-    int i;
-    int j;
+    int y;
+    int x;
 
-    i = -1;
-    j = -1;
+    y = -1;
+    x = -1;
     var->map = params;
-    while (var->map[++i] != 0)
+    while (var->map[++y] != 0)
     {
-        while (var->map[i][++j] != '\0')
+        while (var->map[y][++x] != '\0')
         {
-            if (var->map[i][j] == ' ' || var->map[i][j] == '\t')
-                var->map[i][j] = '1';
-            if (parse_direction(&var->cam, var->map[i][j]))
-            {
-                var->player.pos_x = j + 0.5;
-                var->player.pos_y = i + 0.5;
-            }
-            if (var->map[i][j] == '2')
-                var->sprites = store_sprite(var, j, i);
+            if (var->map[y][x] == ' ' || var->map[y][x] == '\t')
+                var->map[y][x] = '1';
+            if (var->map[y][x] == '2')
+                var->sprites = store_sprite(var, x, y);
+            parse_player(var, x, y);
         }
-        var->size_x = j;
-        j = 0;
+        if (var->size_x != 0 && var->size_x != x)
+            close_game(var, "Map is not correctly formated.");
+        var->size_x = x;
+        x = -1;
     }
-    var->size_y = i;
+    var->size_y = y;
+    check_map(var);
 }
 
 void cub_parser2(t_var *var, char *line)
 {
-    if (line && line[0] == 'R' && var->size_x == 0 && var->size_y == 0)
+    if (line && line[0] == 'R' && var->width == 0 && var->height == 0)
         get_window_size(var, ++line);
     else if (line && line[0] == 'F' && var->f_color == 0)
-        var->f_color = get_rgb(++line);
+        var->f_color = get_rgb(var, ++line);
     else if (line && line[0] == 'C' && var->c_color == 0)
-        var->c_color = get_rgb(++line);
+        var->c_color = get_rgb(var, ++line);
     else if (line && line[0] == 'N' && line[1] == 'O' && var->tex[2].path == 0)
         var->tex[2].path = get_path(2 + line);
     else if (line && line[0] == 'S' && line[1] == 'O' && var->tex[3].path == 0)
@@ -650,7 +678,7 @@ void cub_parser(t_var *var, char *cub)
     out = 1;
     fd = open(cub, O_RDONLY); // ajouter verification de l'extension (.cub)
     if (!(save = malloc(sizeof(char) * 4096)))
-        return;
+        close_game(var, "Could not allocate memory for read buffer.");
     while ((out = read(fd, buffer, 4095)) > 0)
     {
         save = ft_strjoin(save, buffer);
@@ -842,6 +870,42 @@ int game(t_var *var)
     return (0);
 }
 
+int check_parameters(t_var *var)
+{
+    if (!var->mlx)
+        close_game(var, "Mlx failed to create a connection to the server");
+}
+
+/*
+**  Mode == 1 ? check la map;
+**  Mode == 2 ? check le flag;
+*/
+int check_argument(t_var *var, char *name, int mode)
+{
+    int i;
+
+    i = 0;
+    while (name[i])
+    {
+        if (mode == 1)
+        {
+            if (name[i] == '.' && ft_strcmp(&name[i], ".cub") == 1)
+                return (0);
+        }
+        else if (mode == 2)
+        {
+            if (ft_strcmp(&name[i], "--save") == 1)
+                return (0);
+        }
+            i++;
+    }
+    if (mode == 1)
+        close_game(var, "File extension must be \".cub\".");
+    else if (mode == 2)
+        close_game(var, "Flag must be \"--save\".");
+    return (1);
+}
+
 int main(int ac, char **av)
 {
     t_var var;
@@ -849,16 +913,18 @@ int main(int ac, char **av)
     if (ac == 2 || ac == 3)
     {
         // ajouter verification d'erreurs dans les arguments : if (a || b)
-        if (ac == 3)
-            var.save = ft_strcmp("--save", av[ac - 1]);
-        cub_parser(&var, av[1]);
+        if (!check_argument(&var, av[1], 1))
+            cub_parser(&var, av[1]);
+        if (ac == 3 && !check_argument(&var, av[2], 2))
+            var.save = 1;
         var.mlx = mlx_init();
         var.win = mlx_new_window(var.mlx, var.width, var.height, "Cub3D");
+        check_parameters(&var);
         mlx_hook(var.win, 2, 0, key_press, &var);
         mlx_hook(var.win, 3, 0, key_release, &var);
         mlx_loop_hook(var.mlx, game, &var);
         mlx_loop(var.mlx);
-        close_game(&var);
     }
+    close_game(&var, "Number of arguments specified is incorrect.");
     return (0);
 }

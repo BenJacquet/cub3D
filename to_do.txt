@@ -1,9 +1,6 @@
-- Fonction pour check si des sorties sont presentes(si la map n'est pas fermee)
-- Check si je recois le bon nombre de parametres en sortie de parsing
-- ajouter un exit sur tous les retours de fonction void  et dans les fonctions parentes en cas d'erreur
-- gerer la longueur max de la carte (apres le \n) pour la rendre rectangulaire meme si il n'y a pas d'espaces (chaque ligne doit faire la taille max rencontree)
 - gerer textures en resolutions differentes
 - check erreur sur les return de fonctions mlx
 - Makefile
 - Fermer le programme proprement avec la croix
 - changer nom executable
+- Check si je recois tous les parametres en sortie de parsing

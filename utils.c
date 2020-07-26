@@ -6,7 +6,7 @@
 /*   By: jabenjam <jabenjam@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/07/02 14:56:29 by jabenjam          #+#    #+#             */
-/*   Updated: 2020/07/23 17:01:49 by jabenjam         ###   ########.fr       */
+/*   Updated: 2020/07/26 18:37:57 by jabenjam         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,11 +18,11 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 
-void	*ft_memcpy(void *dst, const void *src, size_t n)
+void *ft_memcpy(void *dst, const void *src, size_t n)
 {
-	unsigned int		i;
-	unsigned char		*ndst;
-	const unsigned char	*nsrc;
+	unsigned int i;
+	unsigned char *ndst;
+	const unsigned char *nsrc;
 
 	i = 0;
 	ndst = dst;
@@ -37,10 +37,10 @@ void	*ft_memcpy(void *dst, const void *src, size_t n)
 	return (dst);
 }
 
-char	*ft_strdup(const char *s1)
+char *ft_strdup(const char *s1)
 {
-	unsigned int	len;
-	char			*dup;
+	unsigned int len;
+	char *dup;
 
 	len = ft_strlen(s1) + 1;
 	if (!(dup = (char *)malloc(sizeof(char) * len + 1)))
@@ -49,11 +49,11 @@ char	*ft_strdup(const char *s1)
 	return (dup);
 }
 
-char				*ft_strjoin(char *s1, char *s2)
+char *ft_strjoin(char *s1, char *s2)
 {
-	unsigned int	i;
-	unsigned int	j;
-	char			*new;
+	unsigned int i;
+	unsigned int j;
+	char *new;
 
 	i = ft_strlen(s1) + ft_strlen(s2);
 	j = 0;
@@ -75,9 +75,9 @@ char				*ft_strjoin(char *s1, char *s2)
 	return (new);
 }
 
-int		ft_strcmp(char *s1, char *s2)
+int ft_strcmp(char *s1, char *s2)
 {
-	int		i;
+	int i;
 
 	i = 0;
 	while ((s1[i] && s2[i]) && s1[i] == s2[i])
@@ -85,9 +85,9 @@ int		ft_strcmp(char *s1, char *s2)
 	return ((s1[i] - s2[i] == 0 ? 1 : 0));
 }
 
-int					ft_findn(char *s)
+int ft_findn(char *s)
 {
-	int				i;
+	int i;
 
 	i = 0;
 	if (!s)
@@ -101,10 +101,10 @@ int					ft_findn(char *s)
 	return (0);
 }
 
-int		ft_mini_atoi(char *str)
+int ft_mini_atoi(char *str)
 {
-	int					i;
-	size_t				result;
+	int i;
+	size_t result;
 
 	i = 0;
 	result = 0;
