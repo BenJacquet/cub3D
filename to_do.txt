@@ -1,6 +1,9 @@
-- gerer textures en resolutions differentes
-- check erreur sur les return de fonctions mlx
+- //gerer textures en resolutions differentes
 - Makefile
 - Fermer le programme proprement avec la croix
 - changer nom executable
-- Check si je recois tous les parametres en sortie de parsing
+- Separer bonus et obligatoire
+    Obligatoire = pas de collision mais check Obligatoire;
+    Bonus = collision sans oob;
+- Trouver pourquoi ma resolution repasse a zero
+- Gerer l'event de fermeture de fenetre

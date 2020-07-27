@@ -6,7 +6,7 @@
 /*   By: jabenjam <jabenjam@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/07/01 13:50:48 by jabenjam          #+#    #+#             */
-/*   Updated: 2020/07/26 19:03:10 by jabenjam         ###   ########.fr       */
+/*   Updated: 2020/07/27 18:58:22 by jabenjam         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,13 +38,61 @@ void close_game(t_var *var, char *error)
         ft_putstr_fd("Error : ", 2);
         ft_putstr_fd(error, 2);
     }
+    while (var->map && *var->map)
+        free(*var->map++);
     if (var->mlx)
         mlx_destroy_window(var->mlx, var->win);
     exit(0);
 }
 
-int initialize_var(t_var *var)
+int check_parameters(t_var *var)
 {
+    if (var->number != 8 || var->width == 0 || var->height == 0 ||
+        var->f_color == 0 || var->c_color == 0 || var->tex[0].path == 0 ||
+        var->tex[1].path == 0 || var->tex[2].path == 0 ||
+        var->tex[3].path == 0 || var->s_path == 0)
+    {
+        printf("var->number=%d\n var->width=%d\n var->height=%d\n var->f_color=%d\n var->c_color=%d\n var->tex[0].path=%s\n var->tex[1].path=%s\n var->tex[2].path=%s\n var->tex[3].path=%s\n var->s_path=%s\n",
+        var->number, var->width, var->height, var->f_color, var->c_color, var->tex[0].path, var->tex[1].path, var->tex[2].path, var->tex[3].path, var->s_path);
+        close_game(var, "Invalid map.parameters");
+    }
+    return (0);
+}
+
+/*
+**  Mode == 1 ? check la map;
+**  Mode == 2 ? check le flag;
+*/
+int check_argument(t_var *var, char *name, char *str, int mode)
+{
+    int i;
+
+    i = 0;
+    while (name && name[i])
+    {
+        if (mode == 1)
+        {
+            if (name[i] == '.' && ft_strcmp(&name[i], str) == 1)
+                return (0);
+        }
+        else if (mode == 2)
+        {
+            if (ft_strcmp(&name[i], str) == 1)
+                return (0);
+        }
+        i++;
+    }
+    if (mode == 1)
+        close_game(var, "File is invalid");
+    else if (mode == 2)
+        close_game(var, "Flag must be \"--save\".");
+    return (1);
+}
+
+void initialize_var(t_var *var)
+{
+    var->width = 0;
+    var->height = 0;
     var->size_x = 0;
     var->size_y = 0;
     var->f_color = 0;
@@ -66,10 +114,9 @@ int initialize_var(t_var *var)
     var->cam.plane_x = 0.0;
     var->cam.plane_y = 0.0;
     var->cam.cam_x = 0.0;
-    return (0);
 }
 
-int initialize_ray(t_ray *ray)
+void initialize_ray(t_ray *ray)
 {
     ray->hit = 0;
     ray->side = 0;
@@ -83,21 +130,28 @@ int initialize_ray(t_ray *ray)
     ray->tex_pos = 0;
     ray->step_t = 0;
     ray->end = 0;
-    return (0);
 }
 
-int initialize_tex(t_var *var)
+void initialize_tex(t_var *var)
 {
     int i;
     int bpp;
     int endian;
     int sl;
+    int fd;
 
     i = 0;
     bpp = 32;
     endian = 0;
     while (i <= 3)
     {
+        check_argument(var, var->tex[i].path, ".xpm", 1);
+        if ((fd = open(var->tex[i].path, O_RDONLY) == -1))
+        {
+            close(fd);
+            close_game(var, "File is invalid");
+        }
+        close(fd);
         sl = var->tex[i].width * 4;
         var->tex[i].width = 64;
         var->tex[i].height = 64;
@@ -105,25 +159,31 @@ int initialize_tex(t_var *var)
         var->tex[i].dat = mlx_get_data_addr(var->tex[i].ptr, &bpp, &sl, &endian);
         i++;
     }
-    return (0);
 }
 
-int initialize_sprite(t_var *var, t_sprite *sprite)
+void initialize_sprite(t_var *var, t_sprite *sprite)
 {
     int bpp;
     int endian;
+    int fd;
 
     sprite->width = 64;
     sprite->height = 64;
     sprite->sl = sprite->width * 4;
     bpp = 32;
     endian = 0;
+    check_argument(var, var->s_path, ".xpm", 1);
+    if ((fd = open(var->s_path, O_RDONLY) == -1))
+    {
+        close(fd);
+        close_game(var, "File is invalid");
+    }
+    close(fd);
     sprite->ptr = mlx_xpm_file_to_image(var->mlx, var->s_path, &sprite->width, &sprite->height);
     sprite->dat = mlx_get_data_addr(sprite->ptr, &bpp, &sprite->sl, &endian);
-    return (0);
 }
 
-int initialize_key(t_key *key)
+void initialize_key(t_key *key)
 {
     key->forward = 0;
     key->backward = 0;
@@ -131,17 +191,15 @@ int initialize_key(t_key *key)
     key->right = 0;
     key->l_strafe = 0;
     key->r_strafe = 0;
-    return (0);
 }
 
-int create_image(t_img *img, void *mlx, int width, int height)
+void create_image(t_img *img, void *mlx, int width, int height)
 {
     img->bpp = 32;
     img->sl = width * 4;
     img->end = 0;
     img->ptr = mlx_new_image(mlx, width, height);
     img->dat = mlx_get_data_addr(img->ptr, &img->bpp, &img->sl, &img->end);
-    return (0);
 }
 
 void fill_bmp(int fd, t_var *var)
@@ -253,20 +311,55 @@ int draw_mini_map(t_var *var, int size)
     return (0);
 }
 
+int check_oob(t_var *var)
+{
+    if (var->player.pos_x + var->cam.dir_x * 0.1 <= 1 ||
+        var->player.pos_y + var->cam.dir_y * 0.1 <= 1)
+        return (1);
+    if (var->player.pos_x + var->cam.dir_x * 0.1 >= var->size_x - 1 ||
+        var->player.pos_y + var->cam.dir_y * 0.1 >= var->size_y - 1)
+        return (1);
+    if (var->player.pos_x - var->cam.dir_x * 0.1 <= 1 ||
+        var->player.pos_y - var->cam.dir_y * 0.1 <= 1)
+        return (1);
+    if (var->player.pos_x - var->cam.dir_x * 0.1 >= var->size_x - 1 ||
+        var->player.pos_y - var->cam.dir_y * 0.1 >= var->size_y - 1)
+        return (1);
+    if (var->player.pos_x + var->cam.plane_x * 0.1 <= 1 ||
+        var->player.pos_y + var->cam.plane_y * 0.1 <= 1)
+        return (1);
+    if (var->player.pos_x + var->cam.plane_x * 0.1 >= var->size_x - 1 ||
+        var->player.pos_y + var->cam.plane_y * 0.1 >= var->size_y - 1)
+        return (1);
+    if (var->player.pos_x - var->cam.plane_x * 0.1 <= 1 ||
+        var->player.pos_y - var->cam.plane_y * 0.1 <= 1)
+        return (1);
+    if (var->player.pos_x - var->cam.plane_x * 0.1 >= var->size_x - 1 ||
+        var->player.pos_y - var->cam.plane_y * 0.1 >= var->size_y - 1)
+        return (1);
+    return (0);
+}
+
 int forback(t_var *var, int mode)
 {
+    /*    if (check_oob(var))
+        close_game(var, "Out of map limits");*/
     if (mode == 1)
     {
-        if (var->map[(int)var->player.pos_y][(int)(var->player.pos_x + var->cam.dir_x * 0.1)] != '1')
+        if (var->map[(int)var->player.pos_y]
+                    [(int)(var->player.pos_x + var->cam.dir_x * 0.1)] != '1')
             var->player.pos_x += (var->cam.dir_x * 0.1);
-        if (var->map[(int)(var->player.pos_y + var->cam.dir_y * 0.1)][(int)var->player.pos_x] != '1')
+        if (var->map[(int)(var->player.pos_y + var->cam.dir_y * 0.1)]
+                    [(int)var->player.pos_x] != '1')
             var->player.pos_y += (var->cam.dir_y * 0.1);
     }
     else
     {
-        if (var->map[(int)var->player.pos_y][(int)(var->player.pos_x - var->cam.dir_x * 0.1)] != '1')
+        if (var->map[(int)var->player.pos_y]
+                    [(int)(var->player.pos_x - var->cam.dir_x * 0.1)] != '1')
             var->player.pos_x -= (var->cam.dir_x * 0.1);
-        if (var->map[(int)(var->player.pos_y - var->cam.dir_y * 0.1)][(int)var->player.pos_x] != '1')
+        if (var->map[(int)(var->player.pos_y - var->cam.dir_y * 0.1)]
+                    [(int)var->player.pos_x] != '1')
             var->player.pos_y -= (var->cam.dir_y * 0.1);
     }
     return (0);
@@ -274,43 +367,49 @@ int forback(t_var *var, int mode)
 
 int strafe(t_var *var, int mode)
 {
-    if (mode == 1)
+    /*    if (check_oob(var))
+        close_game(var, "Out of map limits");*/
+    if (mode == 3)
     {
-        if (var->map[(int)var->player.pos_y][(int)(var->player.pos_x - var->cam.plane_x * 0.1)] != '1')
+        if (var->map[(int)var->player.pos_y]
+                    [(int)(var->player.pos_x - var->cam.plane_x * 0.1)] != '1')
             var->player.pos_x -= (var->cam.plane_x * 0.1);
-        if (var->map[(int)(var->player.pos_y - var->cam.plane_y * 0.1)][(int)var->player.pos_x] != '1')
+        if (var->map[(int)(var->player.pos_y - var->cam.plane_y * 0.1)]
+                    [(int)var->player.pos_x] != '1')
             var->player.pos_y -= (var->cam.plane_y * 0.1);
     }
     else
     {
-        if (var->map[(int)var->player.pos_y][(int)(var->player.pos_x + var->cam.plane_x * 0.1)] != '1')
+        if (var->map[(int)var->player.pos_y]
+                    [(int)(var->player.pos_x + var->cam.plane_x * 0.1)] != '1')
             var->player.pos_x += (var->cam.plane_x * 0.1);
-        if (var->map[(int)(var->player.pos_y + var->cam.plane_y * 0.1)][(int)var->player.pos_x] != '1')
+        if (var->map[(int)(var->player.pos_y + var->cam.plane_y * 0.1)]
+                    [(int)var->player.pos_x] != '1')
             var->player.pos_y += (var->cam.plane_y * 0.1);
     }
     return (0);
 }
 
-int look(t_var *var, int mode)
+int look(t_cam *cam, int mode)
 {
     double save_dir_x;
     double save_plane_x;
 
-    save_dir_x = var->cam.dir_x;
-    save_plane_x = var->cam.plane_x;
+    save_dir_x = cam->dir_x;
+    save_plane_x = cam->plane_x;
     if (mode == 1)
     {
-        var->cam.dir_x = var->cam.dir_x * cos(0.1) - var->cam.dir_y * sin(0.1);
-        var->cam.dir_y = save_dir_x * sin(0.1) + var->cam.dir_y * cos(0.1);
-        var->cam.plane_x = var->cam.plane_x * cos(0.1) - var->cam.plane_y * sin(0.1);
-        var->cam.plane_y = save_plane_x * sin(0.1) + var->cam.plane_y * cos(0.1);
+        cam->dir_x = cam->dir_x * cos(0.1) - cam->dir_y * sin(0.1);
+        cam->dir_y = save_dir_x * sin(0.1) + cam->dir_y * cos(0.1);
+        cam->plane_x = cam->plane_x * cos(0.1) - cam->plane_y * sin(0.1);
+        cam->plane_y = save_plane_x * sin(0.1) + cam->plane_y * cos(0.1);
     }
     else
     {
-        var->cam.dir_x = var->cam.dir_x * cos(-0.1) - var->cam.dir_y * sin(-0.1);
-        var->cam.dir_y = save_dir_x * sin(-0.1) + var->cam.dir_y * cos(-0.1);
-        var->cam.plane_x = var->cam.plane_x * cos(-0.1) - var->cam.plane_y * sin(-0.1);
-        var->cam.plane_y = save_plane_x * sin(-0.1) + var->cam.plane_y * cos(-0.1);
+        cam->dir_x = cam->dir_x * cos(-0.1) - cam->dir_y * sin(-0.1);
+        cam->dir_y = save_dir_x * sin(-0.1) + cam->dir_y * cos(-0.1);
+        cam->plane_x = cam->plane_x * cos(-0.1) - cam->plane_y * sin(-0.1);
+        cam->plane_y = save_plane_x * sin(-0.1) + cam->plane_y * cos(-0.1);
     }
     return (0);
 }
@@ -322,13 +421,13 @@ int keys(t_var *var)
     if (var->key.backward == 1)
         forback(var, 0);
     if (var->key.l_strafe == 1)
-        strafe(var, 1);
+        strafe(var, 3);
     if (var->key.r_strafe == 1)
-        strafe(var, 0);
+        strafe(var, 2);
     if (var->key.left == 1)
-        look(var, 1);
+        look(&var->cam, 1);
     if (var->key.right == 1)
-        look(var, 0);
+        look(&var->cam, 0);
     if (var->key.map == 1)
         draw_mini_map(var, 8 + var->key.size);
     return (0);
@@ -618,6 +717,11 @@ void check_map(t_var *var)
         }
         x = -1;
     }
+    if (!var->player.pos_x && !var->player.pos_y)
+        close_game(var, "Player position must be specified.");
+    if (!(var->player.pos_x >= 1 && var->player.pos_x <= var->size_x - 1) ||
+        !(var->player.pos_y >= 1 && var->player.pos_y <= var->size_x - 1))
+        close_game(var, "Player cannot be placed on map edge.");
 }
 
 void map_parser(t_var *var, char **params)
@@ -632,14 +736,14 @@ void map_parser(t_var *var, char **params)
     {
         while (var->map[y][++x] != '\0')
         {
-            if (var->map[y][x] == ' ' || var->map[y][x] == '\t')
+            if (var->map[y][x] == ' ')
                 var->map[y][x] = '1';
             if (var->map[y][x] == '2')
                 var->sprites = store_sprite(var, x, y);
             parse_player(var, x, y);
         }
         if (var->size_x != 0 && var->size_x != x)
-            close_game(var, "Map is not correctly formated.");
+            close_game(var, "Invalid map.parser");
         var->size_x = x;
         x = -1;
     }
@@ -647,7 +751,7 @@ void map_parser(t_var *var, char **params)
     check_map(var);
 }
 
-void cub_parser2(t_var *var, char *line)
+int cub_parser2(t_var *var, char *line)
 {
     if (line && line[0] == 'R' && var->width == 0 && var->height == 0)
         get_window_size(var, ++line);
@@ -665,18 +769,17 @@ void cub_parser2(t_var *var, char *line)
         var->tex[1].path = get_path(2 + line);
     else if (line && line[0] == 'S' && var->s_path == 0)
         var->s_path = get_path(++line);
+    return (1);
 }
 
-void cub_parser(t_var *var, char *cub)
+void cub_parser(t_var *var, int fd)
 {
-    int fd;
     int out;
     char **params;
     char buffer[4096];
     char *save;
 
     out = 1;
-    fd = open(cub, O_RDONLY); // ajouter verification de l'extension (.cub)
     if (!(save = malloc(sizeof(char) * 4096)))
         close_game(var, "Could not allocate memory for read buffer.");
     while ((out = read(fd, buffer, 4095)) > 0)
@@ -685,15 +788,16 @@ void cub_parser(t_var *var, char *cub)
         save[out] = '\0';
     }
     params = ft_split(save, '\n');
-    while (*params != 0 && var->number++ < 8)
+    free(save);
+    while (*params != 0 && var->number < 8 && !ft_isinset("012", **params))
     {
         cub_parser2(var, *params);
         free(*(params++));
+        var->number++;
     }
-    free(save);
+    check_parameters(var);
     map_parser(var, params); // recuperation de la map
     close(fd);
-    return;
 }
 
 void image_wall(t_var *var, t_ray *ray, int x)
@@ -870,56 +974,22 @@ int game(t_var *var)
     return (0);
 }
 
-int check_parameters(t_var *var)
-{
-    if (!var->mlx)
-        close_game(var, "Mlx failed to create a connection to the server");
-}
-
-/*
-**  Mode == 1 ? check la map;
-**  Mode == 2 ? check le flag;
-*/
-int check_argument(t_var *var, char *name, int mode)
-{
-    int i;
-
-    i = 0;
-    while (name[i])
-    {
-        if (mode == 1)
-        {
-            if (name[i] == '.' && ft_strcmp(&name[i], ".cub") == 1)
-                return (0);
-        }
-        else if (mode == 2)
-        {
-            if (ft_strcmp(&name[i], "--save") == 1)
-                return (0);
-        }
-            i++;
-    }
-    if (mode == 1)
-        close_game(var, "File extension must be \".cub\".");
-    else if (mode == 2)
-        close_game(var, "Flag must be \"--save\".");
-    return (1);
-}
-
 int main(int ac, char **av)
 {
     t_var var;
+    int fd;
+
     initialize_var(&var);
     if (ac == 2 || ac == 3)
     {
         // ajouter verification d'erreurs dans les arguments : if (a || b)
-        if (!check_argument(&var, av[1], 1))
-            cub_parser(&var, av[1]);
-        if (ac == 3 && !check_argument(&var, av[2], 2))
+        check_argument(&var, av[1], ".cub", 1);
+        fd = open(av[1], O_RDONLY);
+        cub_parser(&var, fd);
+        if (ac == 3 && !check_argument(&var, av[2], "--save", 2))
             var.save = 1;
         var.mlx = mlx_init();
         var.win = mlx_new_window(var.mlx, var.width, var.height, "Cub3D");
-        check_parameters(&var);
         mlx_hook(var.win, 2, 0, key_press, &var);
         mlx_hook(var.win, 3, 0, key_release, &var);
         mlx_loop_hook(var.mlx, game, &var);
