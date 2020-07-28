@@ -6,7 +6,7 @@
 /*   By: jabenjam <jabenjam@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/07/02 14:56:29 by jabenjam          #+#    #+#             */
-/*   Updated: 2020/07/27 17:28:32 by jabenjam         ###   ########.fr       */
+/*   Updated: 2020/07/28 13:55:29 by jabenjam         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -111,4 +111,25 @@ int ft_mini_atoi(char *str)
 	while (str[i] >= '0' && str[i] <= '9')
 		result = (result * 10) + (str[i++] - '0');
 	return (result);
+}
+
+void	*ft_memset(void *b, int c, size_t len)
+{
+	unsigned int	i;
+	unsigned char	uc;
+	unsigned char	*dst;
+
+	i = 0;
+	uc = c;
+	dst = b;
+	while (len--)
+		dst[i++] = uc;
+	return (b);
+}
+void	ft_bzero(void *s, size_t n)
+{
+	if (n == 0)
+		return ;
+	else
+		ft_memset(s, 0, n);
 }

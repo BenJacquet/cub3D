@@ -5,5 +5,3 @@
 - Separer bonus et obligatoire
     Obligatoire = pas de collision mais check Obligatoire;
     Bonus = collision sans oob;
-- Trouver pourquoi ma resolution repasse a zero
-- Gerer l'event de fermeture de fenetre

@@ -6,7 +6,7 @@
 /*   By: jabenjam <jabenjam@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/07/01 13:50:48 by jabenjam          #+#    #+#             */
-/*   Updated: 2020/07/27 18:58:22 by jabenjam         ###   ########.fr       */
+/*   Updated: 2020/07/28 14:56:33 by jabenjam         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,15 +52,13 @@ int check_parameters(t_var *var)
         var->tex[1].path == 0 || var->tex[2].path == 0 ||
         var->tex[3].path == 0 || var->s_path == 0)
     {
-        printf("var->number=%d\n var->width=%d\n var->height=%d\n var->f_color=%d\n var->c_color=%d\n var->tex[0].path=%s\n var->tex[1].path=%s\n var->tex[2].path=%s\n var->tex[3].path=%s\n var->s_path=%s\n",
-        var->number, var->width, var->height, var->f_color, var->c_color, var->tex[0].path, var->tex[1].path, var->tex[2].path, var->tex[3].path, var->s_path);
-        close_game(var, "Invalid map.parameters");
+        close_game(var, "Invalid map.");
     }
     return (0);
 }
 
 /*
-**  Mode == 1 ? check la map;
+**  Mode == 1 ? check la fichier;
 **  Mode == 2 ? check le flag;
 */
 int check_argument(t_var *var, char *name, char *str, int mode)
@@ -414,6 +412,7 @@ int look(t_cam *cam, int mode)
     return (0);
 }
 
+
 int keys(t_var *var)
 {
     if (var->key.forward == 1)
@@ -475,6 +474,12 @@ int key_release(int key, t_var *var)
     return (0);
 }
 
+int close_window(t_var *var)
+{
+    close_game(var, "");
+    return (0);
+}
+
 void get_window_size(t_var *var, char *line)
 {
     int x;
@@ -493,7 +498,6 @@ void get_window_size(t_var *var, char *line)
     var->height = (x > 1440 ? 1440 : x);
     if (var->height <= 0 || var->width <= 0)
         close_game(var, "Resolution must be higher than 0.");
-    return;
 }
 
 char *get_path(char *line)
@@ -519,12 +523,13 @@ int get_rgb(t_var *var, char *line)
         line++;
     while (line)
     {
+        if (*line == '-')
+            x = -1;
         while (*line >= '0' && *line <= '9')
             x = (x * 10) + (*(line++) - '0');
-        rgb = (colors == 0 ? rgb = x : (rgb << 8) + x);
         if (x < 0 || x > 255)
             close_game(var, "Color must be between 0 and 255.");
-        colors++;
+        rgb = (colors++ == 0 ? rgb = x : (rgb << 8) + x);
         if (*(line++) != ',')
             break;
         x = 0;
@@ -743,7 +748,7 @@ void map_parser(t_var *var, char **params)
             parse_player(var, x, y);
         }
         if (var->size_x != 0 && var->size_x != x)
-            close_game(var, "Invalid map.parser");
+            close_game(var, "Invalid map.");
         var->size_x = x;
         x = -1;
     }
@@ -781,8 +786,9 @@ void cub_parser(t_var *var, int fd)
 
     out = 1;
     if (!(save = malloc(sizeof(char) * 4096)))
-        close_game(var, "Could not allocate memory for read buffer.");
-    while ((out = read(fd, buffer, 4095)) > 0)
+        close_game(var, "Could not allocate memory for read() buffer.");
+    ft_bzero(save, 4096);
+    while ((out = read(fd, buffer, 4096)) > 0)
     {
         save = ft_strjoin(save, buffer);
         save[out] = '\0';
@@ -982,7 +988,6 @@ int main(int ac, char **av)
     initialize_var(&var);
     if (ac == 2 || ac == 3)
     {
-        // ajouter verification d'erreurs dans les arguments : if (a || b)
         check_argument(&var, av[1], ".cub", 1);
         fd = open(av[1], O_RDONLY);
         cub_parser(&var, fd);
@@ -992,6 +997,7 @@ int main(int ac, char **av)
         var.win = mlx_new_window(var.mlx, var.width, var.height, "Cub3D");
         mlx_hook(var.win, 2, 0, key_press, &var);
         mlx_hook(var.win, 3, 0, key_release, &var);
+        mlx_hook(var.win, 17, 0, close_window, &var);
         mlx_loop_hook(var.mlx, game, &var);
         mlx_loop(var.mlx);
     }
