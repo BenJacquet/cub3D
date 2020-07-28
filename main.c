@@ -6,11 +6,12 @@
 /*   By: jabenjam <jabenjam@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/07/01 13:50:48 by jabenjam          #+#    #+#             */
-/*   Updated: 2020/07/28 15:07:43 by jabenjam         ###   ########.fr       */
+/*   Updated: 2020/07/28 15:21:12 by jabenjam         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "vars.h"
+#include "libft.h"
 #include <mlx.h>
 #include <math.h>
 #include <stdio.h>
@@ -19,8 +20,6 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>
-#include "ft_split.c"
-#include "utils.c"
 #include "keys.h"
 
 void close_game(t_var *var, char *error)

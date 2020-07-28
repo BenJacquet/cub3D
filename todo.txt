@@ -1,4 +1,0 @@
-- Remplacer les espaces par des murs pour ne pas pouvoir sortir de la map
-- Fonction pour check si des sorties sont presentes(si la map n'est pas fermee)
-- Peut etre utiliser un split au lieu du GNL
-- Check si je recois le bon nombre de parametres en sortie de parsing

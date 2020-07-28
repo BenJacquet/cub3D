@@ -6,7 +6,7 @@
 /*   By: jabenjam <jabenjam@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/10/08 18:05:09 by jabenjam          #+#    #+#             */
-/*   Updated: 2020/07/03 14:08:56 by jabenjam         ###   ########.fr       */
+/*   Updated: 2020/07/28 15:19:34 by jabenjam         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,6 +49,7 @@ int					ft_isinset(const char *set, char c);
 char				*ft_strtrim(char const *s1, char const *set);
 char				*ft_strchr(const char *s, int c);
 char				*ft_strdup(const char *s1);
+int					ft_strcmp(char *s1, char *s2);
 int					ft_strncmp(const char *s1, const char *s2, size_t n);
 size_t				ft_strlcpy(char *dst, const char *src, size_t size);
 char				*ft_strnstr(const char *haystack, const char *needle,
