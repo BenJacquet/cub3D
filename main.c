@@ -6,7 +6,7 @@
 /*   By: jabenjam <jabenjam@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/07/01 13:50:48 by jabenjam          #+#    #+#             */
-/*   Updated: 2020/07/28 14:56:33 by jabenjam         ###   ########.fr       */
+/*   Updated: 2020/07/28 15:07:43 by jabenjam         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -497,7 +497,7 @@ void get_window_size(t_var *var, char *line)
         x = (x * 10) + (*(line++) - '0');
     var->height = (x > 1440 ? 1440 : x);
     if (var->height <= 0 || var->width <= 0)
-        close_game(var, "Resolution must be higher than 0.");
+        close_game(var, "Width and height must be higher than 0.");
 }
 
 char *get_path(char *line)
