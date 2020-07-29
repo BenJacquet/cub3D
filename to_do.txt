@@ -8,3 +8,4 @@
 - Gerer les retours a la ligne (faire que toutes les lignes fassent la taille max)
 - ne remplir les espaces que si c'est inaccessible
 - save avant d'ouvrir la fenetre
+- initialiser les textures avant la loop
