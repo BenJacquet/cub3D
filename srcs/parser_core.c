@@ -6,9 +6,11 @@
 /*   By: jabenjam <jabenjam@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/07/28 17:45:36 by jabenjam          #+#    #+#             */
-/*   Updated: 2020/07/28 17:48:47 by jabenjam         ###   ########.fr       */
+/*   Updated: 2020/07/29 14:28:35 by jabenjam         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
+
+#include "../incs/cub3d.h"
 
 int cub_parser2(t_var *var, char *line)
 {

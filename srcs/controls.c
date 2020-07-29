@@ -6,69 +6,54 @@
 /*   By: jabenjam <jabenjam@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/07/28 17:49:03 by jabenjam          #+#    #+#             */
-/*   Updated: 2020/07/28 18:49:05 by jabenjam         ###   ########.fr       */
+/*   Updated: 2020/07/29 14:59:09 by jabenjam         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-int check_oob(t_var *var)
-{
-    if (var->player.pos_x + var->cam.dir_x * 0.1 <= 1 ||
-        var->player.pos_y + var->cam.dir_y * 0.1 <= 1)
-        return (1);
-    if (var->player.pos_x + var->cam.dir_x * 0.1 >= var->size_x - 1 ||
-        var->player.pos_y + var->cam.dir_y * 0.1 >= var->size_y - 1)
-        return (1);
-    if (var->player.pos_x - var->cam.dir_x * 0.1 <= 1 ||
-        var->player.pos_y - var->cam.dir_y * 0.1 <= 1)
-        return (1);
-    if (var->player.pos_x - var->cam.dir_x * 0.1 >= var->size_x - 1 ||
-        var->player.pos_y - var->cam.dir_y * 0.1 >= var->size_y - 1)
-        return (1);
-    if (var->player.pos_x + var->cam.plane_x * 0.1 <= 1 ||
-        var->player.pos_y + var->cam.plane_y * 0.1 <= 1)
-        return (1);
-    if (var->player.pos_x + var->cam.plane_x * 0.1 >= var->size_x - 1 ||
-        var->player.pos_y + var->cam.plane_y * 0.1 >= var->size_y - 1)
-        return (1);
-    if (var->player.pos_x - var->cam.plane_x * 0.1 <= 1 ||
-        var->player.pos_y - var->cam.plane_y * 0.1 <= 1)
-        return (1);
-    if (var->player.pos_x - var->cam.plane_x * 0.1 >= var->size_x - 1 ||
-        var->player.pos_y - var->cam.plane_y * 0.1 >= var->size_y - 1)
-        return (1);
-    return (0);
-}
+#include "../incs/cub3d.h"
 
 int forback(t_var *var, int mode)
 {
-    if (check_oob(var))
-        close_game(var, "Out of map limits");
     if (mode == 1)
     {
-        var->player.pos_x += (var->cam.dir_x * 0.1);
-        var->player.pos_y += (var->cam.dir_y * 0.1);
+        if (var->player.pos_x + var->cam.dir_x * 0.1 >= 1 &&
+            var->player.pos_x + var->cam.dir_x * 0.1 <= var->size_x - 1)
+            var->player.pos_x += (var->cam.dir_x * 0.1);
+        if (var->player.pos_y + var->cam.dir_y * 0.1 >= 1 &&
+            var->player.pos_y + var->cam.dir_y * 0.1 <= var->size_y - 1)
+            var->player.pos_y += (var->cam.dir_y * 0.1);
     }
     else
     {
-        var->player.pos_x -= (var->cam.dir_x * 0.1);
-        var->player.pos_y -= (var->cam.dir_y * 0.1);
+        if (var->player.pos_x - var->cam.dir_x * 0.1 >= 1 &&
+            var->player.pos_x - var->cam.dir_x * 0.1 <= var->size_x - 1)
+            var->player.pos_x -= (var->cam.dir_x * 0.1);
+        if (var->player.pos_y - var->cam.dir_y * 0.1 >= 1 &&
+            var->player.pos_y - var->cam.dir_y * 0.1 <= var->size_y - 1)
+            var->player.pos_y -= (var->cam.dir_y * 0.1);
     }
     return (0);
 }
 
 int strafe(t_var *var, int mode)
 {
-    if (check_oob(var))
-        close_game(var, "Out of map limits");
     if (mode == 3)
     {
-        var->player.pos_x -= (var->cam.plane_x * 0.1);
-        var->player.pos_y -= (var->cam.plane_y * 0.1);
+        if (var->player.pos_x - var->cam.plane_x * 0.1 >= 1 &&
+            var->player.pos_x - var->cam.plane_x * 0.1 <= var->size_x - 1)
+            var->player.pos_x -= (var->cam.plane_x * 0.1);
+        if (var->player.pos_y - var->cam.plane_y * 0.1 >= 1 &&
+            var->player.pos_y - var->cam.plane_y * 0.1 <= var->size_y - 1)
+            var->player.pos_y -= (var->cam.plane_y * 0.1);
     }
     else
     {
-        var->player.pos_x += (var->cam.plane_x * 0.1);
-        var->player.pos_y += (var->cam.plane_y * 0.1);
+        if (var->player.pos_x + var->cam.plane_x * 0.1 >= 1 &&
+            var->player.pos_x + var->cam.plane_x * 0.1 <= var->size_x - 1)
+            var->player.pos_x += (var->cam.plane_x * 0.1);
+        if (var->player.pos_y + var->cam.plane_y * 0.1 >= 1 &&
+            var->player.pos_y + var->cam.plane_y * 0.1 <= var->size_y - 1)
+            var->player.pos_y += (var->cam.plane_y * 0.1);
     }
     return (0);
 }

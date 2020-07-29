@@ -6,9 +6,11 @@
 /*   By: jabenjam <jabenjam@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/07/28 17:52:52 by jabenjam          #+#    #+#             */
-/*   Updated: 2020/07/28 18:50:12 by jabenjam         ###   ########.fr       */
+/*   Updated: 2020/07/29 14:28:07 by jabenjam         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
+
+#include "../incs/cub3d.h"
 
 int check_parameters(t_var *var)
 {

@@ -6,15 +6,14 @@
 /*   By: jabenjam <jabenjam@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/07/28 17:36:27 by jabenjam          #+#    #+#             */
-/*   Updated: 2020/07/28 18:44:39 by jabenjam         ###   ########.fr       */
+/*   Updated: 2020/07/29 18:57:35 by jabenjam         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-
 #ifndef CUB3D_H
-#define CUB3D_H
 
-#include "libft.h"
+#define CUB3D_H
+#include "../incs/libft.h"
 #include <mlx.h>
 #include <math.h>
 #include <stdio.h>
@@ -23,7 +22,7 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>
-#include "keys.h"
+#include "../incs/keys.h"
 
 typedef struct s_player
 {
@@ -42,7 +41,7 @@ typedef struct s_sprite
     void *ptr;
     char *dat;
     void *next;
-    int  sl;
+    int sl;
 } t_sprite;
 
 typedef struct s_ray_s
@@ -74,6 +73,8 @@ typedef struct s_key
     int r_strafe;
     int size;
     int map;
+    int t;
+    int play;
 } t_key;
 
 typedef struct s_ray
@@ -131,10 +132,10 @@ typedef struct s_img
 
 typedef struct s_struct
 {
-    int width;    /* window width */
-    int height;   /* window height */
-    int f_color;  /* floor color */
-    int c_color;  /* ceiling color */
+    int width;   /* window width */
+    int height;  /* window height */
+    int f_color; /* floor color */
+    int c_color; /* ceiling color */
     char *s_path; /* path to sprite texture */
     int number;   /* number of parameters received */
     char **map;   /* map */
@@ -143,14 +144,129 @@ typedef struct s_struct
     void *mlx;    /* screen connection identifier */
     void *win;    /* window identifier */
     int sl;
-    int save;
     int n_sprites;
     t_key key;
     t_player player;
     t_cam cam;
-    t_tex tex[5];
+    t_tex tex[4];
     t_sprite *sprites;
     t_img screen;
 } t_var;
+
+/*
+**------INITIALIZATION-------------------------------------------------------------
+*/
+
+void initialize_var(t_var *var);
+void initialize_key(t_key *key);
+void initialize_ray(t_ray *ray);
+void initialize_tex(t_var *var);
+void initialize_sprite(t_var *var, t_sprite *sprite);
+
+/*
+**------PARSING-------------------------------------------------------------
+*/
+
+void cub_parser(t_var *var, int fd);
+int cub_parser2(t_var *var, char *line);
+void parse_resolution(t_var *var, char *line);
+char *parse_path(char *line);
+int parse_rgb(t_var *var, char *line);
+int parse_player(t_var *var, int x, int y);
+void parse_map(t_var *var, char **params);
+t_sprite *store_sprite(t_var *var, int x, int y);
+
+/*
+**------CORE-------------------------------------------------------------
+*/
+
+int game(t_var *var);
+void create_image(t_img *img, void *mlx, int width, int height);
+int raycast(t_var *var, t_ray *ray);
+
+/*
+**------RAYCAST-------------------------------------------------------------
+*/
+
+void raycast_setup(t_var *var, t_ray *ray, int x);
+void raycast_step(t_var *var, t_ray *ray);
+void raycast_walls(t_var *var, t_ray *ray);
+void raycast_scale(t_var *var, t_ray *ray);
+int texture_copy(t_var *var, t_ray *ray, int x);
+
+/*
+**------SPRITES-------------------------------------------------------------
+*/
+
+int sprites_manager(t_var *var, double *zbuffer);
+void get_distance(t_sprite *sprites, t_player *player);
+t_sprite *sort_sprites(t_sprite *sprites);
+void swap_content(t_sprite *current, t_sprite *next);
+t_ray_s sprite_setup(t_var *var);
+int raycast_sprites(t_var *var, double *zbuffer);
+
+/*
+**------BITMAP-------------------------------------------------------------
+*/
+
+int save(t_var *var);
+void create_bmp(t_var *var);
+void fill_bmp(int fd, t_var *var);
+
+/*
+**------RENDERING-------------------------------------------------------------
+*/
+
+void image_fill(t_var *var, t_ray *ray, int x);
+void image_wall(t_var *var, t_ray *ray, int x);
+void sprite_x(t_var *var, t_ray_s *ray, t_sprite *head, double *zbuffer);
+void sprite_y(t_var *var, t_ray_s *ray, t_sprite *head);
+
+/*
+**------CONTROLS-------------------------------------------------------------
+*/
+
+int keys(t_var *var);
+void look(t_cam *cam, int mode);
+void strafe(t_var *var, int mode);
+void forback(t_var *var, int mode);
+
+/*
+**------EVENTS-------------------------------------------------------------
+*/
+
+int key_release(int key, t_var *var);
+int key_press(int key, t_var *var);
+int close_window(t_var *var);
+
+/*
+**------MINIMAP-------------------------------------------------------------
+*/
+
+int draw_mini_map(t_var *var, int size);
+void create_tiles(t_img *tile, void *mlx, int size, int mode);
+void put_tiles(t_var *var, t_img *wall, t_img *pos, int size);
+
+/*
+**------VERIFICATION-------------------------------------------------------------
+*/
+
+void check_map(t_var *var);
+void check_tex(t_var *var);
+int check_argument(t_var *var, char *name, char *str, int mode);
+int check_parameters(t_var *var);
+
+/*
+**------AESTHETIC-------------------------------------------------------------
+*/
+
+void aesthetic_fc(t_var *var, t_ray *ray, int x);
+void aesthetic_wall(t_var *var, t_ray *ray, int x);
+
+/*
+**------EXIT-------------------------------------------------------------
+*/
+
+void close_game(t_var *var, char *error);
 
 #endif

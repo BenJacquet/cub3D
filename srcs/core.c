@@ -6,9 +6,11 @@
 /*   By: jabenjam <jabenjam@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/07/28 18:04:00 by jabenjam          #+#    #+#             */
-/*   Updated: 2020/07/28 18:04:11 by jabenjam         ###   ########.fr       */
+/*   Updated: 2020/07/29 14:28:19 by jabenjam         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
+
+#include "../incs/cub3d.h"
 
 void create_image(t_img *img, void *mlx, int width, int height)
 {

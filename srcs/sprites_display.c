@@ -6,9 +6,11 @@
 /*   By: jabenjam <jabenjam@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/07/28 17:57:15 by jabenjam          #+#    #+#             */
-/*   Updated: 2020/07/28 17:59:02 by jabenjam         ###   ########.fr       */
+/*   Updated: 2020/07/29 14:28:52 by jabenjam         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
+
+#include "../incs/cub3d.h"
 
 void sprite_y(t_var *var, t_ray_s *ray, t_sprite *head)
 {

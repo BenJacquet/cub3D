@@ -6,9 +6,11 @@
 /*   By: jabenjam <jabenjam@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/07/28 17:51:15 by jabenjam          #+#    #+#             */
-/*   Updated: 2020/07/28 17:51:32 by jabenjam         ###   ########.fr       */
+/*   Updated: 2020/07/29 15:25:36 by jabenjam         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
+
+#include "../bonus_incs/cub3d.h"
 
 void put_tiles(t_var *var, t_img *wall, t_img *pos, int size)
 {

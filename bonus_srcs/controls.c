@@ -6,11 +6,13 @@
 /*   By: jabenjam <jabenjam@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/07/28 17:49:03 by jabenjam          #+#    #+#             */
-/*   Updated: 2020/07/28 18:42:44 by jabenjam         ###   ########.fr       */
+/*   Updated: 2020/07/29 17:33:43 by jabenjam         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-int forback(t_var *var, int mode)
+#include "../bonus_incs/cub3d.h"
+
+void forback(t_var *var, int mode)
 {
     if (mode == 1)
     {
@@ -30,10 +32,9 @@ int forback(t_var *var, int mode)
                     [(int)var->player.pos_x] != '1')
             var->player.pos_y -= (var->cam.dir_y * 0.1);
     }
-    return (0);
 }
 
-int strafe(t_var *var, int mode)
+void strafe(t_var *var, int mode)
 {
     if (mode == 3)
     {
@@ -53,10 +54,9 @@ int strafe(t_var *var, int mode)
                     [(int)var->player.pos_x] != '1')
             var->player.pos_y += (var->cam.plane_y * 0.1);
     }
-    return (0);
 }
 
-int look(t_cam *cam, int mode)
+void look(t_cam *cam, int mode)
 {
     double save_dir_x;
     double save_plane_x;
@@ -77,7 +77,24 @@ int look(t_cam *cam, int mode)
         cam->plane_x = cam->plane_x * cos(-0.1) - cam->plane_y * sin(-0.1);
         cam->plane_y = save_plane_x * sin(-0.1) + cam->plane_y * cos(-0.1);
     }
-    return (0);
+}
+
+/*
+** Mode == 0 : Off
+** Mode == 1 : On
+*/
+void music_player(t_var *var, int mode)
+{
+    if (var->key.play == 0 && mode == 1)
+    {
+        system("afplay -v 0.5 bonus_sound/aesthetic.mp3 &>/dev/null &");
+        var->key.play = 1;
+    }
+    else if (var->key.play == 1 && mode == 0)
+    {
+        system("killall afplay");
+        var->key.play = 0;
+    }
 }
 
 int keys(t_var *var)
@@ -96,5 +113,6 @@ int keys(t_var *var)
         look(&var->cam, 0);
     if (var->key.map == 1)
         draw_mini_map(var, 8 + var->key.size);
+    music_player(var, var->key.t);
     return (0);
 }

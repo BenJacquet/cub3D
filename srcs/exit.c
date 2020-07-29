@@ -6,9 +6,11 @@
 /*   By: jabenjam <jabenjam@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/07/28 17:39:03 by jabenjam          #+#    #+#             */
-/*   Updated: 2020/07/28 17:55:21 by jabenjam         ###   ########.fr       */
+/*   Updated: 2020/07/29 14:28:26 by jabenjam         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
+
+#include "../incs/cub3d.h"
 
 void close_game(t_var *var, char *error)
 {

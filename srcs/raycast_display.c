@@ -6,9 +6,11 @@
 /*   By: jabenjam <jabenjam@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/07/28 18:01:47 by jabenjam          #+#    #+#             */
-/*   Updated: 2020/07/28 18:01:52 by jabenjam         ###   ########.fr       */
+/*   Updated: 2020/07/29 14:28:45 by jabenjam         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
+
+#include "../incs/cub3d.h"
 
 void image_wall(t_var *var, t_ray *ray, int x)
 {

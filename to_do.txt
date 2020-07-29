@@ -1,7 +1,10 @@
 - //gerer textures en resolutions differentes
 - Makefile
-- Fermer le programme proprement avec la croix
 - changer nom executable
 - Separer bonus et obligatoire
-    Obligatoire = pas de collision mais check Obligatoire;
+    Obligatoire = pas de collision mais check sortie de map;
     Bonus = collision sans oob;
+- Fix caracteres dans couleur et resolution
+- Gerer les retours a la ligne (faire que toutes les lignes fassent la taille max)
+- ne remplir les espaces que si c'est inaccessible
+- save avant d'ouvrir la fenetre

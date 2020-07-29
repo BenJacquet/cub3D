@@ -6,9 +6,11 @@
 /*   By: jabenjam <jabenjam@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/07/28 17:49:38 by jabenjam          #+#    #+#             */
-/*   Updated: 2020/07/28 17:55:20 by jabenjam         ###   ########.fr       */
+/*   Updated: 2020/07/29 17:02:58 by jabenjam         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
+
+#include "../bonus_incs/cub3d.h"
 
 int close_window(t_var *var)
 {
@@ -32,6 +34,8 @@ int key_press(int key, t_var *var)
         var->key.l_strafe = 1;
     else if (key == K_D)
         var->key.r_strafe = 1;
+    else if (key == K_T)
+        var->key.t = (var->key.t ? 0 : 1);
     else if (key == K_M)
         var->key.map = (var->key.map ? 0 : 1);
     else if (key == K_PLUS)
@@ -57,5 +61,3 @@ int key_release(int key, t_var *var)
         var->key.r_strafe = 0;
     return (0);
 }
-
-

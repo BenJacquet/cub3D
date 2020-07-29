@@ -6,15 +6,15 @@
 /*   By: jabenjam <jabenjam@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/07/28 17:36:27 by jabenjam          #+#    #+#             */
-/*   Updated: 2020/07/28 18:45:22 by jabenjam         ###   ########.fr       */
+/*   Updated: 2020/07/29 15:35:12 by jabenjam         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-
 #ifndef CUB3D_H
-#define CUB3D_H
 
+#define CUB3D_H
 #include "libft.h"
+#include "keys.h"
 #include <mlx.h>
 #include <math.h>
 #include <stdio.h>
@@ -23,7 +23,6 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>
-#include "keys.h"
 
 typedef struct s_player
 {
@@ -42,7 +41,7 @@ typedef struct s_sprite
     void *ptr;
     char *dat;
     void *next;
-    int  sl;
+    int sl;
 } t_sprite;
 
 typedef struct s_ray_s
@@ -150,5 +149,104 @@ typedef struct s_struct
     t_sprite *sprites;
     t_img screen;
 } t_var;
+
+/*
+**------INITIALIZATION-------------------------------------------------------------
+*/
+
+void initialize_var(t_var *var);
+void initialize_key(t_key *key);
+void initialize_ray(t_ray *ray);
+void initialize_tex(t_var *var);
+void initialize_sprite(t_var *var, t_sprite *sprite);
+
+/*
+**------PARSING-------------------------------------------------------------
+*/
+
+void cub_parser(t_var *var, int fd);
+int cub_parser2(t_var *var, char *line);
+void parse_resolution(t_var *var, char *line);
+char *parse_path(char *line);
+int parse_rgb(t_var *var, char *line);
+int parse_player(t_var *var, int x, int y);
+void parse_map(t_var *var, char **params);
+t_sprite *store_sprite(t_var *var, int x, int y);
+
+/*
+**------CORE-------------------------------------------------------------
+*/
+
+int game(t_var *var);
+void create_image(t_img *img, void *mlx, int width, int height);
+int raycast(t_var *var, t_ray *ray);
+
+/*
+**------RAYCAST-------------------------------------------------------------
+*/
+
+void raycast_setup(t_var *var, t_ray *ray, int x);
+void raycast_step(t_var *var, t_ray *ray);
+void raycast_walls(t_var *var, t_ray *ray);
+void raycast_scale(t_var *var, t_ray *ray);
+int texture_copy(t_var *var, t_ray *ray, int x);
+
+/*
+**------SPRITES-------------------------------------------------------------
+*/
+
+int sprites_manager(t_var *var, double *zbuffer);
+void get_distance(t_sprite *sprites, t_player *player);
+t_sprite *sort_sprites(t_sprite *sprites);
+void swap_content(t_sprite *current, t_sprite *next);
+t_ray_s sprite_setup(t_var *var);
+int raycast_sprites(t_var *var, double *zbuffer);
+
+/*
+**------BITMAP-------------------------------------------------------------
+*/
+
+void create_bmp(t_var *var);
+void fill_bmp(int fd, t_var *var);
+
+/*
+**------RENDERING-------------------------------------------------------------
+*/
+
+void image_fill(t_var *var, t_ray *ray, int x);
+void image_wall(t_var *var, t_ray *ray, int x);
+void sprite_x(t_var *var, t_ray_s *ray, t_sprite *head, double *zbuffer);
+void sprite_y(t_var *var, t_ray_s *ray, t_sprite *head);
+
+/*
+**------CONTROLS-------------------------------------------------------------
+*/
+
+int keys(t_var *var);
+int look(t_cam *cam, int mode);
+int strafe(t_var *var, int mode);
+int forback(t_var *var, int mode);
+
+/*
+**------EVENTS-------------------------------------------------------------
+*/
+
+int key_release(int key, t_var *var);
+int key_press(int key, t_var *var);
+int close_window(t_var *var);
+
+/*
+**------VERIFICATION-------------------------------------------------------------
+*/
+
+void check_map(t_var *var);
+int check_argument(t_var *var, char *name, char *str, int mode);
+int check_parameters(t_var *var);
+
+/*
+**------EXIT-------------------------------------------------------------
+*/
+
+void close_game(t_var *var, char *error);
 
 #endif

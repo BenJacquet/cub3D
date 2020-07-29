@@ -6,9 +6,11 @@
 /*   By: jabenjam <jabenjam@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/07/28 17:42:57 by jabenjam          #+#    #+#             */
-/*   Updated: 2020/07/28 18:46:43 by jabenjam         ###   ########.fr       */
+/*   Updated: 2020/07/29 18:57:20 by jabenjam         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
+
+#include "../bonus_incs/cub3d.h"
 
 void initialize_var(t_var *var)
 {
@@ -24,7 +26,6 @@ void initialize_var(t_var *var)
     var->tex[3].path = 0;
     var->s_path = 0;
     var->number = 0;
-    var->save = 0;
     var->n_sprites = 0;
     var->player.pos_x = 0.0;
     var->player.pos_y = 0.0;
@@ -47,6 +48,8 @@ void initialize_key(t_key *key)
     key->r_strafe = 0;
     key->size = 0;
     key->map = 0;
+    key->t = 0;
+    key->play = 0;
 }
 
 void initialize_ray(t_ray *ray)
@@ -71,20 +74,12 @@ void initialize_tex(t_var *var)
     int bpp;
     int endian;
     int sl;
-    int fd;
 
     i = 0;
     bpp = 32;
     endian = 0;
     while (i <= 3)
     {
-        check_argument(var, var->tex[i].path, ".xpm", 1);
-        if ((fd = open(var->tex[i].path, O_RDONLY) == -1))
-        {
-            close(fd);
-            close_game(var, "File is invalid");
-        }
-        close(fd);
         sl = var->tex[i].width * 4;
         var->tex[i].width = 64;
         var->tex[i].height = 64;
@@ -109,7 +104,7 @@ void initialize_sprite(t_var *var, t_sprite *sprite)
     if ((fd = open(var->s_path, O_RDONLY) == -1))
     {
         close(fd);
-        close_game(var, "File is invalid");
+        close_game(var, "File is invalid.\n");
     }
     close(fd);
     sprite->ptr = mlx_xpm_file_to_image(var->mlx, var->s_path, &sprite->width, &sprite->height);

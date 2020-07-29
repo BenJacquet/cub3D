@@ -6,9 +6,11 @@
 /*   By: jabenjam <jabenjam@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/07/28 17:56:27 by jabenjam          #+#    #+#             */
-/*   Updated: 2020/07/28 17:56:50 by jabenjam         ###   ########.fr       */
+/*   Updated: 2020/07/29 14:30:57 by jabenjam         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
+
+#include "../incs/cub3d.h"
 
 void swap_content(t_sprite *current, t_sprite *next)
 {

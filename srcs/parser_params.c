@@ -6,9 +6,11 @@
 /*   By: jabenjam <jabenjam@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/07/28 17:44:24 by jabenjam          #+#    #+#             */
-/*   Updated: 2020/07/28 17:53:52 by jabenjam         ###   ########.fr       */
+/*   Updated: 2020/07/29 17:40:14 by jabenjam         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
+
+#include "../incs/cub3d.h"
 
 void parse_resolution(t_var *var, char *line)
 {
@@ -27,7 +29,7 @@ void parse_resolution(t_var *var, char *line)
         x = (x * 10) + (*(line++) - '0');
     var->height = (x > 1440 ? 1440 : x);
     if (var->height <= 0 || var->width <= 0)
-        close_game(var, "Width and height must be higher than 0.");
+        close_game(var, "Width and height must be higher than 0.\n");
 }
 
 char *parse_path(char *line)
@@ -58,14 +60,14 @@ int parse_rgb(t_var *var, char *line)
         while (*line >= '0' && *line <= '9')
             x = (x * 10) + (*(line++) - '0');
         if (x < 0 || x > 255)
-            close_game(var, "Color must be between 0 and 255.");
+            close_game(var, "Color must be between 0 and 255.\n");
         rgb = (colors++ == 0 ? rgb = x : (rgb << 8) + x);
         if (*(line++) != ',')
             break;
         x = 0;
     }
     if (colors != 3)
-        close_game(var, "Color must contain 3 numbers separated by comas.");
+        close_game(var, "Color must contain 3 numbers separated by comas.\n");
     return (rgb);
 }
 
@@ -85,7 +87,7 @@ int parse_player(t_var *var, int x, int y)
         var->map[y][x] == 'W' || var->map[y][x] == 'E')
     {
         if (var->player.pos_x && var->player.pos_y)
-            close_game(var, "Player position specified more than once");
+            close_game(var, "Player position specified more than once.\n");
         var->player.pos_x = x + 0.5;
         var->player.pos_y = y + 0.5;
     }
@@ -111,7 +113,7 @@ void parse_map(t_var *var, char **params)
             parse_player(var, x, y);
         }
         if (var->size_x != 0 && var->size_x != x)
-            close_game(var, "Invalid map.");
+            close_game(var, "Invalid map.\n");
         var->size_x = x;
         x = -1;
     }

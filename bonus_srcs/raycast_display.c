@@ -6,9 +6,11 @@
 /*   By: jabenjam <jabenjam@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/07/28 18:01:47 by jabenjam          #+#    #+#             */
-/*   Updated: 2020/07/28 18:53:16 by jabenjam         ###   ########.fr       */
+/*   Updated: 2020/07/29 18:00:05 by jabenjam         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
+
+#include "../bonus_incs/cub3d.h"
 
 void image_wall(t_var *var, t_ray *ray, int x)
 {
@@ -36,8 +38,6 @@ void image_fill(t_var *var, t_ray *ray, int x)
     int i = 0;
     int y = 0;
 
-    var->c_color = (var->key.t ? glitch(var->c_color) : var->c_color);
-    var->f_color = (var->key.t ? glitch(var->f_color) : var->f_color);
     while (y < ray->start) // ceiling
     {
         i = y * var->width * 4 + x * 4;
