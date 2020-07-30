@@ -6,7 +6,7 @@
 /*   By: jabenjam <jabenjam@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/07/28 17:36:27 by jabenjam          #+#    #+#             */
-/*   Updated: 2020/07/29 18:57:35 by jabenjam         ###   ########.fr       */
+/*   Updated: 2020/07/30 15:47:29 by jabenjam         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -136,6 +136,7 @@ typedef struct s_struct
     int height;  /* window height */
     int f_color; /* floor color */
     int c_color; /* ceiling color */
+    int colors;
     char *s_path; /* path to sprite texture */
     int number;   /* number of parameters received */
     char **map;   /* map */
@@ -209,7 +210,7 @@ int raycast_sprites(t_var *var, double *zbuffer);
 **------BITMAP-------------------------------------------------------------
 */
 
-int save(t_var *var);
+void save(t_var *var);
 void create_bmp(t_var *var);
 void fill_bmp(int fd, t_var *var);
 
@@ -253,6 +254,7 @@ void put_tiles(t_var *var, t_img *wall, t_img *pos, int size);
 
 void check_map(t_var *var);
 void check_tex(t_var *var);
+void check_numbers(t_var *var, char *line, int mode);
 int check_argument(t_var *var, char *name, char *str, int mode);
 int check_parameters(t_var *var);
 
@@ -262,6 +264,7 @@ int check_parameters(t_var *var);
 
 void aesthetic_fc(t_var *var, t_ray *ray, int x);
 void aesthetic_wall(t_var *var, t_ray *ray, int x);
+void music_player(t_var *var, int mode);
 
 /*
 **------EXIT-------------------------------------------------------------

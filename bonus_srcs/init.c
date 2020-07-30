@@ -6,7 +6,7 @@
 /*   By: jabenjam <jabenjam@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/07/28 17:42:57 by jabenjam          #+#    #+#             */
-/*   Updated: 2020/07/29 18:57:20 by jabenjam         ###   ########.fr       */
+/*   Updated: 2020/07/30 15:47:42 by jabenjam         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,6 +20,7 @@ void initialize_var(t_var *var)
     var->size_y = 0;
     var->f_color = 0;
     var->c_color = 0;
+    var->colors = 0;
     var->tex[0].path = 0;
     var->tex[1].path = 0;
     var->tex[2].path = 0;
@@ -78,6 +79,7 @@ void initialize_tex(t_var *var)
     i = 0;
     bpp = 32;
     endian = 0;
+    check_tex(var);
     while (i <= 3)
     {
         sl = var->tex[i].width * 4;

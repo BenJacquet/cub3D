@@ -6,11 +6,29 @@
 /*   By: jabenjam <jabenjam@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/07/28 18:05:46 by jabenjam          #+#    #+#             */
-/*   Updated: 2020/07/29 16:26:48 by jabenjam         ###   ########.fr       */
+/*   Updated: 2020/07/30 15:08:52 by jabenjam         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../bonus_incs/cub3d.h"
+
+/*
+** Mode == 0 : Off
+** Mode == 1 : On
+*/
+void music_player(t_var *var, int mode)
+{
+    if (var->key.play == 0 && mode == 1)
+    {
+        system("afplay -v 0.5 bonus_sound/aesthetic.mp3 > /dev/null &");
+        var->key.play = 1;
+    }
+    else if (var->key.play == 1 && mode == 0)
+    {
+        system("killall afplay > /dev/null &");
+        var->key.play = 0;
+    }
+}
 
 void aesthetic_wall(t_var *var, t_ray *ray, int x)
 {

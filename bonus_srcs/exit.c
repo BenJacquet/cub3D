@@ -6,7 +6,7 @@
 /*   By: jabenjam <jabenjam@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/07/28 17:39:03 by jabenjam          #+#    #+#             */
-/*   Updated: 2020/07/29 17:50:48 by jabenjam         ###   ########.fr       */
+/*   Updated: 2020/07/30 14:15:00 by jabenjam         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,7 +29,7 @@ void close_game(t_var *var, char *error)
     }
     while (var->map && *var->map)
         free(*var->map++);
-    if (var->mlx)
+    if (var->mlx && var->win)
         mlx_destroy_window(var->mlx, var->win);
     if (var->key.play == 1 && !system("pgrep afplay"))
         system("killall afplay");

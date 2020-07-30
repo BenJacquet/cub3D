@@ -6,7 +6,7 @@
 /*   By: jabenjam <jabenjam@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/07/28 17:49:03 by jabenjam          #+#    #+#             */
-/*   Updated: 2020/07/29 17:33:43 by jabenjam         ###   ########.fr       */
+/*   Updated: 2020/07/30 15:07:00 by jabenjam         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -76,24 +76,6 @@ void look(t_cam *cam, int mode)
         cam->dir_y = save_dir_x * sin(-0.1) + cam->dir_y * cos(-0.1);
         cam->plane_x = cam->plane_x * cos(-0.1) - cam->plane_y * sin(-0.1);
         cam->plane_y = save_plane_x * sin(-0.1) + cam->plane_y * cos(-0.1);
-    }
-}
-
-/*
-** Mode == 0 : Off
-** Mode == 1 : On
-*/
-void music_player(t_var *var, int mode)
-{
-    if (var->key.play == 0 && mode == 1)
-    {
-        system("afplay -v 0.5 bonus_sound/aesthetic.mp3 &>/dev/null &");
-        var->key.play = 1;
-    }
-    else if (var->key.play == 1 && mode == 0)
-    {
-        system("killall afplay");
-        var->key.play = 0;
     }
 }
 

@@ -6,7 +6,7 @@
 /*   By: jabenjam <jabenjam@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/07/28 17:44:24 by jabenjam          #+#    #+#             */
-/*   Updated: 2020/07/29 18:36:20 by jabenjam         ###   ########.fr       */
+/*   Updated: 2020/07/30 18:53:42 by jabenjam         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,8 +28,7 @@ void parse_resolution(t_var *var, char *line)
     while (line && *line >= '0' && *line <= '9')
         x = (x * 10) + (*(line++) - '0');
     var->height = (x > 1440 ? 1440 : x);
-    if (var->height <= 0 || var->width <= 0)
-        close_game(var, "Resolution is incorrect.\n");
+    check_numbers(var, line, 1);
 }
 
 char *parse_path(char *line)
@@ -46,28 +45,24 @@ int parse_rgb(t_var *var, char *line)
 {
     int rgb;
     int x;
-    int colors;
 
     rgb = 0;
-    x = 0;
-    colors = 0;
     while (line && *line == ' ')
         line++;
-    while (line)
+    while (line && ft_isinset("0123456789", *line))
     {
-        if (*line == '-')
-            x = -1;
+        x = 0;
         while (*line >= '0' && *line <= '9')
             x = (x * 10) + (*(line++) - '0');
         if (x < 0 || x > 255)
             close_game(var, "Color must be between 0 and 255.\n");
-        rgb = (colors++ == 0 ? rgb = x : (rgb << 8) + x);
-        if (*(line++) != ',')
-            break;
-        x = 0;
+        rgb = (var->colors++ == 0 ? rgb = x : (rgb << 8) + x);
+        line += (*line == ',' && var->colors != 3 ? 1 : 0);
+        while (line && *line == ' ' && var->colors != 3)
+            line++;
     }
-    if (colors != 3)
-        close_game(var, "Color is not correctly formatted.\n");
+    check_numbers(var, line, 2);
+    var->colors = 0;
     return (rgb);
 }
 
@@ -90,8 +85,23 @@ int parse_player(t_var *var, int x, int y)
             close_game(var, "Player position specified more than once.\n");
         var->player.pos_x = x + 0.5;
         var->player.pos_y = y + 0.5;
+        if (!(var->player.pos_x >= 1 && var->player.pos_x <= var->size_x - 1) ||
+            !(var->player.pos_y >= 1 && var->player.pos_y <= var->size_x - 1))
+            close_game(var, "Player cannot be placed on map edge.\n");
     }
     return (0);
+}
+
+void fill_map(t_var *var, int y, int x)
+{
+    if (var->map[])
+    {
+        var->map[y][x] = '1';
+    }
+    if ()
+    {
+        var->map[y][x] = '0';
+    }
 }
 
 void parse_map(t_var *var, char **params)
@@ -104,17 +114,16 @@ void parse_map(t_var *var, char **params)
     var->map = params;
     while (var->map[++y] != 0)
     {
+        var->size_x = ft_strlen(var->map[y]);
         while (var->map[y][++x] != '\0')
         {
-            if (var->map[y][x] == ' ')
-                var->map[y][x] = '1';
             if (var->map[y][x] == '2')
                 var->sprites = store_sprite(var, x, y);
             parse_player(var, x, y);
         }
-        if (var->size_x != 0 && var->size_x != x)
-            close_game(var, "Invalid map.\n");
-        var->size_x = x;
+        /*        if (var->size_x != 0 && var->size_x != x)
+            close_game(var, "Invalid map.\n");*/
+        var->size_x = (x > var->size_x ? x : var->size_x);
         x = -1;
     }
     var->size_y = y;
