@@ -3,3 +3,4 @@
 - changer nom executable
 - Appliquer les modifs des bonus sur la version obligatoire
 
+Pour les segments, prendre en compte les espaces si le caractère d'avant et d'après sont des 0 ou des 1
