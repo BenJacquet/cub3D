@@ -6,7 +6,7 @@
 /*   By: jabenjam <jabenjam@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/07/28 17:44:24 by jabenjam          #+#    #+#             */
-/*   Updated: 2020/07/30 18:53:42 by jabenjam         ###   ########.fr       */
+/*   Updated: 2020/08/01 18:55:08 by jabenjam         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -92,16 +92,166 @@ int parse_player(t_var *var, int x, int y)
     return (0);
 }
 
-void fill_map(t_var *var, int y, int x)
+void fill_space(t_var *var, int y, int x)
 {
-    if (var->map[])
+    //printf("\ny = %d --- x = %d\n", x, y);
+    if (y == 0 && (x >= 0 && x <= var->size_x))
     {
-        var->map[y][x] = '1';
+        //        printf("\ny = %d --- x = %d\n", x, y);
+        if (!(var->map[y][x - 1] == '0' || var->map[y][x + 1] == '0' ||
+            var->map[y + 1][x] == '0'))
+            var->map[y][x] = '1';
+        else
+            var->map[y][x] = '0';
     }
-    if ()
+    else if (y == var->size_y - 1 && (x >= 0 && x <= var->size_x))
     {
-        var->map[y][x] = '0';
+        if (!(var->map[y][x - 1] == '0' || var->map[y][x + 1] == '0' ||
+            var->map[y - 1][x] == '0'))
+            var->map[y][x] = '1';
+        else
+            var->map[y][x] = '0';
     }
+    else if (x == 0 && (y >= 0 && y <= var->size_y))
+    {
+        if (!(var->map[y - 1][x] == '0' || var->map[y + 1][x] == '0' ||
+            var->map[y][x + 1] == '0'))
+            var->map[y][x] = '1';
+        else
+            var->map[y][x] = '0';
+    }
+    else if (x == var->size_x - 1 && (y >= 0 && y <= var->size_y))
+    {
+        if (!(var->map[y - 1][x] == '0' || var->map[y + 1][x] == '0' ||
+            var->map[y][x - 1] == '0'))
+            var->map[y][x] = '1';
+        else
+            var->map[y][x] = '0';
+    }
+    else
+    {
+        if (!(var->map[y - 1][x] == '0' || var->map[y + 1][x] == '0' ||
+            var->map[y][x - 1] == '0' || var->map[y][x + 1] == '0'))
+            var->map[y][x] = '1';
+        else
+            var->map[y][x] = '0';
+    }
+}
+
+void check_segment(t_var *var, char *segment, int x, int y)
+{
+    int len;
+
+    len = ft_strlen(segment);
+    if ((segment[0] == '0') || (segment[len - 1] == '0'))
+    {
+        printf("\ny = %d --- x = %d --- segment = %s\n", y, x, segment);
+        for (int mapy = 0; var->map[mapy]; mapy++)
+        {
+            if (mapy >= 10)
+                printf("(%d): %s\n", mapy, var->map[mapy]);
+            else
+                printf("(%d) : %s\n", mapy, var->map[mapy]);
+        }
+        close_game(var, "Map is not closed.\n");
+    }
+}
+
+void check_vertically(t_var *var, int x)
+{
+    int y;
+    int i;
+    char segment[var->size_y + 1];
+
+    y = 0;
+    while (y < var->size_y)
+    {
+        i = 0;
+        while (y < var->size_y && var->map[y][x] != ' ')
+            segment[i++] = var->map[y++][x];
+        segment[i] = '\0';
+        check_segment(var, segment, x, y);
+        y++;
+    }
+}
+
+void check_horizontally(t_var *var, int y)
+{
+    int x;
+    int i;
+    char segment[var->size_x + 1];
+
+    x = 0;
+    while (x < var->size_x)
+    {
+        i = 0;
+        while (x < var->size_x && var->map[y][x] != ' ')
+        {
+            check_vertically(var, x);
+            segment[i++] = var->map[y][x++];
+        }
+        segment[i] = '\0';
+        check_segment(var, segment, x, y);
+        x++;
+    }
+}
+
+void is_closed(t_var *var)
+{
+    int y;
+    int x;
+
+    y = -1;
+    while (var->map[++y])
+    {
+        x = -1;
+        while (var->map[y][++x])
+        {
+            if (var->map[y][x] == ' ')
+                fill_space(var, y, x);
+        }
+    }
+    y = -1;
+    while (var->map[++y])
+        check_horizontally(var, y);
+}
+
+char *resize_line(char *line, int spaces)
+{
+    char end[spaces + 1];
+    int i = 0;
+    char *new;
+
+    while (i < spaces)
+        end[i++] = ' ';
+    end[i] = '\0';
+    new = ft_strjoin(line, end);
+    free(line);
+    return (new);
+}
+
+void make_rectangular(t_var *var)
+{
+    int y;
+    int hi_len;
+    int len;
+
+    y = -1;
+    hi_len = 0;
+    while (var->map[++y])
+    {
+        len = ft_strlen(var->map[y]);
+        hi_len = (hi_len < len ? len : hi_len);
+    }
+    var->size_x = hi_len;
+    y = -1;
+    while (var->map[++y])
+    {
+        len = ft_strlen(var->map[y]);
+        if (len < hi_len)
+            var->map[y] = resize_line(var->map[y], hi_len - len);
+    }
+    var->size_y = y;
 }
 
 void parse_map(t_var *var, char **params)
@@ -110,11 +260,12 @@ void parse_map(t_var *var, char **params)
     int x;
 
     y = -1;
-    x = -1;
     var->map = params;
-    while (var->map[++y] != 0)
+    make_rectangular(var);
+    is_closed(var);
+    while (var->map[++y])
     {
-        var->size_x = ft_strlen(var->map[y]);
+        x = -1;
         while (var->map[y][++x] != '\0')
         {
             if (var->map[y][x] == '2')
@@ -123,9 +274,14 @@ void parse_map(t_var *var, char **params)
         }
         /*        if (var->size_x != 0 && var->size_x != x)
             close_game(var, "Invalid map.\n");*/
-        var->size_x = (x > var->size_x ? x : var->size_x);
-        x = -1;
     }
     var->size_y = y;
-    check_map(var);
+    //    check_map(var);
+    for (int mapy = 0; var->map[mapy]; mapy++)
+    {
+        if (mapy >= 10)
+            printf("(%d): %s\n", mapy, var->map[mapy]);
+        else
+            printf("(%d) : %s\n", mapy, var->map[mapy]);
+    }
 }

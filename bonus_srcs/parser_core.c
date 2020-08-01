@@ -6,7 +6,7 @@
 /*   By: jabenjam <jabenjam@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/07/28 17:45:36 by jabenjam          #+#    #+#             */
-/*   Updated: 2020/07/30 13:51:46 by jabenjam         ###   ########.fr       */
+/*   Updated: 2020/08/01 14:44:14 by jabenjam         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,6 +39,7 @@ void cub_parser(t_var *var, int fd)
     char **params;
     char buffer[4096];
     char *save;
+    char *bkp;
 
     out = 1;
     if (!(save = malloc(sizeof(char) * 4096)))
@@ -46,8 +47,10 @@ void cub_parser(t_var *var, int fd)
     ft_bzero(save, 4096);
     while ((out = read(fd, buffer, 4096)) > 0)
     {
+        bkp = save;
         save = ft_strjoin(save, buffer);
         save[out] = '\0';
+        free(bkp);
     }
     params = ft_split(save, '\n');
     free(save);

@@ -3,17 +3,3 @@
 - changer nom executable
 - Appliquer les modifs des bonus sur la version obligatoire
 
-ORDRE :
-0: verifier si la map contient des des caracteres interdits
-1: determiner la taille max de la map ligne par ligne
-2: verifier si la map est fermee
-    (si non -> erreur)
-3: recuperer l'emplacement du personnage
-4: verifier si le perso est sur un bord
-    (si oui -> erreur)
-5: mettre toutes les lignes a la bonne taille si fermee et '\n' ou ' '
-6: verifier si les espaces sont derriere des murs
-    (si oui les remplacer par des murs)
-    (sinon les remplacer par des 0)
-8: verifier si les espaces font depasser la taille max a une ligne
-    (si oui -> erreur)
