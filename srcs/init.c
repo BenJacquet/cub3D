@@ -6,7 +6,7 @@
 /*   By: jabenjam <jabenjam@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/07/28 17:42:57 by jabenjam          #+#    #+#             */
-/*   Updated: 2020/07/29 15:14:48 by jabenjam         ###   ########.fr       */
+/*   Updated: 2020/08/02 16:24:44 by jabenjam         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,6 +20,7 @@ void initialize_var(t_var *var)
     var->size_y = 0;
     var->f_color = 0;
     var->c_color = 0;
+    var->colors = 0;
     var->tex[0].path = 0;
     var->tex[1].path = 0;
     var->tex[2].path = 0;

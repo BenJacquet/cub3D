@@ -6,7 +6,7 @@
 /*   By: jabenjam <jabenjam@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/07/28 18:01:47 by jabenjam          #+#    #+#             */
-/*   Updated: 2020/07/29 18:00:05 by jabenjam         ###   ########.fr       */
+/*   Updated: 2020/08/02 16:07:35 by jabenjam         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,7 +47,7 @@ void image_fill(t_var *var, t_ray *ray, int x)
         var->screen.dat[i] = 0;                               // A
         y++;
     }
-    image_wall(var, ray, x);
+        image_wall(var, ray, x);
     while (ray->end < var->height && ray->end >= 0) // floor
     {
         i = ray->end * var->width * 4 + x * 4;

@@ -6,7 +6,7 @@
 /*   By: jabenjam <jabenjam@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/07/28 18:04:00 by jabenjam          #+#    #+#             */
-/*   Updated: 2020/07/29 14:28:19 by jabenjam         ###   ########.fr       */
+/*   Updated: 2020/08/02 16:35:56 by jabenjam         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,13 +46,20 @@ int game(t_var *var)
     t_ray ray;
 
     initialize_ray(&ray);
-    initialize_tex(var);
     create_image(&var->screen, var->mlx, var->width, var->height);
     raycast(var, &ray);
-    if (var->save)
-        create_bmp(var);
     mlx_put_image_to_window(var->mlx, var->win, var->screen.ptr, 0, 0);
     mlx_destroy_image(var->mlx, var->screen.ptr);
     keys(var);
     return (0);
+}
+
+void save(t_var *var)
+{
+    t_ray ray;
+
+    initialize_ray(&ray);
+    create_image(&var->screen, var->mlx, var->width, var->height);
+    raycast(var, &ray);
+    create_bmp(var);
 }

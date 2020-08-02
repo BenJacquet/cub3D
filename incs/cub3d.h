@@ -6,7 +6,7 @@
 /*   By: jabenjam <jabenjam@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/07/28 17:36:27 by jabenjam          #+#    #+#             */
-/*   Updated: 2020/07/29 15:35:12 by jabenjam         ###   ########.fr       */
+/*   Updated: 2020/08/02 16:35:26 by jabenjam         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -132,6 +132,7 @@ typedef struct s_struct
     int height;   /* window height */
     int f_color;  /* floor color */
     int c_color;  /* ceiling color */
+    int colors;
     char *s_path; /* path to sprite texture */
     int number;   /* number of parameters received */
     char **map;   /* map */
@@ -171,6 +172,9 @@ char *parse_path(char *line);
 int parse_rgb(t_var *var, char *line);
 int parse_player(t_var *var, int x, int y);
 void parse_map(t_var *var, char **params);
+void make_rectangular(t_var *var);
+char *resize_line(char *line, int spaces);
+void fill_space(t_var *var, int y, int x);
 t_sprite *store_sprite(t_var *var, int x, int y);
 
 /*
@@ -206,6 +210,7 @@ int raycast_sprites(t_var *var, double *zbuffer);
 **------BITMAP-------------------------------------------------------------
 */
 
+void save(t_var *var);
 void create_bmp(t_var *var);
 void fill_bmp(int fd, t_var *var);
 
@@ -240,8 +245,14 @@ int close_window(t_var *var);
 */
 
 void check_map(t_var *var);
+void check_tex(t_var *var);
+void check_numbers(t_var *var, char *line, int mode);
 int check_argument(t_var *var, char *name, char *str, int mode);
 int check_parameters(t_var *var);
+void check_horizontally(t_var *var, int y);
+void check_vertically(t_var *var, int x);
+void check_segment(t_var *var, char *segment);
+void is_closed(t_var *var);
 
 /*
 **------EXIT-------------------------------------------------------------

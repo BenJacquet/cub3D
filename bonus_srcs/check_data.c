@@ -6,7 +6,7 @@
 /*   By: jabenjam <jabenjam@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/07/28 17:52:52 by jabenjam          #+#    #+#             */
-/*   Updated: 2020/08/01 14:19:55 by jabenjam         ###   ########.fr       */
+/*   Updated: 2020/08/02 16:15:40 by jabenjam         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -97,38 +97,4 @@ void check_numbers(t_var *var, char *line, int mode)
         if (var->colors != 3)
             close_game(var, "Only 3 numbers must be specified.\n");
     }
-}
-
-/*void(t_var *var)
-{
-
-}*/
-
-void check_map(t_var *var)
-{
-    int x;
-    int y;
-
-    x = -1;
-    y = -1;
-    while (var->map[++y])
-    {
-        while (var->map[y][++x])
-        {
-            if (!ft_isinset("012NSWE ", var->map[y][x]))
-                close_game(var, "Map can only contain 0 1 2 N S W E ' '.\n");
-/*            else if ((x == 0 && var->map[y][x] == '0') ||
-                     (x == var->size_x - 1 && var->map[y][x] == '0') ||
-                     (y == 0 && var->map[y][x] == '0') ||
-                     (y == var->size_y - 1 && var->map[y][x] == '0'))
-            {
-                var->map[y][x] = 'X';
-                printf("line%d x=%d: %s", y, x, var->map[y]);
-                close_game(var, "Map is not closed, check the edges.\n");
-            }*/
-        }
-        x = -1;
-    }
-    if (!var->player.pos_x && !var->player.pos_y)
-        close_game(var, "Player position must be specified.\n");
 }

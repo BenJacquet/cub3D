@@ -6,7 +6,7 @@
 /*   By: jabenjam <jabenjam@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/07/28 17:52:52 by jabenjam          #+#    #+#             */
-/*   Updated: 2020/07/29 14:28:07 by jabenjam         ###   ########.fr       */
+/*   Updated: 2020/08/02 16:23:00 by jabenjam         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,7 @@ int check_parameters(t_var *var)
         var->tex[1].path == 0 || var->tex[2].path == 0 ||
         var->tex[3].path == 0 || var->s_path == 0)
     {
-        close_game(var, "Invalid map.");
+        close_game(var, "Invalid map.\n");
     }
     return (0);
 }
@@ -48,36 +48,53 @@ int check_argument(t_var *var, char *name, char *str, int mode)
         i++;
     }
     if (mode == 1)
-        close_game(var, "File is invalid");
+        close_game(var, "File is invalid or line has bad format.\n");
     else if (mode == 2)
-        close_game(var, "Flag must be \"--save\".");
+        close_game(var, "Flag must be \"--save\".\n");
     return (1);
 }
 
-void check_map(t_var *var)
+void check_tex(t_var *var)
 {
-    int x;
-    int y;
+    int i;
+    int fd;
 
-    x = -1;
-    y = -1;
-    while (var->map[++y])
+    i = -1;
+    while (++i <= 3)
     {
-        while (var->map[y][++x])
+        check_argument(var, var->tex[i].path, ".xpm", 1);
+        if ((fd = open(var->tex[i].path, O_RDONLY) == -1))
         {
-            if (!ft_isinset("012NSWE", var->map[y][x]))
-                close_game(var, "Map can only contain 0 1 2 N S W E.");
-            else if ((x == 0 && var->map[y][x] == '0') ||
-                     (x == var->size_x - 1 && var->map[y][x] == '0') ||
-                     (y == 0 && var->map[y][x] == '0') ||
-                     (y == var->size_y - 1 && var->map[y][x] == '0'))
-                close_game(var, "Map is not closed, check the edges.");
+            close(fd);
+            close_game(var, "File is invalid.\n");
         }
-        x = -1;
+        close(fd);
     }
-    if (!var->player.pos_x && !var->player.pos_y)
-        close_game(var, "Player position must be specified.");
-    if (!(var->player.pos_x >= 1 && var->player.pos_x <= var->size_x - 1) ||
-        !(var->player.pos_y >= 1 && var->player.pos_y <= var->size_x - 1))
-        close_game(var, "Player cannot be placed on map edge.");
+    check_argument(var, var->s_path, ".xpm", 1);
+    if ((fd = open(var->s_path, O_RDONLY) == -1))
+    {
+        close(fd);
+        close_game(var, "File is invalid.\n");
+    }
+    close(fd);
+}
+
+/*
+**  Mode == 1 ? check la resolution;
+**  Mode == 2 ? check les couleurs;
+*/
+void check_numbers(t_var *var, char *line, int mode)
+{
+    if (*line != '\0')
+        close_game(var, "Bad formatting.\n");
+    if (mode == 1)
+    {
+        if (var->width <= 0 || var->height <= 0)
+            close_game(var, "Resolution is invalid.\n");
+    }
+    if (mode == 2)
+    {
+        if (var->colors != 3)
+            close_game(var, "Only 3 numbers must be specified.\n");
+    }
 }

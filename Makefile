@@ -6,13 +6,32 @@
 #    By: jabenjam <jabenjam@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2020/07/28 18:21:33 by jabenjam          #+#    #+#              #
-#    Updated: 2020/07/29 16:02:19 by jabenjam         ###   ########.fr        #
+#    Updated: 2020/08/02 18:40:37 by jabenjam         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
+#COLORS
+GREY=$'\x1b[30m
+RED=$'\x1b[31m
+GREEN=$'\x1b[32m
+YELLOW=$'\x1b[33m
+BLUE=$'\x1b[34m
+PURPLE=$'\x1b[35m
+CYAN=$'\x1b[36m
+WHITE=$'\x1b[37m
+
+#STYLES
+END=$'\x1b[0m
+BOLD=$'\x1b[1m
+UNDER=$'\x1b[4m
+REV=$'\x1b[7m
+
+#CORE
 NAME = Cub3D
 
-LFT = lib/libft.a
+LFT = libft/
+
+LFTA = libft/libft.a
 
 INCS =  incs/cub3d.h \
 		incs/keys.h\
@@ -24,7 +43,9 @@ B_INC = bonus_incs/cub3d.h \
 
 SRCS = cub3d.c \
 		srcs/bmp.c \
+		srcs/check_closed.c \
 		srcs/check_data.c \
+		srcs/check_map.c \
 		srcs/controls.c \
 		srcs/core.c \
 		srcs/events.c \
@@ -42,7 +63,9 @@ SRCS = cub3d.c \
 B_SRCS = cub3d_bonus.c \
 		bonus_srcs/aesthetic.c \
 		bonus_srcs/bmp.c \
+		bonus_srcs/check_closed.c \
 		bonus_srcs/check_data.c \
+		bonus_srcs/check_map.c \
 		bonus_srcs/controls.c \
 		bonus_srcs/core.c \
 		bonus_srcs/events.c \
@@ -65,22 +88,40 @@ CC = gcc
 
 CFLAGS = -Wall -Wextra -Werror
 
-MLX = -lmlx -framework OpenGL -framework AppKit
+MLX = -lmlx -framework OpenGL -framework AppKit #MacOS
 
-#MLX_LINUX = 
+#MLX = #Linux
 
-all :
-	$(CC) $(CFLAGS) $(MLX) $(LFT) $(SRCS) -I $(INCS)
+$(NAME) :
+	@echo "$(YELLOW)Creating libft.a..."
+	@$(MAKE) -C $(LFT) > /dev/null
+	@echo "$(GREEN)Done !"
+	@echo "$(YELLOW)Linking objects..."
+ifeq ($(MAKECMDGOALS),bonus)
+	$(CC) $(CFLAGS) -o $(NAME) $(BOBJS) $(MLX) $(LFTA)
+else
+	$(CC) $(CFLAGS) -o $(NAME) $(OBJS) $(MLX) $(LFTA)
+endif
 
-bonus :
-	$(CC) $(CFLAGS) $(MLX) $(LFT) $(B_SRCS) -I $(B_INCS)
+all : $(OBJS) $(NAME)
+	@echo "$(BOLD)$(GREEN)$(NAME) is ready !"
+
+bonus : $(BOBJS) $(NAME)
+	@echo "$(BOLD)$(GREEN)$(NAME) is ready !"
 
 clean :
-	rm -rf $(OBJS) $(BOBJS)
+	@echo "$(RED)Deleting object files in subfolders..."
+	@rm -rf $(OBJS) $(BOBJS)
+	@$(MAKE) clean -C $(LFT) > /dev/null
+	@echo "$(GREEN)Done !"
 
 fclean : clean
-	rm -rf $(NAME)
-	rm -rf cub3d.bmp
+	@echo "$(RED)Deleting Cub3d, cub3d.bmp and libft.a..."
+	@rm -rf $(NAME)
+	@rm -rf cub3d.bmp
+	@$(MAKE) fclean -C $(LFT) > /dev/null
+	@echo "$(GREEN)Done !"
+
 
 re : fclean all
 

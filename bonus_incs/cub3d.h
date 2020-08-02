@@ -6,7 +6,7 @@
 /*   By: jabenjam <jabenjam@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/07/28 17:36:27 by jabenjam          #+#    #+#             */
-/*   Updated: 2020/07/30 15:47:29 by jabenjam         ###   ########.fr       */
+/*   Updated: 2020/08/02 16:19:37 by jabenjam         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -175,6 +175,9 @@ char *parse_path(char *line);
 int parse_rgb(t_var *var, char *line);
 int parse_player(t_var *var, int x, int y);
 void parse_map(t_var *var, char **params);
+void make_rectangular(t_var *var);
+char *resize_line(char *line, int spaces);
+void fill_space(t_var *var, int y, int x);
 t_sprite *store_sprite(t_var *var, int x, int y);
 
 /*
@@ -252,11 +255,17 @@ void put_tiles(t_var *var, t_img *wall, t_img *pos, int size);
 **------VERIFICATION-------------------------------------------------------------
 */
 
+
 void check_map(t_var *var);
 void check_tex(t_var *var);
 void check_numbers(t_var *var, char *line, int mode);
 int check_argument(t_var *var, char *name, char *str, int mode);
 int check_parameters(t_var *var);
+void check_horizontally(t_var *var, int y);
+void check_vertically(t_var *var, int x);
+void check_segment(t_var *var, char *segment);
+void is_closed(t_var *var);
+
 
 /*
 **------AESTHETIC-------------------------------------------------------------
