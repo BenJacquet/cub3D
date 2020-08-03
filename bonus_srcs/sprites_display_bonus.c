@@ -1,16 +1,16 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   sprites_display.c                                  :+:      :+:    :+:   */
+/*   sprites_display_bonus.c                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: jabenjam <jabenjam@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/07/28 17:57:15 by jabenjam          #+#    #+#             */
-/*   Updated: 2020/07/29 15:27:54 by jabenjam         ###   ########.fr       */
+/*   Updated: 2020/08/03 12:44:55 by jabenjam         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../bonus_incs/cub3d.h"
+#include "../bonus_incs/cub3d_bonus.h"
 
 void sprite_y(t_var *var, t_ray_s *ray, t_sprite *head)
 {

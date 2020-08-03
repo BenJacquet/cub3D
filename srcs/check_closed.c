@@ -6,11 +6,11 @@
 /*   By: jabenjam <jabenjam@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/08/02 16:15:19 by jabenjam          #+#    #+#             */
-/*   Updated: 2020/08/02 18:54:52 by jabenjam         ###   ########.fr       */
+/*   Updated: 2020/08/03 12:59:11 by jabenjam         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../bonus_incs/cub3d.h"
+#include "../incs/cub3d.h"
 
 void check_segment(t_var *var, char *segment)
 {

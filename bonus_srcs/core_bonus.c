@@ -1,16 +1,16 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   core.c                                             :+:      :+:    :+:   */
+/*   core_bonus.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: jabenjam <jabenjam@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/07/28 18:04:00 by jabenjam          #+#    #+#             */
-/*   Updated: 2020/07/30 14:24:38 by jabenjam         ###   ########.fr       */
+/*   Updated: 2020/08/03 12:44:20 by jabenjam         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../bonus_incs/cub3d.h"
+#include "../bonus_incs/cub3d_bonus.h"
 
 void create_image(t_img *img, void *mlx, int width, int height)
 {

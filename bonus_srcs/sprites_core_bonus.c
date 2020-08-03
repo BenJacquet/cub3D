@@ -1,16 +1,16 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   sprites_core.c                                     :+:      :+:    :+:   */
+/*   sprites_core_bonus.c                               :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: jabenjam <jabenjam@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/07/28 17:55:04 by jabenjam          #+#    #+#             */
-/*   Updated: 2020/07/29 15:27:51 by jabenjam         ###   ########.fr       */
+/*   Updated: 2020/08/03 12:44:52 by jabenjam         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../bonus_incs/cub3d.h"
+#include "../bonus_incs/cub3d_bonus.h"
 
 t_ray_s sprite_setup(t_var *var)
 {

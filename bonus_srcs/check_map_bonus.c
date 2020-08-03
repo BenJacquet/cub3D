@@ -1,16 +1,16 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   check_map.c                                        :+:      :+:    :+:   */
+/*   check_map_bonus.c                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: jabenjam <jabenjam@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/08/02 16:09:24 by jabenjam          #+#    #+#             */
-/*   Updated: 2020/08/02 16:16:01 by jabenjam         ###   ########.fr       */
+/*   Updated: 2020/08/03 12:44:11 by jabenjam         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../bonus_incs/cub3d.h"
+#include "../bonus_incs/cub3d_bonus.h"
 
 void fill_space(t_var *var, int y, int x)
 {

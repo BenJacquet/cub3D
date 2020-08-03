@@ -6,7 +6,7 @@
 /*   By: jabenjam <jabenjam@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/07/28 17:52:02 by jabenjam          #+#    #+#             */
-/*   Updated: 2020/07/29 14:27:58 by jabenjam         ###   ########.fr       */
+/*   Updated: 2020/08/03 13:27:58 by jabenjam         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,7 +41,7 @@ void create_bmp(t_var *var)
     int header_size;
     int color_plane;
 
-    fd = open("Cub3D.bmp", O_CREAT | O_RDWR);
+    fd = open("Cub3D.bmp", O_RDWR | O_CREAT, 0666 | O_TRUNC);
     size = 54 + (var->width * var->height * 4);
     array = 54;
     header_size = 40;

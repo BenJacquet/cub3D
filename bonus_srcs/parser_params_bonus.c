@@ -1,16 +1,16 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   parser_params.c                                    :+:      :+:    :+:   */
+/*   parser_params_bonus.c                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: jabenjam <jabenjam@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/07/28 17:44:24 by jabenjam          #+#    #+#             */
-/*   Updated: 2020/08/02 16:32:25 by jabenjam         ###   ########.fr       */
+/*   Updated: 2020/08/03 12:44:35 by jabenjam         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../bonus_incs/cub3d.h"
+#include "../bonus_incs/cub3d_bonus.h"
 
 void parse_resolution(t_var *var, char *line)
 {

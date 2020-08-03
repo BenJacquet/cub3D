@@ -6,11 +6,11 @@
 /*   By: jabenjam <jabenjam@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/07/01 13:50:48 by jabenjam          #+#    #+#             */
-/*   Updated: 2020/08/02 16:40:16 by jabenjam         ###   ########.fr       */
+/*   Updated: 2020/08/03 12:46:05 by jabenjam         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "bonus_incs/cub3d.h"
+#include "bonus_incs/cub3d_bonus.h"
 
 int main(int ac, char **av)
 {

@@ -6,7 +6,7 @@
 #    By: jabenjam <jabenjam@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2020/07/28 18:21:33 by jabenjam          #+#    #+#              #
-#    Updated: 2020/08/02 18:40:37 by jabenjam         ###   ########.fr        #
+#    Updated: 2020/08/03 12:45:46 by jabenjam         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -61,24 +61,24 @@ SRCS = cub3d.c \
 
 
 B_SRCS = cub3d_bonus.c \
-		bonus_srcs/aesthetic.c \
-		bonus_srcs/bmp.c \
-		bonus_srcs/check_closed.c \
-		bonus_srcs/check_data.c \
-		bonus_srcs/check_map.c \
-		bonus_srcs/controls.c \
-		bonus_srcs/core.c \
-		bonus_srcs/events.c \
-		bonus_srcs/exit.c \
-		bonus_srcs/init.c \
-		bonus_srcs/mini_map.c \
-		bonus_srcs/parser_core.c \
-		bonus_srcs/parser_params.c \
-		bonus_srcs/raycast_core.c \
-		bonus_srcs/raycast_display.c \
-		bonus_srcs/sprites_core.c \
-		bonus_srcs/sprites_display.c \
-		bonus_srcs/sprites_sort.c \
+		bonus_srcs/aesthetic_bonus.c \
+		bonus_srcs/bmp_bonus.c \
+		bonus_srcs/check_closed_bonus.c \
+		bonus_srcs/check_data_bonus.c \
+		bonus_srcs/check_map_bonus.c \
+		bonus_srcs/controls_bonus.c \
+		bonus_srcs/core_bonus.c \
+		bonus_srcs/events_bonus.c \
+		bonus_srcs/exit_bonus.c \
+		bonus_srcs/init_bonus.c \
+		bonus_srcs/mini_map_bonus.c \
+		bonus_srcs/parser_core_bonus.c \
+		bonus_srcs/parser_params_bonus.c \
+		bonus_srcs/raycast_core_bonus.c \
+		bonus_srcs/raycast_display_bonus.c \
+		bonus_srcs/sprites_core_bonus.c \
+		bonus_srcs/sprites_display_bonus.c \
+		bonus_srcs/sprites_sort_bonus.c \
 
 OBJS = $(SRCS:.c=.o)
 

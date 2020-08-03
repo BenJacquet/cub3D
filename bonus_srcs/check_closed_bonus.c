@@ -1,16 +1,16 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   check_closed.c                                     :+:      :+:    :+:   */
+/*   check_closed_bonus.c                               :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: jabenjam <jabenjam@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/08/02 16:15:19 by jabenjam          #+#    #+#             */
-/*   Updated: 2020/08/02 18:55:13 by jabenjam         ###   ########.fr       */
+/*   Updated: 2020/08/03 12:44:38 by jabenjam         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../bonus_incs/cub3d.h"
+#include "../bonus_incs/cub3d_bonus.h"
 
 void check_segment(t_var *var, char *segment)
 {

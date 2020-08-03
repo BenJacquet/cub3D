@@ -1,16 +1,16 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   sprites_sort.c                                     :+:      :+:    :+:   */
+/*   sprites_sort_bonus.c                               :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: jabenjam <jabenjam@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/07/28 17:56:27 by jabenjam          #+#    #+#             */
-/*   Updated: 2020/07/29 15:27:58 by jabenjam         ###   ########.fr       */
+/*   Updated: 2020/08/03 12:44:57 by jabenjam         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../bonus_incs/cub3d.h"
+#include "../bonus_incs/cub3d_bonus.h"
 
 void swap_content(t_sprite *current, t_sprite *next)
 {

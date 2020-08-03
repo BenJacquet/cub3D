@@ -1,16 +1,16 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   raycast_core.c                                     :+:      :+:    :+:   */
+/*   raycast_core_bonus.c                               :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: jabenjam <jabenjam@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/07/28 18:02:45 by jabenjam          #+#    #+#             */
-/*   Updated: 2020/08/02 16:07:42 by jabenjam         ###   ########.fr       */
+/*   Updated: 2020/08/03 12:44:47 by jabenjam         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../bonus_incs/cub3d.h"
+#include "../bonus_incs/cub3d_bonus.h"
 
 int texture_copy(t_var *var, t_ray *ray, int x)
 {
