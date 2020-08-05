@@ -1,2 +1,3 @@
 - //gerer textures en resolutions differentes
 - Appliquer les modifs des bonus sur la version obligatoire
+- Gerer le makefile qui ne trouve pas les objets en cas de make
