@@ -6,7 +6,7 @@
 #    By: jabenjam <jabenjam@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2020/07/28 18:21:33 by jabenjam          #+#    #+#              #
-#    Updated: 2020/08/13 23:06:42 by jabenjam         ###   ########.fr        #
+#    Updated: 2020/08/13 23:12:25 by jabenjam         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -109,7 +109,7 @@ clean :
 	@rm -rf $(OBJS) $(BOBJS)
 	@echo "Done !"
 	@echo "Cleaning libft !"
-	@$(MAKE) clean -C $(LFT) > /dev/null
+	@$(MAKE) fclean -C $(LFT) > /dev/null
 	@echo "Done !"
 	@echo "Cleaning minilibx !"
 	@$(MAKE) clean -C minilibx > /dev/null

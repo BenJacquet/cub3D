@@ -1,0 +1,5 @@
+- //gerer textures en resolutions differentes
+- Appliquer les modifs des bonus sur la version obligatoire
+- Gérer reduction de fenetre au cas ou
+- Gerer le makefile qui ne trouve pas les objets en cas de make
+- Pour le --save, enregistrer dans la résolution spécifiés meme si elle est plus grande que l'ecran
