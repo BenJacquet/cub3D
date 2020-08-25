@@ -6,7 +6,7 @@
 /*   By: jabenjam <jabenjam@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/07/28 17:55:04 by jabenjam          #+#    #+#             */
-/*   Updated: 2020/08/11 15:40:11 by jabenjam         ###   ########.fr       */
+/*   Updated: 2020/08/25 16:07:43 by jabenjam         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,13 +46,12 @@ int				raycast_sprites(t_var *var, double *zbuffer)
 	t_ray_s		ray_s;
 
 	head = var->sprites;
-	initialize_sprite(var, head);
 	while (var->sprites)
 	{
 		ray_s = sprite_setup(var);
 		ray_s.col = ray_s.start_x;
 		while (ray_s.col < ray_s.end_x)
-			sprite_x(var, &ray_s, head, zbuffer);
+			sprite_x(var, &ray_s, zbuffer);
 		var->sprites = var->sprites->next;
 	}
 	var->sprites = head;

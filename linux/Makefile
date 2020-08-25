@@ -6,7 +6,7 @@
 #    By: jabenjam <jabenjam@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2020/07/28 18:21:33 by jabenjam          #+#    #+#              #
-#    Updated: 2020/08/13 23:12:25 by jabenjam         ###   ########.fr        #
+#    Updated: 2020/08/25 21:10:30 by jabenjam         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -18,16 +18,17 @@ LFT = libft/
 
 LFTA = libft/libft.a
 
-MLXA =  minilibx/libmlx.a \
-		minilibx/libmlx_Linux.a
+MLXA =  minilibx/
 
 INCS =  incs/cub3d.h \
-		incs/keys.h\
 		incs/libft.h \
+		incs/keys.h \
+		incs/keys_a.h
 
 B_INC = bonus_incs/cub3d.h \
-		incs/keys.h \
 		incs/libft.h \
+		incs/keys.h \
+		incs/keys_a.h
 
 SRCS = cub3d.c \
 		srcs/bmp.c \
@@ -45,7 +46,7 @@ SRCS = cub3d.c \
 		srcs/raycast_display.c \
 		srcs/sprites_core.c \
 		srcs/sprites_display.c \
-		srcs/sprites_sort.c \
+		srcs/sprites_sort.c
 
 
 B_SRCS = cub3d_bonus.c \
@@ -66,7 +67,7 @@ B_SRCS = cub3d_bonus.c \
 		bonus_srcs/raycast_display_bonus.c \
 		bonus_srcs/sprites_core_bonus.c \
 		bonus_srcs/sprites_display_bonus.c \
-		bonus_srcs/sprites_sort_bonus.c \
+		bonus_srcs/sprites_sort_bonus.c
 
 OBJS = $(SRCS:.c=.o)
 
@@ -76,7 +77,7 @@ CC = gcc
 
 CFLAGS = -Wall -Wextra -Werror
 
-MLX = -lmlx -lXext -lX11  #Linux
+MLX = -lmlx -lm -lXext -lX11 -lpthread -lbsd
 
 $(NAME) : $(OBJS)
 	@echo "Creating libft.a..."
@@ -86,7 +87,7 @@ $(NAME) : $(OBJS)
 	@$(MAKE) -C minilibx > /dev/null
 	@echo "Done !"
 	@echo "Linking objects..."
-	$(CC) $(CFLAGS) -o $(NAME) $(OBJS) $(LFTA) -lm $(MLXA) $(MLX)
+	$(CC) $(CFLAGS) -o $(NAME) $(OBJS) $(LFTA) -I$(MLXA) -L$(MLXA) $(MLX)
 
 $(NAME_BONUS) : $(BOBJS) 
 	@echo "Creating libft.a..."
@@ -96,7 +97,7 @@ $(NAME_BONUS) : $(BOBJS)
 	@$(MAKE) -C minilibx > /dev/null
 	@echo "Done !"
 	@echo "Linking objects..."
-	$(CC) $(CFLAGS) -o $(NAME_BONUS) $(BOBJS) -lm $(LFTA) $(MLXA) $(MLX)
+	$(CC) $(CFLAGS) -o $(NAME_BONUS) $(BOBJS) $(LFTA) -I$(MLXA) -L$(MLXA) $(MLX)
 
 all : $(NAME)
 	@echo "$(NAME) is ready !"
@@ -116,9 +117,9 @@ clean :
 	@echo "Done !"
 
 fclean : clean
-	@echo "Deleting Cub3d, cub3d.bmp and libft.a..."
-	@rm -rf $(NAME)
-	@rm -rf cub3d.bmp
+	@echo "Deleting Cub3d, Cub3D.bmp and libft.a..."
+	@rm -rf $(NAME) $(NAME_BONUS)
+	@rm -rf Cub3D.bmp
 	@echo "Done !"
 
 

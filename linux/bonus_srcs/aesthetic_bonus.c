@@ -6,27 +6,27 @@
 /*   By: jabenjam <jabenjam@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/07/28 18:05:46 by jabenjam          #+#    #+#             */
-/*   Updated: 2020/08/11 16:43:03 by jabenjam         ###   ########.fr       */
+/*   Updated: 2020/08/25 19:01:34 by jabenjam         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../bonus_incs/cub3d_bonus.h"
 
 /*
-** Mode == 0 : Off
-** Mode == 1 : On
+** Key.t == 0 : Off
+** Key.t == 1 : On
 */
 
-void	music_player(t_var *var, int mode)
+void	music_player(t_var *var)
 {
-	if (var->key.play == 0 && mode == 1)
+	if (var->key.play == 0 && var->key.t == 1)
 	{
-		system("afplay -v 0.5 bonus_sound/aesthetic.mp3 > /dev/null &");
+		system("mpg321 -g 50 bonus_sound/aesthetic.mp3 > /dev/null &");
 		var->key.play = 1;
 	}
-	else if (var->key.play == 1 && mode == 0)
+	if (var->key.play == 1 && var->key.t == 0)
 	{
-		system("killall afplay > /dev/null &");
+		system("killall mpg321 > /dev/null &");
 		var->key.play = 0;
 	}
 }

@@ -6,7 +6,7 @@
 /*   By: jabenjam <jabenjam@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/07/28 17:49:03 by jabenjam          #+#    #+#             */
-/*   Updated: 2020/08/11 16:51:43 by jabenjam         ###   ########.fr       */
+/*   Updated: 2020/08/25 20:12:59 by jabenjam         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -95,6 +95,6 @@ int			keys(t_var *var)
 		look(&var->cam, 0);
 	if (var->key.map == 1)
 		draw_mini_map(var, 8 + var->key.size);
-	music_player(var, var->key.t);
+	music_player(var);
 	return (0);
 }

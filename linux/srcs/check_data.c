@@ -6,7 +6,7 @@
 /*   By: jabenjam <jabenjam@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/07/28 17:52:52 by jabenjam          #+#    #+#             */
-/*   Updated: 2020/08/13 22:42:18 by jabenjam         ###   ########.fr       */
+/*   Updated: 2020/08/25 14:13:46 by jabenjam         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,7 @@ int		check_parameters(t_var *var)
 	if (var->number != 8 || var->width == 0 || var->height == 0 ||
 			var->f_color == 0 || var->c_color == 0 || var->tex[0].path == 0 ||
 			var->tex[1].path == 0 || var->tex[2].path == 0 ||
-			var->tex[3].path == 0 || var->s_path == 0)
+			var->tex[3].path == 0 || var->tex[4].path == 0)
 	{
 		close_game(var, "Invalid map.\n");
 	}
@@ -61,7 +61,7 @@ void	check_tex(t_var *var)
 	int	fd;
 
 	i = -1;
-	while (++i <= 3)
+	while (++i <= 4)
 	{
 		check_argument(var, var->tex[i].path, ".xpm", 1);
 		if ((fd = open(var->tex[i].path, O_RDONLY) == -1))
@@ -71,13 +71,6 @@ void	check_tex(t_var *var)
 		}
 		close(fd);
 	}
-	check_argument(var, var->s_path, ".xpm", 1);
-	if ((fd = open(var->s_path, O_RDONLY) == -1))
-	{
-		close(fd);
-		close_game(var, "File is invalid or path is incorrect.\n");
-	}
-	close(fd);
 }
 
 /*

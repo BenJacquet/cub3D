@@ -6,7 +6,7 @@
 /*   By: jabenjam <jabenjam@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/07/28 17:42:57 by jabenjam          #+#    #+#             */
-/*   Updated: 2020/08/13 22:47:20 by jabenjam         ###   ########.fr       */
+/*   Updated: 2020/08/25 16:21:20 by jabenjam         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,13 +22,12 @@ void	initialize_var(t_var *var)
 	var->c_color = 0;
 	var->colors = 0;
 	var->bpp = 32;
-	var->tex[0].path = 0;
-	var->tex[1].path = 0;
-	var->tex[2].path = 0;
-	var->tex[3].path = 0;
-	var->s_path = 0;
+	var->tex[0].path = NULL;
+	var->tex[1].path = NULL;
+	var->tex[2].path = NULL;
+	var->tex[3].path = NULL;
+	var->tex[4].path = NULL;
 	var->number = 0;
-	var->save = 0;
 	var->n_sprites = 0;
 	var->player.pos_x = 0.0;
 	var->player.pos_y = 0.0;
@@ -39,6 +38,8 @@ void	initialize_var(t_var *var)
 	var->cam.plane_x = 0.0;
 	var->cam.plane_y = 0.0;
 	var->cam.cam_x = 0.0;
+	var->sprites = NULL;
+	var->win = NULL;
 }
 
 void	initialize_key(t_key *key)
@@ -72,54 +73,19 @@ void	initialize_tex(t_var *var)
 	int	i;
 	int	endian;
 	int	sl;
-	int	fd;
 
 	i = 0;
 	endian = 0;
-	while (i <= 3)
+	while (i <= 4)
 	{
 		check_argument(var, var->tex[i].path, ".xpm", 1);
-		if ((fd = open(var->tex[i].path, O_RDONLY) == -1))
-		{
-			close(fd);
-			close_game(var, "File is invalid");
-		}
-		close(fd);
-		sl = var->tex[i].width * 4;
 		var->tex[i].width = 64;
 		var->tex[i].height = 64;
-		printf("0\n");
-		printf("var->tex[%d].path=%s | width=%d | height=%d\n", i, var->tex[i].path, var->tex[i].width, var->tex[i].height);
+		sl = var->tex[i].width * 4;
 		var->tex[i].ptr = mlx_xpm_file_to_image(var->mlx, var->tex[i].path,
 						&var->tex[i].width, &var->tex[i].height);
-		printf("1\n");
 		var->tex[i].dat = mlx_get_data_addr(var->tex[i].ptr, &var->bpp,
 						&sl, &endian);
-		printf("2\n");
 		i++;
 	}
-}
-
-void	initialize_sprite(t_var *var, t_sprite *sprite)
-{
-	int	endian;
-	int	fd;
-
-	sprite->width = 64;
-	sprite->height = 64;
-	sprite->sl = sprite->width * 4;
-	endian = 0;
-	check_argument(var, var->s_path, ".xpm", 1);
-	if ((fd = open(var->s_path, O_RDONLY) == -1))
-	{
-		close(fd);
-		close_game(var, "File is invalid");
-	}
-	close(fd);
-	sprite->ptr = mlx_xpm_file_to_image(var->mlx, var->s_path,
-					&sprite->width, &sprite->height);
-	printf("3\n");
-	sprite->dat = mlx_get_data_addr(sprite->ptr, &var->bpp,
-					&sprite->sl, &endian);
-	printf("4\n");
 }

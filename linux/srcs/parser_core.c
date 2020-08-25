@@ -6,7 +6,7 @@
 /*   By: jabenjam <jabenjam@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/07/28 17:45:36 by jabenjam          #+#    #+#             */
-/*   Updated: 2020/08/11 15:51:13 by jabenjam         ###   ########.fr       */
+/*   Updated: 2020/08/25 14:12:17 by jabenjam         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,8 +28,8 @@ int			cub_parser2(t_var *var, char *line)
 		var->tex[0].path = parse_path(2 + line);
 	else if (line && line[0] == 'E' && line[1] == 'A' && var->tex[1].path == 0)
 		var->tex[1].path = parse_path(2 + line);
-	else if (line && line[0] == 'S' && var->s_path == 0)
-		var->s_path = parse_path(++line);
+	else if (line && line[0] == 'S' && var->tex[4].path == 0)
+		var->tex[4].path = parse_path(++line);
 	return (1);
 }
 

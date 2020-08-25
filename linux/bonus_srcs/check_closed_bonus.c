@@ -6,7 +6,7 @@
 /*   By: jabenjam <jabenjam@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/08/02 16:15:19 by jabenjam          #+#    #+#             */
-/*   Updated: 2020/08/11 16:01:26 by jabenjam         ###   ########.fr       */
+/*   Updated: 2020/08/25 20:43:57 by jabenjam         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,13 +17,16 @@ void		check_segment(t_var *var, char *segment)
 	int		len;
 
 	len = ft_strlen(segment);
-	if (ft_isinset("0NSWE", segment[0]) ||
-			ft_isinset("0NSWE", segment[len - 1]))
+	if (segment[0] && segment[len - 1])
 	{
-		if (ft_isinset("NSWE", segment[0]) ||
+		if (ft_isinset("0NSWE", segment[0]) ||
+			ft_isinset("0NSWE", segment[len - 1]))
+		{
+			if (ft_isinset("NSWE", segment[0]) ||
 				ft_isinset("NSWE", segment[len - 1]))
-			close_game(var, "Incorrect player position.\n");
-		close_game(var, "Map is not closed or is not filled.\n");
+				close_game(var, "Incorrect player position.\n");
+			close_game(var, "Map is not closed or is not filled.\n");
+		}
 	}
 }
 

@@ -6,7 +6,7 @@
 /*   By: jabenjam <jabenjam@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/07/28 17:49:38 by jabenjam          #+#    #+#             */
-/*   Updated: 2020/08/11 16:05:18 by jabenjam         ###   ########.fr       */
+/*   Updated: 2020/08/25 20:54:20 by jabenjam         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,7 +37,7 @@ int		key_press(int key, t_var *var)
 	else if (key == K_T)
 		var->key.t = (var->key.t ? 0 : 1);
 	else if (key == K_M)
-		var->key.map = (var->key.map ? 0 : 1);
+		var->key.map = 1;
 	else if (key == K_PLUS)
 		var->key.size += (var->key.size < var->width / 400);
 	else if (key == K_MINUS)
@@ -59,5 +59,7 @@ int		key_release(int key, t_var *var)
 		var->key.l_strafe = 0;
 	else if (key == K_D)
 		var->key.r_strafe = 0;
+	else if (key == K_M)
+		var->key.map = 0;
 	return (0);
 }

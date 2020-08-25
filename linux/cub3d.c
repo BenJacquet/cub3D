@@ -6,7 +6,7 @@
 /*   By: jabenjam <jabenjam@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/07/01 13:50:48 by jabenjam          #+#    #+#             */
-/*   Updated: 2020/08/12 15:51:02 by jabenjam         ###   ########.fr       */
+/*   Updated: 2020/08/25 19:11:10 by jabenjam         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,6 +26,7 @@ int	main(int ac, char **av)
 		check_tex(&var);
 		var.mlx = mlx_init();
 		initialize_tex(&var);
+		initialize_key(&var.key);
 		if (ac == 3 && !check_argument(&var, av[2], "--save", 2))
 			save(&var);
 		var.win = mlx_new_window(var.mlx, var.width, var.height, "Cub3D");

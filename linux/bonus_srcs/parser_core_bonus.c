@@ -6,7 +6,7 @@
 /*   By: jabenjam <jabenjam@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/07/28 17:45:36 by jabenjam          #+#    #+#             */
-/*   Updated: 2020/08/11 16:37:44 by jabenjam         ###   ########.fr       */
+/*   Updated: 2020/08/25 15:41:16 by jabenjam         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,22 +14,22 @@
 
 int			cub_parser2(t_var *var, char *line)
 {
-	if (line && !strncmp(line, "R ", 2) && var->width == 0 && var->height == 0)
+	if (line && line[0] == 'R' && var->width == 0 && var->height == 0)
 		parse_resolution(var, ++line);
-	else if (line && !strncmp(line, "F ", 2) && var->f_color == 0)
+	else if (line && line[0] == 'F' && var->f_color == 0)
 		var->f_color = parse_rgb(var, ++line);
-	else if (line && !strncmp(line, "C ", 2) && var->c_color == 0)
+	else if (line && line[0] == 'C' && var->c_color == 0)
 		var->c_color = parse_rgb(var, ++line);
-	else if (line && !strncmp(line, "NO ", 3) && var->tex[2].path == 0)
+	else if (line && line[0] == 'N' && line[1] == 'O' && var->tex[2].path == 0)
 		var->tex[2].path = parse_path(2 + line);
-	else if (line && !strncmp(line, "SO ", 3) && var->tex[3].path == 0)
+	else if (line && line[0] == 'S' && line[1] == 'O' && var->tex[3].path == 0)
 		var->tex[3].path = parse_path(2 + line);
-	else if (line && !strncmp(line, "WE ", 3) && var->tex[0].path == 0)
+	else if (line && line[0] == 'W' && line[1] == 'E' && var->tex[0].path == 0)
 		var->tex[0].path = parse_path(2 + line);
-	else if (line && !strncmp(line, "EA ", 3) && var->tex[1].path == 0)
+	else if (line && line[0] == 'E' && line[1] == 'A' && var->tex[1].path == 0)
 		var->tex[1].path = parse_path(2 + line);
-	else if (line && !strncmp(line, "S ", 2) && var->s_path == 0)
-		var->s_path = parse_path(++line);
+	else if (line && line[0] == 'S' && var->tex[4].path == 0)
+		var->tex[4].path = parse_path(++line);
 	return (1);
 }
 
