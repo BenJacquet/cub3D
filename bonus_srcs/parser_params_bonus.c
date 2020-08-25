@@ -6,7 +6,7 @@
 /*   By: jabenjam <jabenjam@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/07/28 17:44:24 by jabenjam          #+#    #+#             */
-/*   Updated: 2020/08/25 23:06:49 by jabenjam         ###   ########.fr       */
+/*   Updated: 2020/08/25 23:40:44 by jabenjam         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -76,7 +76,7 @@ int			parse_player(t_var *var, int x, int y)
 	else if (var->map[y][x] == 'E' || var->map[y][x] == 'W')
 	{
 		var->cam.dir_x = (var->map[y][x] == 'E' ? 1.0 : -1.0);
-		var->cam.plane_y = (var->map[y][x] == 'W' ? -0.66 : 0.66);
+		var->cam.plane_y = (var->map[y][x] == 'E' ? 0.66 : -0.66);
 	}
 	if (var->map[y][x] == 'N' || var->map[y][x] == 'S' ||
 			var->map[y][x] == 'W' || var->map[y][x] == 'E')
@@ -87,8 +87,8 @@ int			parse_player(t_var *var, int x, int y)
 		var->player.pos_y = y + 0.5;
 		var->map[y][x] = '0';
 		if (!(var->player.pos_x >= 1 && var->player.pos_x <= var->size_x - 1) ||
-			!(var->player.pos_y >= 1 && var->player.pos_y <= var->size_x - 1))
-			close_game(var, "Player cannot be placed on map edge.\n");
+			!(var->player.pos_y >= 1 && var->player.pos_y <= var->size_y - 1))
+			close_game(var, "Invalid player position.\n");
 	}
 	return (0);
 }

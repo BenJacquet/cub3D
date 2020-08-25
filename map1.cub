@@ -1,0 +1,16 @@
+R 1920 1080
+NO ./textures/redbrick.xpm
+SO ./textures/purplestone.xpm
+WE ./textures/greystone.xpm
+EA ./textures/mossy.xpm
+S ./textures/barrel.xpm
+F 127,127,127
+C 25,120,230
+
+11
+11
+11
+11
+1N
+11
+11
