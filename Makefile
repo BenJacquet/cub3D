@@ -6,7 +6,7 @@
 #    By: jabenjam <jabenjam@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2020/07/28 18:21:33 by jabenjam          #+#    #+#              #
-#    Updated: 2020/08/25 21:10:30 by jabenjam         ###   ########.fr        #
+#    Updated: 2020/08/26 10:55:46 by jabenjam         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -75,7 +75,7 @@ BOBJS = $(B_SRCS:.c=.o)
 
 CC = gcc
 
-CFLAGS = -Wall -Wextra -Werror
+CFLAGS = -Wall -Wextra -Werror -g3 -fsanitize=address
 
 MLX = -lmlx -lm -lXext -lX11 -lpthread -lbsd
 

@@ -6,7 +6,7 @@
 /*   By: jabenjam <jabenjam@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/07/28 17:42:57 by jabenjam          #+#    #+#             */
-/*   Updated: 2020/08/25 22:00:17 by jabenjam         ###   ########.fr       */
+/*   Updated: 2020/08/26 10:55:27 by jabenjam         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,6 +21,7 @@ void	initialize_var2(t_var *var)
 	var->tex[4].path = NULL;
 	var->sprites = NULL;
 	var->win = NULL;
+	var->map = NULL;
 }
 
 void	initialize_var(t_var *var)
