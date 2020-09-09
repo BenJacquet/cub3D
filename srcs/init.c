@@ -6,7 +6,7 @@
 /*   By: jabenjam <jabenjam@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/07/28 17:42:57 by jabenjam          #+#    #+#             */
-/*   Updated: 2020/08/26 10:58:34 by jabenjam         ###   ########.fr       */
+/*   Updated: 2020/09/09 14:31:31 by jabenjam         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -90,6 +90,8 @@ void	initialize_tex(t_var *var)
 		sl = var->tex[i].width * 4;
 		var->tex[i].ptr = mlx_xpm_file_to_image(var->mlx, var->tex[i].path,
 						&var->tex[i].width, &var->tex[i].height);
+		if (var->tex[i].ptr == NULL)
+			close_game(var, "Texture file is corrupted.\n");
 		var->tex[i].dat = mlx_get_data_addr(var->tex[i].ptr, &var->bpp,
 						&sl, &endian);
 		i++;

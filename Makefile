@@ -6,7 +6,7 @@
 #    By: jabenjam <jabenjam@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2020/07/28 18:21:33 by jabenjam          #+#    #+#              #
-#    Updated: 2020/08/26 10:55:46 by jabenjam         ###   ########.fr        #
+#    Updated: 2020/09/09 14:44:55 by jabenjam         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -28,7 +28,8 @@ INCS =  incs/cub3d.h \
 B_INC = bonus_incs/cub3d.h \
 		incs/libft.h \
 		incs/keys.h \
-		incs/keys_a.h
+		incs/keys_a.h \
+		incs/keys_mac.h
 
 SRCS = cub3d.c \
 		srcs/bmp.c \
@@ -75,9 +76,10 @@ BOBJS = $(B_SRCS:.c=.o)
 
 CC = gcc
 
-CFLAGS = -Wall -Wextra -Werror -g3 -fsanitize=address
+CFLAGS = -Wall -Wextra -Werror
 
-MLX = -lmlx -lm -lXext -lX11 -lpthread -lbsd
+#MLX = -lmlx -lm -lXext -lX11 -lpthread -lbsd
+MLX = -lmlx -framework OpenGL -framework AppKit
 
 $(NAME) : $(OBJS)
 	@echo "Creating libft.a..."

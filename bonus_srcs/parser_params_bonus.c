@@ -6,7 +6,7 @@
 /*   By: jabenjam <jabenjam@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/07/28 17:44:24 by jabenjam          #+#    #+#             */
-/*   Updated: 2020/08/25 23:40:44 by jabenjam         ###   ########.fr       */
+/*   Updated: 2020/09/09 14:13:22 by jabenjam         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,19 +15,28 @@
 void		parse_resolution(t_var *var, char *line, int ac)
 {
 	int		x;
+	int		i;
 
 	x = 0;
+	i = 0;
 	while (line && *line == ' ')
 		line++;
 	while (line && *line >= '0' && *line <= '9' && *line != ' ')
+	{
 		x = (x * 10) + (*(line++) - '0');
-	var->width = (x > 2560 && ac == 2 ? 2560 : x);
+		i++;
+	}
+	var->width = ((x > 2560 || i > 10) && ac == 2 ? 2560 : x);
 	x = 0;
+	i = 0;
 	while (line && *line == ' ')
 		line++;
 	while (line && *line >= '0' && *line <= '9')
+	{
 		x = (x * 10) + (*(line++) - '0');
-	var->height = (x > 1440 && ac == 2 ? 1440 : x);
+		i++;
+	}
+	var->height = ((x > 1440 || i > 10) && ac == 2 ? 1440 : x);
 	check_numbers(var, line, 1);
 }
 

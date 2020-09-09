@@ -6,7 +6,7 @@
 /*   By: jabenjam <jabenjam@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/07/01 13:50:48 by jabenjam          #+#    #+#             */
-/*   Updated: 2020/08/25 23:02:29 by jabenjam         ###   ########.fr       */
+/*   Updated: 2020/09/09 14:40:39 by jabenjam         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,6 +36,6 @@ int			main(int ac, char **av)
 		mlx_loop_hook(var.mlx, game, &var);
 		mlx_loop(var.mlx);
 	}
-	close_game(&var, "Number of arguments specified is incorrect.");
+	close_game(&var, "Number of arguments specified is incorrect.\n");
 	return (0);
 }

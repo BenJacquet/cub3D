@@ -6,7 +6,7 @@
 /*   By: jabenjam <jabenjam@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/07/28 17:45:36 by jabenjam          #+#    #+#             */
-/*   Updated: 2020/08/25 23:05:50 by jabenjam         ###   ########.fr       */
+/*   Updated: 2020/09/09 15:04:46 by jabenjam         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,6 +56,7 @@ void		cub_parser(t_var *var, int fd, int ac)
 	if (!(save = malloc(sizeof(char) * 4096)))
 		close_game(var, "Could not allocate memory for read() buffer.\n");
 	ft_bzero(save, 4096);
+	ft_bzero(buffer, 4096);
 	while ((out = read(fd, buffer, 4096)) > 0)
 	{
 		bkp = save;
