@@ -6,7 +6,7 @@
 #    By: jabenjam <jabenjam@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2020/07/28 18:21:33 by jabenjam          #+#    #+#              #
-#    Updated: 2020/09/09 14:44:55 by jabenjam         ###   ########.fr        #
+#    Updated: 2020/09/09 16:54:21 by jabenjam         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -78,8 +78,8 @@ CC = gcc
 
 CFLAGS = -Wall -Wextra -Werror
 
-#MLX = -lmlx -lm -lXext -lX11 -lpthread -lbsd
-MLX = -lmlx -framework OpenGL -framework AppKit
+MLX = -lmlx -lm -lXext -lX11 -lpthread -lbsd
+#MLX = -lmlx -framework OpenGL -framework AppKit
 
 $(NAME) : $(OBJS)
 	@echo "Creating libft.a..."
