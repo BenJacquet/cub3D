@@ -6,7 +6,7 @@
 /*   By: jabenjam <jabenjam@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/07/28 18:02:45 by jabenjam          #+#    #+#             */
-/*   Updated: 2020/08/25 22:20:18 by jabenjam         ###   ########.fr       */
+/*   Updated: 2020/09/20 19:02:29 by jabenjam         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -74,7 +74,7 @@ void		raycast_step(t_var *var, t_ray *ray)
 	if (ray->dir_x < 0)
 	{
 		ray->step_x = -1;
-		ray->side_x = (var->player.pos_x - ray->map_x) * var->cam.delta_x;
+		ray->side_x = (var->player.pos_x - ray->map_x) * var->cam.delta_x; // distance depuis le point de depart jusqu'au prochain cote en x
 	}
 	else
 	{
@@ -95,12 +95,12 @@ void		raycast_step(t_var *var, t_ray *ray)
 
 void		raycast_setup(t_var *var, t_ray *ray, int x)
 {
-	var->cam.cam_x = (2 * x) / (double)var->width - 1;
+	var->cam.cam_x = (2 * x) / (double)var->width - 1; // Position de la cam en x
 	ray->dir_x = var->cam.dir_x + var->cam.plane_x * var->cam.cam_x;
 	ray->dir_y = var->cam.dir_y + var->cam.plane_y * var->cam.cam_x;
 	ray->map_x = (int)var->player.pos_x;
 	ray->map_y = (int)var->player.pos_y;
-	var->cam.delta_x = fabs(1 / ray->dir_x);
-	var->cam.delta_y = fabs(1 / ray->dir_y);
+	var->cam.delta_x = fabs(1 / ray->dir_x); // distance jusqu'a la prochaine case en x
+	var->cam.delta_y = fabs(1 / ray->dir_y); // distance jusqu'a la prochaine case en y
 	ray->hit = 0;
 }
