@@ -6,11 +6,12 @@
 /*   By: jabenjam <jabenjam@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/07/28 17:45:36 by jabenjam          #+#    #+#             */
-/*   Updated: 2020/09/09 14:25:31 by jabenjam         ###   ########.fr       */
+/*   Updated: 2020/09/20 18:09:24 by jabenjam         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../bonus_incs/cub3d_bonus.h"
+
 int			cub_parser2(t_var *var, char *line, int ac)
 {
 	if (line && line[0] == 'R' && var->width == 0 && var->height == 0)

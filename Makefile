@@ -6,7 +6,7 @@
 #    By: jabenjam <jabenjam@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2020/07/28 18:21:33 by jabenjam          #+#    #+#              #
-#    Updated: 2020/09/09 16:54:21 by jabenjam         ###   ########.fr        #
+#    Updated: 2020/09/20 18:27:38 by jabenjam         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -22,14 +22,15 @@ MLXA =  minilibx/
 
 INCS =  incs/cub3d.h \
 		incs/libft.h \
+		incs/mlx.h \
 		incs/keys.h \
 		incs/keys_a.h
 
 B_INC = bonus_incs/cub3d.h \
 		incs/libft.h \
+		incs/mlx.h \
 		incs/keys.h \
 		incs/keys_a.h \
-		incs/keys_mac.h
 
 SRCS = cub3d.c \
 		srcs/bmp.c \
@@ -79,7 +80,6 @@ CC = gcc
 CFLAGS = -Wall -Wextra -Werror
 
 MLX = -lmlx -lm -lXext -lX11 -lpthread -lbsd
-#MLX = -lmlx -framework OpenGL -framework AppKit
 
 $(NAME) : $(OBJS)
 	@echo "Creating libft.a..."
@@ -119,11 +119,10 @@ clean :
 	@echo "Done !"
 
 fclean : clean
-	@echo "Deleting Cub3d, Cub3D.bmp and libft.a..."
+	@echo "Deleting Cub3d, Cub3d_bonus and Cub3D.bmp..."
 	@rm -rf $(NAME) $(NAME_BONUS)
 	@rm -rf Cub3D.bmp
 	@echo "Done !"
-
 
 re : fclean all
 
