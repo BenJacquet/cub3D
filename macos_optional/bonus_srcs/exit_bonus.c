@@ -6,7 +6,7 @@
 /*   By: jabenjam <jabenjam@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/07/28 17:39:03 by jabenjam          #+#    #+#             */
-/*   Updated: 2020/08/26 10:54:44 by jabenjam         ###   ########.fr       */
+/*   Updated: 2020/09/21 11:48:55 by jabenjam         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,8 +27,8 @@ void		close_game2(t_var *var)
 	}
 	if (var->win != NULL)
 		mlx_destroy_window(var->mlx, var->win);
-	if (var->key.play == 1 && !system("pgrep mpg321"))
-		system("killall mpg321");
+	if (var->key.play == 1 && !system("pgrep afplay"))
+		system("killall afplay");
 }
 
 void		close_game(t_var *var, char *error)

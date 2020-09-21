@@ -1,8 +1,8 @@
 R 1080 720
-NO ./textures/494/space.xpm
-SO ./textures/494/desert.xpm
-WE ./textures/168/halosky.xpm
-EA ./textures/168/halogris.xpm
+NO ./textures/purplestone.xpm
+SO ./textures/greystone.xpm
+WE ./textures/mossy.xpm
+EA ./textures/redbrick.xpm
 S ./textures/barrel.xpm
 F 127,127,127
 C 25,120,230
