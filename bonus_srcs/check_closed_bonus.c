@@ -6,7 +6,7 @@
 /*   By: jabenjam <jabenjam@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/08/02 16:15:19 by jabenjam          #+#    #+#             */
-/*   Updated: 2020/08/25 23:22:26 by jabenjam         ###   ########.fr       */
+/*   Updated: 2020/09/21 15:48:53 by jabenjam         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,8 +19,8 @@ void		check_segment(t_var *var, char *segment)
 	len = ft_strlen(segment);
 	if (segment[0] && segment[len - 1])
 	{
-		if (ft_isinset("0NSWE", segment[0]) ||
-			ft_isinset("0NSWE", segment[len - 1]))
+		if (ft_isinset("02NSWE", segment[0]) ||
+			ft_isinset("02NSWE", segment[len - 1]))
 		{
 			if (ft_isinset("NSWE", segment[0]) ||
 				ft_isinset("NSWE", segment[len - 1]))
