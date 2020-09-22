@@ -6,7 +6,7 @@
 /*   By: jabenjam <jabenjam@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/07/01 13:50:48 by jabenjam          #+#    #+#             */
-/*   Updated: 2020/09/09 14:41:42 by jabenjam         ###   ########.fr       */
+/*   Updated: 2020/09/22 12:21:50 by jabenjam         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,9 +22,9 @@ int	main(int ac, char **av)
 	{
 		check_argument(&var, av[1], ".cub", 1);
 		fd = open(av[1], O_RDONLY);
+		var.mlx = mlx_init();
 		cub_parser(&var, fd, ac);
 		check_tex(&var);
-		var.mlx = mlx_init();
 		initialize_tex(&var);
 		initialize_key(&var.key);
 		if (ac == 3 && !check_argument(&var, av[2], "--save", 2))

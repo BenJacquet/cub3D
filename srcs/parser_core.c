@@ -6,7 +6,7 @@
 /*   By: jabenjam <jabenjam@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/07/28 17:45:36 by jabenjam          #+#    #+#             */
-/*   Updated: 2020/09/09 15:04:46 by jabenjam         ###   ########.fr       */
+/*   Updated: 2020/09/22 12:34:18 by jabenjam         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,10 @@
 int			cub_parser2(t_var *var, char *line, int ac)
 {
 	if (line && line[0] == 'R' && var->width == 0 && var->height == 0)
+	{
+		mlx_get_screen_size(var->mlx, &var->width, &var->height);
 		parse_resolution(var, ++line, ac);
+	}
 	else if (line && line[0] == 'F' && var->f_color == 0)
 		var->f_color = parse_rgb(var, ++line);
 	else if (line && line[0] == 'C' && var->c_color == 0)
