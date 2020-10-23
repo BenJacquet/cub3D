@@ -1,4 +1,0 @@
-- Appliquer les modifs des bonus sur la version obligatoire
-- Pour le --save, enregistrer dans la résolution spécifiée meme si elle est plus grande que l'ecran
-- close le fd en cas d'erreur dans le nom
-- free les paths au close
