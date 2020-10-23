@@ -6,13 +6,13 @@
 #    By: jabenjam <jabenjam@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2020/07/28 18:21:33 by jabenjam          #+#    #+#              #
-#    Updated: 2020/09/20 18:27:55 by jabenjam         ###   ########.fr        #
+#    Updated: 2020/10/23 11:35:00 by jabenjam         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
-NAME = Cub3D
+NAME = cub3D
 
-NAME_BONUS = Cub3D_bonus
+NAME_BONUS = cub3D_bonus
 
 LFT = libft/
 

@@ -6,7 +6,7 @@
 /*   By: jabenjam <jabenjam@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/07/28 18:05:46 by jabenjam          #+#    #+#             */
-/*   Updated: 2020/09/20 17:56:06 by jabenjam         ###   ########.fr       */
+/*   Updated: 2020/10/23 11:35:26 by jabenjam         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,7 +21,7 @@ void	music_player(t_var *var)
 {
 	if (var->key.play == 0 && var->key.t == 1)
 	{
-		system("afplay -v 50 bonus_sound/aesthetic.mp3 > /dev/null &");
+		system("afplay -v 0.50 bonus_sound/aesthetic.mp3 > /dev/null &");
 		var->key.play = 1;
 	}
 	if (var->key.play == 1 && var->key.t == 0)
